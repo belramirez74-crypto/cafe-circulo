@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+@theme {
+  --color-cafe-bg: #0a0a0a;
+  --color-cafe-surface: #1f1512;
+  --color-cafe-card: #2a1f1a;
+  --color-cafe-border: #3d2c25;
+  --color-cafe-burgundy: #52120E;
+  --color-cafe-burgundy-light: #6e1d18;
+  --color-cafe-accent: #52120E;
+  --color-cafe-cream: #f5f0e8;
+  --color-cafe-text: #f5f0e8;
+  --color-cafe-muted: #b5a89a;
+  --color-cafe-muted-dark: #8a7a6a;
+
+  --font-display: "Oswald", "Impact", sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-script: "Allura", "Edwardian Script ITC", "Playlist Script", cursive;
+}
+
+@layer base {
+  * { scrollbar-color: var(--color-cafe-border) var(--color-cafe-bg); }
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-cafe-bg);
+  color: var(--color-cafe-text);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0f0b09; }
+::-webkit-scrollbar-thumb { background: #2f2420; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #4a3530; }
+
+::selection { background: rgba(122, 31, 46, 0.4); }
+
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 12px rgba(82, 18, 14, 0.4), 0 0 30px rgba(82, 18, 14, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(82, 18, 14, 0.7), 0 0 50px rgba(82, 18, 14, 0.3);
+  }
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 2.5s ease-in-out infinite;
+}
+
+.grain-overlay::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px;
+}
+
+.checker-pattern {
+  background-image:
+    linear-gradient(45deg, rgba(255,255,255,0.03) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255,255,255,0.03) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.03) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.03) 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+}
+
+.menu-grid-bg {
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 49px, rgba(255,255,255,0.02) 49px, rgba(255,255,255,0.02) 50px),
+    repeating-linear-gradient(90deg, transparent, transparent 49px, rgba(255,255,255,0.02) 49px, rgba(255,255,255,0.02) 50px);
+}
