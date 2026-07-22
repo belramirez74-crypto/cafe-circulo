@@ -33,7 +33,7 @@ router.post('/login', async (req, res) => {
       { expiresIn: '7d' }
     );
 
-    res.json({ token, user: { id: user.id, email: user.email, name: user.name, role: user.role } });
+    res.json({ token, user: { id: user.id, email: user.email, name: user.name, role: user.role, avatar_url: user.avatar_url || null } });
   } catch (err) {
     res.status(500).json({ error: 'Error del servidor' });
   }
@@ -44,7 +44,12 @@ router.get('/verify', async (req, res) => {
   if (!token) return res.status(401).json({ error: 'No token' });
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    res.json({ valid: true, user: { id: decoded.id, email: decoded.email, name: decoded.name, role: decoded.role } });
+    const { data: user } = await supabase
+      .from('app_users')
+      .select('avatar_url')
+      .eq('id', decoded.id)
+      .single();
+    res.json({ valid: true, user: { id: decoded.id, email: decoded.email, name: decoded.name, role: decoded.role, avatar_url: user?.avatar_url || null } });
   } catch {
     res.status(401).json({ error: 'Token inválido' });
   }

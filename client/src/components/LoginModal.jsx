@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useUserAuth } from '../context/UserAuthContext';
 import { useAuth } from '../context/AuthContext';
 import { userLogin } from '../lib/api';
-import { Lock, Mail, Store, X } from 'lucide-react';
+import { Lock, Mail, Store, X, Eye, EyeOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function LoginModal({ open, onClose }) {
@@ -10,6 +10,7 @@ export default function LoginModal({ open, onClose }) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { setUser } = useUserAuth();
   const { setAdmin } = useAuth();
 
@@ -51,7 +52,7 @@ export default function LoginModal({ open, onClose }) {
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
             onClick={e => e.stopPropagation()}
-            className="w-full max-w-sm bg-cafe-surface border border-cafe-border"
+            className="w-full max-w-sm bg-cafe-surface border border-cafe-border rounded-xl"
           >
             <div className="flex items-center justify-between p-4 border-b border-cafe-border">
               <div className="flex items-center gap-2">
@@ -90,20 +91,23 @@ export default function LoginModal({ open, onClose }) {
                 <div className="flex items-center border border-cafe-border bg-cafe-bg focus-within:border-cafe-accent transition-colors">
                   <Lock className="w-4 h-4 text-cafe-muted ml-3 shrink-0" />
                   <input
-                    type="password"
+                    type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={e => setPassword(e.target.value)}
                     className="w-full px-3 py-2 bg-transparent text-cafe-text focus:outline-none"
                     placeholder="••••••••"
                     required
                   />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="mr-3 text-cafe-muted hover:text-cafe-text transition-colors shrink-0">
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-cafe-accent text-white font-display tracking-wider hover:bg-cafe-burgundy-light transition-colors disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-cafe-accent text-white font-display tracking-wider hover:bg-cafe-burgundy-light transition-colors disabled:opacity-50 rounded-xl shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-black/40"
               >
                 <Lock className="w-4 h-4" />
                 {loading ? 'INGRESANDO...' : 'INGRESAR'}

@@ -1,8 +1,11 @@
 import { Router } from 'express';
+import multer from 'multer';
+import XLSX from 'xlsx';
 import { supabase } from '../lib/supabase.js';
 import { authenticateAdmin } from '../middleware/auth.js';
 
 const router = Router();
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 
 router.get('/', async (req, res) => {
   try {
@@ -94,6 +97,38 @@ router.delete('/:id', authenticateAdmin, async (req, res) => {
 
     if (error) throw error;
     res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/import', authenticateAdmin, upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No se envió archivo' });
+
+    const wb = XLSX.read(req.file.buffer, { type: 'buffer' });
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+
+    const items = rows.map(r => ({
+      name: r.Nombre || r.nombre || r.name || '',
+      description: r.Descripción || r.Descripcion || r.description || '',
+      price: parseFloat(r.Precio || r.precio || r.price || 0),
+      category: r.Categoría || r.Categoria || r.category || 'Cafetería',
+      image_url: r.Imagen || r.imagen || r.image_url || '',
+      stock: true,
+      featured: false,
+    })).filter(i => i.name);
+
+    if (!items.length) return res.status(400).json({ error: 'No se encontraron items válidos' });
+
+    const { data, error } = await supabase
+      .from('menu_items')
+      .insert(items)
+      .select();
+
+    if (error) throw error;
+    res.status(201).json({ imported: data.length, items: data });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

@@ -62,5 +62,5 @@ INSERT INTO categories (name, display_order) VALUES
 ON CONFLICT (name) DO NOTHING;
 
 INSERT INTO admins (email, password_hash) VALUES
-  ('admin@cafecirculo.com', '$2a$10$sH6kHvPd9dBE1NykjjF2HeNmJSpHUhZho0zGCO1TnE4HyGGHXnykq')
+  ('admin@cafecirculo.com', '$2a$10$gPaaUx.BYOiCMCMniVOs/uBbIGRnUbY9TaZbBp4z9H5MRLELvGwIu')
 ON CONFLICT (email) DO NOTHING;

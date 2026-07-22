@@ -68,6 +68,14 @@ router.get('/tasks', authenticateUser, requireAdmin, async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// Eliminar tarea
+router.delete('/tasks/:id', authenticateUser, requireAdmin, async (req, res) => {
+  try {
+    await supabase.from('staff_tasks').delete().eq('id', req.params.id);
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 // Asignar recordatorio a staff
 router.post('/reminders', authenticateUser, requireAdmin, async (req, res) => {
   try {
@@ -129,10 +137,44 @@ router.get('/clients', authenticateUser, requireAdmin, async (req, res) => {
   try {
     const { data } = await supabase
       .from('app_users')
-      .select('id, email, name, role, created_at')
+      .select('id, email, name, role, created_at, avatar_url')
       .eq('role', 'client')
       .order('created_at', { ascending: false });
     res.json(data || []);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Obtener favoritos de un cliente (auto + pinned)
+router.get('/clients/:id/favorites', authenticateUser, requireAdmin, async (req, res) => {
+  try {
+    const clientId = req.params.id;
+
+    // Auto favorites from sales
+    const { data: sales } = await supabase
+      .from('sales')
+      .select('item_name, category, menu_item_id, unit_price, quantity')
+      .eq('client_id', clientId)
+      .order('sold_at', { ascending: false });
+
+    const counts = {};
+    (sales || []).forEach(s => {
+      const key = s.item_name;
+      if (!counts[key]) counts[key] = { item_name: s.item_name, category: s.category, unit_price: s.unit_price, total_quantity: 0, order_count: 0 };
+      counts[key].total_quantity += s.quantity;
+      counts[key].order_count++;
+    });
+    const autoFavorites = Object.values(counts)
+      .sort((a, b) => b.order_count - a.order_count)
+      .slice(0, 5);
+
+    // Pinned favorites
+    const { data: pinned } = await supabase
+      .from('client_favorites')
+      .select('id, created_at, menu_items(id, name, category, price, image_url)')
+      .eq('client_id', clientId)
+      .order('created_at', { ascending: false });
+
+    res.json({ autoFavorites, pinnedFavorites: pinned || [] });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 

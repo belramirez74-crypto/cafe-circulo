@@ -50,7 +50,7 @@ export default function AdminEvents() {
           </div>
           <button
             onClick={() => setShowForm(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-cafe-accent text-white font-display text-sm tracking-wider hover:bg-cafe-burgundy-light transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-cafe-accent text-white font-display text-sm tracking-wider hover:bg-cafe-burgundy-light transition-colors rounded-xl shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-black/40"
           >
             <Plus className="w-4 h-4" /> NUEVO EVENTO
           </button>
@@ -66,7 +66,7 @@ export default function AdminEvents() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ delay: i * 0.05 }}
-                className="bg-cafe-surface border border-cafe-border overflow-hidden group"
+                className="bg-cafe-surface border border-cafe-border overflow-hidden group rounded-xl"
               >
                 {event.flyer_url && (
                   <div className="aspect-[4/3] overflow-hidden">
@@ -117,7 +117,7 @@ export default function AdminEvents() {
                 initial={{ scale: 0.95, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.95, opacity: 0 }}
-                className="bg-cafe-surface border border-cafe-border w-full max-w-lg"
+                className="bg-cafe-surface border border-cafe-border w-full max-w-lg rounded-xl"
                 onClick={e => e.stopPropagation()}
               >
                 <div className="flex items-center justify-between p-6 border-b border-cafe-border">
@@ -170,7 +170,7 @@ export default function AdminEvents() {
                     <button
                       type="submit"
                       disabled={loading}
-                      className="flex-1 py-2 bg-cafe-accent text-white font-display text-sm tracking-wider hover:bg-cafe-burgundy-light transition-colors disabled:opacity-50"
+                      className="flex-1 py-2 bg-cafe-accent text-white font-display text-sm tracking-wider hover:bg-cafe-burgundy-light transition-colors disabled:opacity-50 rounded-xl shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-black/40"
                     >
                       {loading ? 'CREANDO...' : 'CREAR EVENTO'}
                     </button>

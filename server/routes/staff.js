@@ -28,7 +28,8 @@ router.put('/profile', authenticateUser, async (req, res) => {
 router.post('/time-logs', authenticateUser, async (req, res) => {
   try {
     if (req.body.action === 'out') {
-      const { data: open } = await supabase.from('time_logs').select('*').eq('user_id', req.user.id).is('clock_out', null).single();
+      const { data: entries } = await supabase.from('time_logs').select('*').eq('user_id', req.user.id).order('created_at', { ascending: false }).limit(10);
+      const open = entries?.find(e => !e.clock_out);
       if (open) {
         const { data } = await supabase.from('time_logs').update({ clock_out: new Date().toISOString() }).eq('id', open.id).select().single();
         return res.json(data);
@@ -120,6 +121,19 @@ router.get('/clients', authenticateUser, async (req, res) => {
   try {
     const { data } = await supabase.from('staff_clients').select('*, client:client_id(id, email, name, role)').eq('staff_id', req.user.id);
     res.json(data);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+router.get('/clients/search', authenticateUser, async (req, res) => {
+  try {
+    const q = req.query.q || '';
+    const { data } = await supabase
+      .from('app_users')
+      .select('id, name, email, avatar_url')
+      .eq('role', 'client')
+      .ilike('name', `%${q}%`)
+      .limit(20);
+    res.json(data || []);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 

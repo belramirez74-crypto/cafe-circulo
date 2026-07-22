@@ -9,9 +9,11 @@ router.get('/landing', async (req, res) => {
     const { data, error } = await supabase
       .from('landing_settings')
       .select('*')
-      .single();
+      .limit(1)
+      .maybeSingle();
 
     if (error) throw error;
+    if (!data) return res.status(404).json({ error: 'No landing settings found' });
     res.json(data);
   } catch (err) {
     res.status(500).json({ error: err.message });

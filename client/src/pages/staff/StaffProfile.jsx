@@ -72,7 +72,7 @@ export default function StaffProfile() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Profile Card */}
-          <div className="bg-cafe-surface border border-cafe-border p-6 md:col-span-1">
+          <div className="bg-cafe-surface border border-cafe-border p-6 rounded-xl md:col-span-1">
             <div className="flex flex-col items-center text-center mb-4">
               <div className="w-24 h-24 rounded-full bg-cafe-card border border-cafe-border/60 flex items-center justify-center overflow-hidden mb-3">
                 {profile.photo_url ? (
@@ -118,7 +118,7 @@ export default function StaffProfile() {
               <button
                 onClick={handleSaveProfile}
                 disabled={saving}
-                className="w-full py-2 bg-cafe-accent text-white font-display text-sm tracking-wider hover:bg-cafe-burgundy-light transition-colors disabled:opacity-50"
+                className="w-full py-2 bg-cafe-accent text-white font-display text-sm tracking-wider hover:bg-cafe-burgundy-light transition-colors disabled:opacity-50 rounded-xl shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-black/40"
               >
                 {saving ? 'GUARDANDO...' : 'GUARDAR PERFIL'}
               </button>
@@ -128,7 +128,7 @@ export default function StaffProfile() {
           {/* Tasks & Reminders */}
           <div className="space-y-6 md:col-span-2">
             {/* Tasks */}
-            <div className="bg-cafe-surface border border-cafe-border p-6">
+            <div className="bg-cafe-surface border border-cafe-border p-6 rounded-xl">
               <div className="flex items-center gap-3 mb-4">
                 <ListChecks className="w-5 h-5 text-cafe-burgundy-light" />
                 <h2 className="font-display text-lg text-cafe-text">TAREAS</h2>
@@ -172,7 +172,7 @@ export default function StaffProfile() {
             </div>
 
             {/* Reminders */}
-            <div className="bg-cafe-surface border border-cafe-border p-6">
+            <div className="bg-cafe-surface border border-cafe-border p-6 rounded-xl">
               <div className="flex items-center gap-3 mb-4">
                 <Bell className="w-5 h-5 text-cafe-burgundy-light" />
                 <h2 className="font-display text-lg text-cafe-text">RECORDATORIOS</h2>
@@ -210,7 +210,7 @@ export default function StaffProfile() {
             </div>
 
             {/* Notes */}
-            <div className="bg-cafe-surface border border-cafe-border p-6">
+            <div className="bg-cafe-surface border border-cafe-border p-6 rounded-xl">
               <div className="flex items-center gap-3 mb-4">
                 <FileText className="w-5 h-5 text-cafe-burgundy-light" />
                 <h2 className="font-display text-lg text-cafe-text">NOTAS</h2>

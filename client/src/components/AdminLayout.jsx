@@ -4,12 +4,14 @@ import { useAuth } from '../context/AuthContext';
 import {
   LayoutDashboard, User, Layout, ShoppingBag, UserCog, Users,
   CalendarPlus, LogOut, Store, ChevronLeft, PanelRightClose, PanelRightOpen,
-  CircleUser
+  CircleUser, BarChart3, DollarSign
 } from 'lucide-react';
 
 const sidebarLinks = [
-  { to: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/admin/profile', icon: User, label: 'Mi Perfil' },
+  { to: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
+  { to: '/admin/stats', icon: BarChart3, label: 'Reportes' },
+  { to: '/admin/ventas', icon: DollarSign, label: 'Ventas' },
   { to: '/admin/landing', icon: Layout, label: 'Landing Page' },
   { to: '/admin/menu', icon: ShoppingBag, label: 'Gestión de Menú' },
   { to: '/admin/clients', icon: UserCog, label: 'Gestión de Clientes' },
@@ -29,7 +31,7 @@ export default function AdminLayout({ children }) {
   };
 
   return (
-    <div className="min-h-screen bg-cafe-bg flex">
+    <div className="min-h-screen bg-cafe-bg flex panel-light">
       {/* Sidebar */}
       <aside
         className={`bg-cafe-surface border-r border-cafe-border flex flex-col transition-all duration-300 ${
@@ -65,8 +67,8 @@ export default function AdminLayout({ children }) {
                 to={link.to}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded transition-colors ${
                   isActive
-                    ? 'bg-cafe-accent/20 text-cafe-cream'
-                    : 'text-cafe-muted hover:text-cafe-text hover:bg-cafe-card/30'
+                    ? 'bg-[#5c1514]/15 text-[#5c1514] font-semibold'
+                    : 'text-[#5c1514] hover:bg-[#5c1514]/10'
                 }`}
               >
                 <Icon className="w-5 h-5 shrink-0" />
@@ -79,7 +81,11 @@ export default function AdminLayout({ children }) {
         {/* Admin info & logout */}
         <div className="border-t border-cafe-border p-3">
           <div className="flex items-center gap-3 min-w-0">
-            <CircleUser className="w-8 h-8 text-cafe-muted shrink-0" />
+            {admin?.avatar_url ? (
+              <img src={admin.avatar_url} alt="Avatar" className="w-8 h-8 rounded-full object-cover shrink-0" />
+            ) : (
+              <CircleUser className="w-8 h-8 text-cafe-muted shrink-0" />
+            )}
             {!collapsed && admin && (
               <div className="min-w-0 flex-1">
                 <p className="text-sm text-cafe-text truncate">{admin.name}</p>

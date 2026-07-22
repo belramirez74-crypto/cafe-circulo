@@ -33,7 +33,7 @@ export default function Home() {
               viewport={{ once: true }}
             >
               <Crown className="w-8 h-8 text-cafe-burgundy-light mx-auto mb-3" />
-              <p className="font-script text-cafe-cream text-3xl sm:text-4xl mb-2">Bienvenido</p>
+              <p className="font-script text-cafe-cream text-4xl sm:text-5xl mb-2">Bienvenido</p>
               <h2 className="font-display text-3xl sm:text-4xl text-cafe-text mb-4">
                 {user.role === 'admin' ? 'ADMINISTRADOR' : user.role === 'staff' ? 'STAFF' : 'CLIENTE EXCLUSIVO'}
               </h2>
@@ -41,11 +41,11 @@ export default function Home() {
 
               {user.role === 'staff' && (
                 <div className="max-w-xl mx-auto space-y-4">
-                  <Link to="/staff" className="flex items-center gap-3 p-4 bg-cafe-surface border border-cafe-border/60 hover:border-cafe-accent transition-colors group">
+                  <Link to="/staff" className="flex items-center gap-3 p-4 bg-cafe-surface border border-cafe-border/60 hover:border-cafe-accent transition-colors group rounded-xl">
                     <Shield className="w-5 h-5 text-cafe-burgundy-light shrink-0 group-hover:text-cafe-accent transition-colors" />
                     <p className="text-cafe-muted text-sm text-left group-hover:text-cafe-text transition-colors">Dashboard staff — fichado, tareas, clientes</p>
                   </Link>
-                  <Link to="/staff/profile" className="flex items-center gap-3 p-4 bg-cafe-surface border border-cafe-border/60 hover:border-cafe-accent transition-colors group">
+                  <Link to="/staff/profile" className="flex items-center gap-3 p-4 bg-cafe-surface border border-cafe-border/60 hover:border-cafe-accent transition-colors group rounded-xl">
                     <User className="w-5 h-5 text-cafe-burgundy-light shrink-0 group-hover:text-cafe-accent transition-colors" />
                     <p className="text-cafe-muted text-sm text-left group-hover:text-cafe-text transition-colors">Mi perfil — notas, recordatorios, tareas</p>
                   </Link>
@@ -54,7 +54,7 @@ export default function Home() {
 
               {user.role === 'client' && (
                 <div className="max-w-2xl mx-auto space-y-6">
-                  <div className="flex items-center gap-3 justify-center p-4 bg-cafe-surface border border-cafe-border/60">
+                  <div className="flex items-center gap-3 justify-center p-4 bg-cafe-surface border border-cafe-border/60 rounded-xl">
                     <Sparkles className="w-5 h-5 text-cafe-burgundy-light shrink-0" />
                     <p className="text-cafe-muted text-sm text-left">Beneficios exclusivos, promociones y contenido especial para clientes registrados.</p>
                   </div>
@@ -64,7 +64,7 @@ export default function Home() {
                       <h3 className="font-display text-sm tracking-widest text-cafe-accent">PROMOCIONES EXCLUSIVAS</h3>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {promotions.map(p => (
-                          <div key={p.id} className="flex items-start gap-3 p-4 bg-cafe-surface border border-cafe-border/60 text-left">
+                          <div key={p.id} className="flex items-start gap-3 p-4 bg-cafe-surface border border-cafe-border/60 text-left rounded-xl">
                             {p.image_url && (
                               <div className="w-16 h-16 shrink-0 rounded overflow-hidden bg-cafe-card">
                                 <img src={p.image_url} alt="" className="w-full h-full object-cover" />
@@ -72,7 +72,7 @@ export default function Home() {
                             )}
                             <div>
                               <h4 className="font-display text-sm text-cafe-text">{p.title}</h4>
-                              {p.description && <p className="text-xs text-cafe-muted mt-1">{p.description}</p>}
+                              {p.description && <p className="text-sm text-cafe-muted mt-1 leading-relaxed">{p.description}</p>}
                             </div>
                           </div>
                         ))}
@@ -85,7 +85,7 @@ export default function Home() {
                       <h3 className="font-display text-sm tracking-widest text-cafe-accent">EVENTOS</h3>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {clientBanners.map(b => (
-                          <div key={b.id} className="aspect-[16/9] rounded overflow-hidden border border-cafe-border/60 bg-cafe-card group">
+                          <div key={b.id} className="aspect-[16/9] rounded-xl overflow-hidden border border-cafe-border/60 bg-cafe-card group">
                             {b.image_url ? (
                               <img src={b.image_url} alt={b.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                             ) : (
@@ -105,7 +105,7 @@ export default function Home() {
                 <div className="max-w-xl mx-auto space-y-4">
                   <Link
                     to="/admin"
-                    className="flex items-center gap-3 justify-center p-4 bg-cafe-surface border border-cafe-border/60 hover:border-cafe-accent transition-colors group"
+                    className="flex items-center gap-3 justify-center p-4 bg-cafe-surface border border-cafe-border/60 hover:border-cafe-accent transition-colors group rounded-xl"
                   >
                     <Crown className="w-5 h-5 text-cafe-burgundy-light shrink-0 group-hover:text-cafe-accent transition-colors" />
                     <p className="text-cafe-muted text-sm group-hover:text-cafe-text transition-colors">Ir al panel de administración</p>
@@ -121,7 +121,7 @@ export default function Home() {
       <section className="py-20 border-t border-cafe-border/60">
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center mb-8">
-            <p className="font-script text-cafe-cream text-3xl sm:text-4xl">lo más destacado</p>
+            <p className="font-script text-cafe-cream text-4xl sm:text-5xl">lo más destacado</p>
             <h2 className="font-display text-2xl sm:text-3xl text-cafe-text tracking-[0.15em]">{user?.role === 'staff' ? 'RECOMENDACIONES PARA CLIENTES' : 'RECOMENDACIONES'}</h2>
             <div className="w-12 h-0.5 bg-gradient-to-r from-transparent via-cafe-accent to-transparent mx-auto mt-3" />
           </div>
@@ -140,7 +140,7 @@ export default function Home() {
                   </div>
                   <div className="p-4">
                     <h3 className="font-display text-base text-cafe-text truncate">{item.name}</h3>
-                    {item.description && <p className="text-cafe-muted text-xs mt-1 line-clamp-2">{item.description}</p>}
+                    {item.description && <p className="text-cafe-muted text-sm mt-1 line-clamp-3 leading-relaxed">{item.description}</p>}
                     <div className="flex items-center justify-between mt-3 pt-3 border-t border-cafe-border/40">
                       <span className="font-display text-xl text-cafe-accent">
                         ${item.price ? (typeof item.price === 'number' ? parseFloat(item.price).toLocaleString('es-AR') : item.price) : ''}
@@ -163,7 +163,7 @@ export default function Home() {
           <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-cafe-burgundy/40 to-transparent mx-auto mb-6" />
           <p className="font-display text-lg text-cafe-text mb-2 tracking-widest">CAFÉ CÍRCULO</p>
           <p className="text-cafe-muted-dark text-sm tracking-wide">Villa Allende · Córdoba · Argentina</p>
-          <p className="text-cafe-muted-dark/60 text-xs mt-6 tracking-wider">© 2024 Café Círculo</p>
+          <p className="text-cafe-muted-dark/60 text-xs mt-6 tracking-wider">© 2026 Café Círculo</p>
         </div>
       </footer>
     </div>

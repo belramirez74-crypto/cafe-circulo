@@ -1,6 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { Upload, Image, Link, X, Loader } from 'lucide-react';
+import { Upload, Image, Link, X, Loader, Film } from 'lucide-react';
 import { uploadImage, getUploadedImages } from '../lib/api';
+
+function isVideoUrl(url) {
+  return /\.(mp4|webm|mov)$/i.test(url) || url.includes('youtube.com') || url.includes('youtu.be') || url.includes('vimeo.com');
+}
 
 export default function ImagePicker({ value, onChange, onClose }) {
   const [tab, setTab] = useState('upload');
@@ -26,7 +30,7 @@ export default function ImagePicker({ value, onChange, onClose }) {
       onChange(res.data.url);
       onClose?.();
     } catch (err) {
-      alert(err.response?.data?.error || 'Error al subir imagen');
+      alert(err.response?.data?.error || 'Error al subir archivo');
     } finally {
       setUploading(false);
     }
@@ -39,12 +43,24 @@ export default function ImagePicker({ value, onChange, onClose }) {
     }
   };
 
+  const renderThumb = (item, small = false) => {
+    if (item.type === 'video') {
+      return (
+        <div className="w-full h-full bg-cafe-card flex items-center justify-center relative">
+          <Film className={small ? 'w-4 h-4 text-cafe-accent' : 'w-8 h-8 text-cafe-accent'} />
+          <span className="absolute bottom-1 right-1 text-[9px] bg-black/60 text-white px-1 rounded">MP4</span>
+        </div>
+      );
+    }
+    return <img src={item.url} alt="" className="w-full h-full object-cover" />;
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70" onClick={onClose}>
-      <div className="bg-cafe-surface border border-cafe-border w-full max-w-lg" onClick={e => e.stopPropagation()}>
+      <div className="bg-cafe-surface border border-cafe-border w-full max-w-lg rounded-xl" onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-cafe-border">
-          <h2 className="font-display text-lg text-cafe-text">SELECCIONAR IMAGEN</h2>
+          <h2 className="font-display text-lg text-cafe-text">SELECCIONAR ARCHIVO</h2>
           <button onClick={onClose} className="text-cafe-muted hover:text-cafe-text">
             <X className="w-5 h-5" />
           </button>
@@ -66,7 +82,7 @@ export default function ImagePicker({ value, onChange, onClose }) {
         {/* Upload Tab */}
         {tab === 'upload' && (
           <div className="p-6 text-center">
-            <input ref={fileRef} type="file" accept="image/*" onChange={handleFile} className="hidden" />
+            <input ref={fileRef} type="file" accept="image/*,video/mp4,video/webm,video/quicktime" onChange={handleFile} className="hidden" />
             <button
               onClick={() => fileRef.current?.click()}
               disabled={uploading}
@@ -77,8 +93,8 @@ export default function ImagePicker({ value, onChange, onClose }) {
               ) : (
                 <>
                   <Upload className="w-10 h-10 text-cafe-muted" />
-                  <p className="text-cafe-muted text-sm">Hacé click para seleccionar una imagen</p>
-                  <p className="text-cafe-muted-dark text-xs">JPG, PNG, WebP, GIF · Max 5MB</p>
+                  <p className="text-cafe-muted text-sm">Hacé click para seleccionar imagen o video</p>
+                  <p className="text-cafe-muted-dark text-xs">Imágenes: JPG, PNG, WebP, GIF · Videos: MP4, WebM, MOV · Max 50MB</p>
                 </>
               )}
             </button>
@@ -93,16 +109,16 @@ export default function ImagePicker({ value, onChange, onClose }) {
                 <Loader className="w-6 h-6 text-cafe-accent animate-spin" />
               </div>
             ) : gallery.length === 0 ? (
-              <p className="text-center text-cafe-muted text-sm py-8">No hay imágenes subidas todavía</p>
+              <p className="text-center text-cafe-muted text-sm py-8">No hay archivos subidos todavía</p>
             ) : (
               <div className="grid grid-cols-3 gap-3">
-                {gallery.map(img => (
+                {gallery.map(item => (
                   <button
-                    key={img.filename}
-                    onClick={() => { onChange(img.url); onClose?.(); }}
-                    className={`aspect-video rounded overflow-hidden border-2 transition-colors ${value === img.url ? 'border-cafe-accent' : 'border-transparent hover:border-cafe-border'}`}
+                    key={item.filename}
+                    onClick={() => { onChange(item.url); onClose?.(); }}
+                    className={`aspect-video rounded overflow-hidden border-2 transition-colors ${value === item.url ? 'border-cafe-accent' : 'border-transparent hover:border-cafe-border'}`}
                   >
-                    <img src={img.url} alt="" className="w-full h-full object-cover" />
+                    {renderThumb(item, true)}
                   </button>
                 ))}
               </div>
@@ -114,25 +130,38 @@ export default function ImagePicker({ value, onChange, onClose }) {
         {tab === 'url' && (
           <div className="p-6 space-y-4">
             <div>
-              <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">URL DE LA IMAGEN</label>
+              <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">URL (imagen, video o YouTube/Vimeo)</label>
               <input
                 type="url"
                 value={url}
                 onChange={e => setUrl(e.target.value)}
                 className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-cafe-accent"
-                placeholder="https://..."
+                placeholder="https://... o youtube.com/watch?v=... o vimeo.com/..."
                 autoFocus
               />
             </div>
             {url && (
               <div className="aspect-video rounded overflow-hidden border border-cafe-border bg-cafe-card">
-                <img src={url} alt="" className="w-full h-full object-cover" onError={e => { e.target.style.display = 'none' }} />
+                {(() => {
+                  const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&?/]+)/);
+                  const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+                  if (ytMatch) {
+                    return <iframe src={`https://www.youtube.com/embed/${ytMatch[1]}`} className="w-full h-full" allowFullScreen title="Vista previa" />;
+                  }
+                  if (vimeoMatch) {
+                    return <iframe src={`https://player.vimeo.com/video/${vimeoMatch[1]}`} className="w-full h-full" allowFullScreen title="Vista previa" />;
+                  }
+                  if (/\.(mp4|webm|mov)$/i.test(url)) {
+                    return <video src={url} className="w-full h-full object-cover" controls />;
+                  }
+                  return <img src={url} alt="" className="w-full h-full object-cover" onError={e => { e.target.style.display = 'none' }} />;
+                })()}
               </div>
             )}
             <button
               onClick={handleUrl}
               disabled={!url.trim()}
-              className="w-full py-2 bg-cafe-accent text-white font-display text-sm tracking-wider hover:bg-cafe-burgundy-light transition-colors disabled:opacity-50"
+              className="w-full py-2 bg-cafe-accent text-white font-display text-sm tracking-wider hover:bg-cafe-burgundy-light transition-colors disabled:opacity-50 rounded-xl shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-black/40"
             >
               USAR ESTA URL
             </button>

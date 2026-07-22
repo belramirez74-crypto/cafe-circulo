@@ -44,7 +44,7 @@ export default function MenuPage() {
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="font-script text-cafe-accent text-lg mb-2"
+            className="font-script text-cafe-accent text-2xl sm:text-3xl mb-2"
           >
             Nuestras especialidades
           </motion.p>
@@ -73,7 +73,7 @@ export default function MenuPage() {
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Buscar en el menú..."
-              className="w-full pl-10 pr-4 py-3 bg-cafe-surface border border-cafe-border text-cafe-text placeholder-cafe-muted/50 focus:outline-none focus:border-cafe-accent transition-colors"
+              className="w-full pl-10 pr-4 py-3 bg-cafe-surface border border-cafe-border text-cafe-text placeholder-cafe-muted/50 focus:outline-none focus:border-cafe-accent transition-colors rounded-xl"
             />
           </div>
         </motion.div>
@@ -91,7 +91,7 @@ export default function MenuPage() {
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`flex items-center gap-2 px-4 py-2 text-sm font-display tracking-wider transition-colors ${
+                className={`flex items-center gap-2 px-4 py-2 text-sm font-display tracking-wider transition-colors rounded-xl shadow-md shadow-black/20 ${
                   activeCategory === cat
                     ? 'bg-cafe-accent text-white'
                     : 'bg-cafe-surface text-cafe-muted border border-cafe-border hover:text-cafe-text hover:border-cafe-accent'
@@ -117,7 +117,7 @@ export default function MenuPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
-                className={`group bg-cafe-surface border border-cafe-border border-l-4 overflow-hidden hover:border-cafe-accent transition-colors ${
+                className={`group bg-cafe-surface border border-cafe-border border-l-4 overflow-hidden hover:border-cafe-accent transition-colors rounded-2xl ${
                   categoryColors[item.category] || 'border-l-cafe-accent'
                 }`}
               >
@@ -137,7 +137,7 @@ export default function MenuPage() {
                 <div className="p-4">
                   <div className="flex items-start justify-between gap-4 mb-1">
                     <h3 className="font-display text-lg text-cafe-text">{item.name}</h3>
-                    <span className="font-display text-cafe-accent shrink-0">
+                    <span className="font-display text-xl text-cafe-cream shrink-0">
                       ${parseFloat(item.price).toLocaleString('es-AR')}
                     </span>
                   </div>

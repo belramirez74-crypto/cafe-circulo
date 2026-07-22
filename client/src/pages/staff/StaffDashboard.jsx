@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useUserAuth } from '../../context/UserAuthContext';
-import { getTodayTimeLogs, clockIn, clockOut, getStaffClients, getStaffTasks, getStaffSchedule } from '../../lib/api';
-import { Clock, LogIn, LogOut, Calendar, Users, ListChecks, User, Coffee } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { getTodayTimeLogs, clockIn, clockOut, getStaffClients, getStaffTasks, getStaffSchedule, searchClients, addStaffClient } from '../../lib/api';
+import { Clock, LogIn, LogOut, Calendar, Users, ListChecks, User, Coffee, Plus, Search, X, UserPlus } from 'lucide-react';
 
 export default function StaffDashboard() {
   const { user } = useUserAuth();
@@ -17,6 +18,10 @@ export default function StaffDashboard() {
   const [calMonth, setCalMonth] = useState(new Date().getMonth());
   const [calYear, setCalYear] = useState(new Date().getFullYear());
   const [selectedDay, setSelectedDay] = useState(null);
+  const [showAddClient, setShowAddClient] = useState(false);
+  const [clientSearch, setClientSearch] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [searching, setSearching] = useState(false);
 
   const now = new Date();
   const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
@@ -68,6 +73,30 @@ export default function StaffDashboard() {
 
   if (!user) return null;
 
+  const handleSearchClient = async (q) => {
+    setClientSearch(q);
+    if (q.length < 2) { setSearchResults([]); return; }
+    setSearching(true);
+    try {
+      const res = await searchClients(q);
+      const assignedIds = new Set(clients.map(c => c.client_id));
+      setSearchResults(res.data.filter(c => !assignedIds.has(c.id)));
+    } catch {}
+    setSearching(false);
+  };
+
+  const handleAssignClient = async (clientId) => {
+    try {
+      await addStaffClient(clientId);
+      setShowAddClient(false);
+      setClientSearch('');
+      setSearchResults([]);
+      loadData();
+    } catch (err) {
+      alert(err.response?.data?.error || 'Error al asignar');
+    }
+  };
+
   return (
     <div>
       <div className="max-w-6xl mx-auto px-4">
@@ -78,7 +107,7 @@ export default function StaffDashboard() {
           </div>
           <Link
             to="/staff/profile"
-            className="flex items-center gap-2 px-4 py-2 bg-cafe-accent text-white font-display text-sm tracking-wider hover:bg-cafe-burgundy-light transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-cafe-accent text-white font-display text-sm tracking-wider hover:bg-cafe-burgundy-light transition-colors rounded-xl shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-black/40"
           >
             <User className="w-4 h-4" /> MI PERFIL
           </Link>
@@ -86,7 +115,7 @@ export default function StaffDashboard() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {/* Clock In/Out */}
-          <div className="bg-cafe-surface border border-cafe-border p-6">
+          <div className="bg-cafe-surface border border-cafe-border p-6 rounded-xl">
             <div className="flex items-center gap-3 mb-4">
               <Clock className="w-6 h-6 text-cafe-burgundy-light" />
               <h2 className="font-display text-lg text-cafe-text">FICHADO</h2>
@@ -110,7 +139,7 @@ export default function StaffDashboard() {
                       </span>
                     </p>
                   </div>
-                  <span className="text-xs text-cafe-accent/60 font-display">COMPLETADO</span>
+                  <span className="text-xs text-green-400 font-display tracking-wider bg-green-500/15 px-2 py-0.5 rounded">COMPLETADO</span>
                 </div>
               </div>
             )}
@@ -136,7 +165,7 @@ export default function StaffDashboard() {
                 <button
                   onClick={() => handleClock('out')}
                   disabled={clocking}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-cafe-burgundy-light text-white font-display text-sm tracking-wider hover:bg-cafe-accent transition-colors disabled:opacity-50"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-cafe-burgundy-light text-white font-display text-sm tracking-wider hover:bg-cafe-accent transition-colors disabled:opacity-50 rounded-xl shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-black/40"
                 >
                   <LogOut className="w-4 h-4" /> {clocking ? 'PROCESANDO...' : 'FICHAR SALIDA'}
                 </button>
@@ -152,7 +181,7 @@ export default function StaffDashboard() {
                 <button
                   onClick={() => handleClock('in')}
                   disabled={clocking}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-cafe-accent text-white font-display text-sm tracking-wider hover:bg-cafe-burgundy-light transition-colors disabled:opacity-50"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-cafe-accent text-white font-display text-sm tracking-wider hover:bg-cafe-burgundy-light transition-colors disabled:opacity-50 rounded-xl shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-black/40"
                 >
                   <LogIn className="w-4 h-4" /> {clocking ? 'PROCESANDO...' : 'FICHAR ENTRADA'}
                 </button>
@@ -161,7 +190,7 @@ export default function StaffDashboard() {
           </div>
 
           {/* CALENDARIO */}
-          <div className="bg-cafe-surface border border-cafe-border p-6">
+          <div className="bg-cafe-surface border border-cafe-border p-6 rounded-xl">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <Calendar className="w-6 h-6 text-cafe-burgundy-light" />
@@ -178,8 +207,8 @@ export default function StaffDashboard() {
 
             {/* Day-of-week header */}
             <div className="grid grid-cols-7 gap-0.5 mb-1">
-              {['D', 'L', 'M', 'M', 'J', 'V', 'S'].map(d => (
-                <div key={d} className="text-center text-xs text-cafe-muted/50 font-display py-1">{d}</div>
+              {['D', 'L', 'Ma', 'Mi', 'J', 'V', 'S'].map((d, i) => (
+                <div key={i} className="text-center text-xs text-cafe-muted/50 font-display py-1">{d}</div>
               ))}
             </div>
 
@@ -234,7 +263,7 @@ export default function StaffDashboard() {
                     )}
                     <span className="text-cafe-muted">{ev.title}</span>
                     {ev.description && (
-                      <span className="text-cafe-muted/40 text-xs truncate hidden sm:inline">{ev.description}</span>
+                      <span className="text-cafe-muted/70 text-xs truncate hidden sm:inline">{ev.description}</span>
                     )}
                   </div>
                 ))}
@@ -243,7 +272,7 @@ export default function StaffDashboard() {
           </div>
 
           {/* Tareas pendientes */}
-          <div className="bg-cafe-surface border border-cafe-border p-6">
+          <div className="bg-cafe-surface border border-cafe-border p-6 rounded-xl">
             <div className="flex items-center gap-3 mb-4">
               <ListChecks className="w-6 h-6 text-cafe-burgundy-light" />
               <h2 className="font-display text-lg text-cafe-text">TAREAS</h2>
@@ -253,7 +282,10 @@ export default function StaffDashboard() {
                 {tasks.filter(t => t.status !== 'completed').slice(0, 3).map(task => (
                   <div key={task.id} className="flex items-start gap-2 text-sm">
                     <span className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${task.status === 'in_progress' ? 'bg-cafe-burgundy-light' : 'bg-cafe-muted'}`} />
-                    <span className="text-cafe-muted truncate">{task.title}</span>
+                    <div>
+                      <p className="text-cafe-muted truncate">{task.title}</p>
+                      {task.description && <p className="text-xs text-cafe-muted/70 truncate">{task.description}</p>}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -264,20 +296,85 @@ export default function StaffDashboard() {
         </div>
 
         {/* Clients Section */}
-        <div className="bg-cafe-surface border border-cafe-border p-6 mb-8">
+        <div className="bg-cafe-surface border border-cafe-border p-6 rounded-xl mb-8">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <Users className="w-6 h-6 text-cafe-burgundy-light" />
+              <Users className="w-6 h-6 text-[#5c1514]" />
               <h2 className="font-display text-lg text-cafe-text">MIS CLIENTES</h2>
             </div>
-            <span className="text-cafe-muted text-sm">{clients.length} clientes</span>
+            <div className="flex items-center gap-3">
+              <span className="text-cafe-muted text-sm">{clients.length} clientes</span>
+              <button
+                onClick={() => setShowAddClient(!showAddClient)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 font-display text-xs tracking-wider transition-colors rounded-lg ${showAddClient ? 'bg-green-600 text-white' : 'bg-[#5c1514] text-white hover:bg-[#731c1a]'}`}
+              >
+                {showAddClient ? <X className="w-3.5 h-3.5" /> : <UserPlus className="w-3.5 h-3.5" />}
+                {showAddClient ? 'CANCELAR' : 'ASIGNAR CLIENTE'}
+              </button>
+            </div>
           </div>
+
+          {/* Search bar */}
+          <AnimatePresence>
+            {showAddClient && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mb-4 overflow-hidden"
+              >
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cafe-muted" />
+                  <input
+                    type="text"
+                    value={clientSearch}
+                    onChange={e => handleSearchClient(e.target.value)}
+                    placeholder="Buscar cliente por nombre..."
+                    className="w-full pl-10 pr-4 py-2.5 bg-cafe-bg border border-cafe-border text-cafe-text text-sm focus:outline-none focus:border-[#5c1514] rounded-lg"
+                    autoFocus
+                  />
+                </div>
+                {searchResults.length > 0 && (
+                  <div className="mt-2 bg-cafe-bg border border-cafe-border rounded-lg max-h-48 overflow-y-auto">
+                    {searchResults.map(c => (
+                      <button
+                        key={c.id}
+                        onClick={() => handleAssignClient(c.id)}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-cafe-card transition-colors text-left border-b border-cafe-border/30 last:border-0"
+                      >
+                        <div className="w-8 h-8 rounded-full bg-[#5c1514]/10 flex items-center justify-center shrink-0">
+                          {c.avatar_url ? (
+                            <img src={c.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
+                          ) : (
+                            <User className="w-4 h-4 text-[#5c1514]" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm text-cafe-text font-display">{c.name || 'Cliente'}</p>
+                          <p className="text-xs text-cafe-muted">{c.email}</p>
+                        </div>
+                        <Plus className="w-4 h-4 text-[#5c1514]" />
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {clientSearch.length >= 2 && searchResults.length === 0 && !searching && (
+                  <p className="text-xs text-cafe-muted text-center py-3">No se encontraron clientes disponibles</p>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {clients.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {clients.map(sc => (
-                <div key={sc.id} className="flex items-center gap-3 p-3 bg-cafe-card/50 rounded border border-cafe-border/40">
-                  <div className="w-10 h-10 rounded-full bg-cafe-surface border border-cafe-border/60 flex items-center justify-center">
-                    <Coffee className="w-5 h-5 text-cafe-muted" />
+                <div key={sc.id} className="flex items-center gap-3 p-3 bg-cafe-card/50 rounded-xl border border-cafe-border/40">
+                  <div className="w-10 h-10 rounded-full bg-[#5c1514]/10 flex items-center justify-center border border-[#5c1514]/20">
+                    {sc.client?.avatar_url ? (
+                      <img src={sc.client.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
+                    ) : (
+                      <User className="w-5 h-5 text-[#5c1514]" />
+                    )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-display text-sm text-cafe-text truncate">{sc.client?.name || 'Cliente'}</p>
@@ -287,7 +384,7 @@ export default function StaffDashboard() {
               ))}
             </div>
           ) : (
-            <p className="text-cafe-muted/50 text-sm text-center py-4">No tenés clientes asignados todavía</p>
+            <p className="text-cafe-muted/50 text-sm text-center py-4">No tenés clientes asignados — usá "ASIGNAR CLIENTE" para agregar</p>
           )}
         </div>
       </div>

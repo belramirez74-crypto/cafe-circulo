@@ -20,9 +20,9 @@ export default function RecommendationsSection({ featured }) {
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-display text-base text-cafe-text truncate">{item.name}</h3>
-                    {item.description && <p className="text-cafe-muted text-sm truncate mt-0.5">{item.description}</p>}
+                    {item.description && <p className="text-cafe-muted text-sm mt-0.5 line-clamp-2 leading-relaxed">{item.description}</p>}
                   </div>
-                  <span className="font-display text-lg text-cafe-accent shrink-0">
+                  <span className="font-display text-lg text-cafe-cream shrink-0">
                     ${item.price ? (typeof item.price === 'number' ? parseFloat(item.price).toLocaleString('es-AR') : item.price) : ''}
                   </span>
                 </div>

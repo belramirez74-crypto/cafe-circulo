@@ -20,12 +20,15 @@ import AdminEvents from './pages/admin/AdminEvents';
 import AdminLanding from './pages/admin/AdminLanding';
 import AdminStaff from './pages/admin/AdminStaff';
 import AdminClients from './pages/admin/AdminClients';
+import AdminStats from './pages/admin/AdminStats';
+import AdminVentas from './pages/admin/AdminVentas';
+import ClientProfile from './pages/client/ClientProfile';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function StaffRoute({ children }) {
   const { user, loading } = useUserAuth();
   if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-2 border-cafe-accent border-t-transparent rounded-full animate-spin" /></div>;
-  if (!user || user.role === 'client') return <Login />;
+  if (!user) return <Login />;
   return children;
 }
 
@@ -67,6 +70,9 @@ export default function App() {
           <Route path="/admin/landing" element={<AdminRoute><AdminLanding /></AdminRoute>} />
           <Route path="/admin/staff" element={<AdminRoute><AdminStaff /></AdminRoute>} />
           <Route path="/admin/clients" element={<AdminRoute><AdminClients /></AdminRoute>} />
+          <Route path="/admin/stats" element={<AdminRoute><AdminStats /></AdminRoute>} />
+          <Route path="/admin/ventas" element={<AdminRoute><AdminVentas /></AdminRoute>} />
+          <Route path="/client/profile" element={<StaffRoute><ClientProfile /></StaffRoute>} />
         </Routes>
       </main>
     </>

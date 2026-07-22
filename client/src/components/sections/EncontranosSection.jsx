@@ -5,7 +5,7 @@ export default function EncontranosSection({ settings }) {
     <section className="min-h-screen pt-24 pb-16 flex items-center justify-center">
       <div className="max-w-6xl mx-auto px-4">
         <div className="text-center mb-12">
-          <p className="font-script text-cafe-cream text-lg mb-2">{settings?.encontranos_subtitle || 'Visitanos'}</p>
+          <p className="font-script text-cafe-cream text-2xl sm:text-3xl mb-2">{settings?.encontranos_subtitle || 'Visitanos'}</p>
           <h2 className="font-display text-3xl sm:text-4xl text-cafe-text">{settings?.encontranos_heading || 'ENCONTRANOS'}</h2>
           <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-cafe-accent to-transparent mx-auto mt-4" />
         </div>

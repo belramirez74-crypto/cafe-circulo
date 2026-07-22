@@ -1,7 +1,8 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useUserAuth } from '../context/UserAuthContext';
-import { Store, Menu, LayoutDashboard, LogOut, User } from 'lucide-react';
+import { Store, Menu, LayoutDashboard, LogOut, User, Home, Sun, Moon } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 function NavLink({ to, icon: Icon, label, active, blocked }) {
   const isActive = active || false;
@@ -30,6 +31,7 @@ function NavLink({ to, icon: Icon, label, active, blocked }) {
 export default function Navbar() {
   const { admin, logout: adminLogout } = useAuth();
   const { user, logout: userLogout } = useUserAuth();
+  const { light, toggle: toggleTheme } = useTheme();
   const location = useLocation();
 
   const handleLogout = () => {
@@ -74,20 +76,46 @@ export default function Navbar() {
             )}
 
             {user && user.role === 'client' && (
-              <span className="text-xs font-display tracking-wider uppercase text-cafe-accent font-bold">{user.name}</span>
+              <>
+                <NavLink
+                  to="/"
+                  icon={Home}
+                  label="Inicio"
+                  active={location.pathname === '/'}
+                />
+                <Link to="/client/profile" className="flex items-center gap-2 group cursor-pointer">
+                  <div className="w-8 h-8 rounded-full overflow-hidden bg-white/15 flex items-center justify-center border-2 border-[#c4a882]">
+                    {user.avatar_url ? (
+                      <img src={user.avatar_url} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <User className="w-4 h-4 text-[#c4a882]" />
+                    )}
+                  </div>
+                  <span className="text-xs font-display tracking-wider uppercase text-[#c4a882] font-bold group-hover:text-white transition-colors">{user.name || 'Cliente'}</span>
+                </Link>
+              </>
             )}
 
             {(admin || user) && (
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded text-sm font-medium
-                  text-cafe-muted/60 border border-cafe-border
-                  hover:text-cafe-muted hover:border-cafe-muted/30
-                  transition-all duration-200"
-              >
-                <LogOut className="w-4 h-4" />
-                <span className="hidden sm:inline">Salir</span>
-              </button>
+              <>
+                <button
+                  onClick={toggleTheme}
+                  className="p-2 text-cafe-muted hover:text-cafe-text hover:bg-white/5 rounded transition-colors"
+                  title={light ? 'Modo oscuro' : 'Modo claro'}
+                >
+                  {light ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded text-sm font-medium
+                    text-cafe-muted/60 border border-cafe-border
+                    hover:text-cafe-muted hover:border-cafe-muted/30
+                    transition-all duration-200"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span className="hidden sm:inline">Salir</span>
+                </button>
+              </>
             )}
           </div>
         </div>

@@ -14,7 +14,7 @@ export default function ReservaSection({ settings }) {
             href={settings?.reserva_whatsapp_url || 'https://wa.me/5493541530797'}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-8 py-3 bg-cafe-accent text-white font-display tracking-wider hover:bg-cafe-burgundy-light transition-colors animate-glow-pulse rounded-full"
+            className="inline-flex items-center gap-2 px-8 py-3 bg-cafe-accent text-white font-display tracking-wider hover:bg-cafe-burgundy-light transition-colors animate-glow-pulse rounded-full shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-black/40"
           >
             <Coffee className="w-4 h-4" /> RESERVAR POR WHATSAPP
           </a>
@@ -22,7 +22,7 @@ export default function ReservaSection({ settings }) {
             href={settings?.reserva_instagram_url || 'https://instagram.com/cafecirculo'}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-8 py-3 bg-cafe-accent text-white font-display tracking-wider hover:bg-cafe-burgundy-light transition-colors animate-glow-pulse rounded-full"
+            className="inline-flex items-center gap-2 px-8 py-3 bg-cafe-accent text-white font-display tracking-wider hover:bg-cafe-burgundy-light transition-colors animate-glow-pulse rounded-full shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-black/40"
           >
             <Image className="w-4 h-4" /> INSTAGRAM
           </a>

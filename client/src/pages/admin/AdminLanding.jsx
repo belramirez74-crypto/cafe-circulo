@@ -1,7 +1,19 @@
 import { useEffect, useState } from 'react';
 import { getLandingSettings, updateLandingSettings } from '../../lib/api';
-import { Save, Clock, MapPin, Music, Plus, X, Image, GripVertical, ChevronRight } from 'lucide-react';
+import { Save, Clock, MapPin, Music, Plus, X, Image, GripVertical, ChevronRight, Video } from 'lucide-react';
 import ImagePicker from '../../components/ImagePicker';
+
+function isVideoUrl(url) {
+  return /(?:youtube\.com\/watch\?v=|youtu\.be\/|vimeo\.com\/|player\.vimeo\.com\/video\/)/.test(url);
+}
+
+function getVideoEmbed(url) {
+  const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]+)/);
+  if (yt) return `https://www.youtube.com/embed/${yt[1]}`;
+  const vm = url.match(/vimeo\.com\/(\d+)/);
+  if (vm) return `https://player.vimeo.com/video/${vm[1]}`;
+  return url;
+}
 
 const defaultSettings = {
   // Hero
@@ -22,8 +34,7 @@ const defaultSettings = {
   recommended_items: [],
 
   // Gallery
-  gallery_tagline_1: 'más que un café de especialidad,',
-  gallery_tagline_2: 'una comunidad.',
+  gallery_taglines: ['más que un café de especialidad,', 'una comunidad.', 'donde los círculos se hacen más grandes'],
   gallery_images: [],
 
   // Encontranos
@@ -53,6 +64,16 @@ export default function AdminLanding() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [pickerTarget, setPickerTarget] = useState(null);
+  const [previewTaglineIdx, setPreviewTaglineIdx] = useState(0);
+
+  useEffect(() => {
+    const taglines = settings.gallery_taglines || ['más que un café de especialidad,', 'una comunidad.'];
+    if (taglines.length <= 1) return;
+    const interval = setInterval(() => {
+      setPreviewTaglineIdx(prev => prev + 1);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, [settings.gallery_taglines?.length]);
 
   useEffect(() => {
     setLoading(true);
@@ -93,6 +114,24 @@ export default function AdminLanding() {
     const [moved] = updated.splice(from, 1);
     updated.splice(to, 0, moved);
     handleChange('gallery_images', updated);
+  };
+
+  const addTagline = () => {
+    setSettings(prev => ({ ...prev, gallery_taglines: [...(prev.gallery_taglines || []), ''] }));
+  };
+  const updateTagline = (index, value) => {
+    setSettings(prev => {
+      const updated = [...(prev.gallery_taglines || [])];
+      updated[index] = value;
+      return { ...prev, gallery_taglines: updated };
+    });
+  };
+  const removeTagline = (index) => {
+    setSettings(prev => {
+      const updated = [...(prev.gallery_taglines || [])];
+      updated.splice(index, 1);
+      return { ...prev, gallery_taglines: updated };
+    });
   };
 
   const addRecommendedItem = () => {
@@ -156,7 +195,7 @@ export default function AdminLanding() {
           <button
             onClick={handleSave}
             disabled={!hasChanges || saving}
-            className="flex items-center gap-2 px-4 py-2 bg-cafe-accent text-white font-display text-sm tracking-wider hover:bg-cafe-burgundy-light transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 bg-cafe-accent text-white font-display text-sm tracking-wider hover:bg-cafe-burgundy-light transition-colors disabled:opacity-50 rounded-xl shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-black/40"
           >
             <Save className="w-4 h-4" /> {saving ? 'GUARDANDO...' : saved ? 'GUARDADO' : 'GUARDAR'}
           </button>
@@ -166,7 +205,7 @@ export default function AdminLanding() {
           {/* Left: Edit Forms */}
           <div className="space-y-6 overflow-y-auto max-h-[calc(100vh-12rem)] pr-2">
             {/* 1. Hero */}
-            <div className="bg-cafe-surface border border-cafe-border p-6">
+            <div className="bg-cafe-surface border border-cafe-border p-6 rounded-xl">
               <h2 className="font-display text-lg text-cafe-accent mb-4">1 · SECCIÓN HERO</h2>
               <div className="space-y-4">
                 <div>
@@ -248,7 +287,7 @@ export default function AdminLanding() {
             </div>
 
             {/* 2. Reserva */}
-            <div className="bg-cafe-surface border border-cafe-border p-6">
+            <div className="bg-cafe-surface border border-cafe-border p-6 rounded-xl">
               <h2 className="font-display text-lg text-cafe-accent mb-4">2 · RESERVA</h2>
               <div className="space-y-4">
                 <div>
@@ -292,12 +331,12 @@ export default function AdminLanding() {
             </div>
 
             {/* 3. Productos Recomendados */}
-            <div className="bg-cafe-surface border border-cafe-border p-6">
+            <div className="bg-cafe-surface border border-cafe-border p-6 rounded-xl">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="font-display text-lg text-cafe-accent">3 · PRODUCTOS RECOMENDADOS</h2>
                 <button
                   onClick={addRecommendedItem}
-                  className="flex items-center gap-1 px-3 py-1.5 bg-cafe-accent text-white font-display text-xs tracking-wider hover:bg-cafe-burgundy-light transition-colors"
+                  className="flex items-center gap-1 px-3 py-1.5 bg-cafe-accent text-white font-display text-xs tracking-wider hover:bg-cafe-burgundy-light transition-colors rounded-xl shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-black/40"
                 >
                   <Plus className="w-3 h-3" /> AGREGAR
                 </button>
@@ -408,41 +447,50 @@ export default function AdminLanding() {
             </div>
 
             {/* 4. Galería */}
-            <div className="bg-cafe-surface border border-cafe-border p-6">
-              <h2 className="font-display text-lg text-cafe-accent mb-4">4 · GALERÍA DE IMÁGENES</h2>
+            <div className="bg-cafe-surface border border-cafe-border p-6 rounded-xl">
+              <h2 className="font-display text-lg text-cafe-accent mb-4">4 · GALERÍA DE IMÁGENES Y VIDEOS</h2>
               <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">TEXTO DECORATIVO LÍNEA 1</label>
-                    <input
-                      type="text"
-                      value={settings.gallery_tagline_1}
-                      onChange={e => handleChange('gallery_tagline_1', e.target.value)}
-                      className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-cafe-accent"
-                    />
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-xs font-display tracking-wider text-cafe-muted">TEXTOS DECORATIVO (rotan cada 3.5s)</label>
+                    <button onClick={addTagline} className="text-xs text-cafe-accent hover:text-cafe-burgundy-light flex items-center gap-1">
+                      <Plus className="w-3 h-3" /> AGREGAR FRASE
+                    </button>
                   </div>
-                  <div>
-                    <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">TEXTO DECORATIVO LÍNEA 2</label>
-                    <input
-                      type="text"
-                      value={settings.gallery_tagline_2}
-                      onChange={e => handleChange('gallery_tagline_2', e.target.value)}
-                      className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-cafe-accent"
-                    />
+                  <div className="space-y-2">
+                    {(settings.gallery_taglines || []).map((line, idx) => (
+                      <div key={idx} className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={line}
+                          onChange={e => updateTagline(idx, e.target.value)}
+                          className="flex-1 px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text text-sm focus:outline-none focus:border-cafe-accent rounded-lg"
+                          placeholder="Frase decorativa..."
+                        />
+                        {(settings.gallery_taglines || []).length > 1 && (
+                          <button onClick={() => removeTagline(idx)} className="text-cafe-muted hover:text-red-400 p-1">
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-display tracking-wider text-cafe-muted">IMÁGENES</span>
+                  <div>
+                    <span className="text-xs font-display tracking-wider text-cafe-muted">IMÁGENES Y VIDEOS</span>
+                    <p className="text-[10px] text-cafe-muted/60 mt-0.5">Podés pegar URLs de imágenes, YouTube o Vimeo</p>
+                  </div>
                   <button
                     onClick={addGalleryImage}
-                    className="flex items-center gap-1 px-3 py-1.5 bg-cafe-accent text-white font-display text-xs tracking-wider hover:bg-cafe-burgundy-light transition-colors"
+                    className="flex items-center gap-1 px-3 py-1.5 bg-cafe-accent text-white font-display text-xs tracking-wider hover:bg-cafe-burgundy-light transition-colors rounded-xl shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-black/40"
                   >
                     <Plus className="w-3 h-3" /> AGREGAR
                   </button>
                 </div>
                 <div className="space-y-3">
                   {(settings.gallery_images || []).length === 0 && (
-                    <p className="text-cafe-muted text-sm text-center py-4">Sin imágenes. Agregá una URL.</p>
+                    <p className="text-cafe-muted text-sm text-center py-4">Sin elementos. Agregá una URL de imagen o video.</p>
                   )}
                   {(settings.gallery_images || []).map((url, index) => (
                     <div key={index} className="border border-cafe-border p-3">
@@ -457,7 +505,7 @@ export default function AdminLanding() {
                               value={url}
                               onChange={e => updateGalleryImage(index, e.target.value)}
                               className="flex-1 px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text text-sm focus:outline-none focus:border-cafe-accent"
-                              placeholder="https://..."
+                              placeholder="https://imagen.jpg, youtube.com/watch?v=... o vimeo.com/..."
                             />
                             <button
                               onClick={() => setPickerTarget(`gallery_${index}`)}
@@ -475,12 +523,20 @@ export default function AdminLanding() {
                           </div>
                           {url && (
                             <div className="aspect-video rounded overflow-hidden border border-cafe-border bg-cafe-card">
-                              <img
-                                src={url}
-                                alt={`Galería ${index + 1}`}
-                                className="w-full h-full object-cover"
-                                onError={e => { e.target.style.display = 'none' }}
-                              />
+                              {(() => {
+                                if (/\.(mp4|webm|mov)$/i.test(url)) {
+                                  return <video src={url} className="w-full h-full object-cover" controls playsInline />;
+                                }
+                                const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&?/]+)/);
+                                const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+                                if (ytMatch) {
+                                  return <iframe src={`https://www.youtube.com/embed/${ytMatch[1]}`} className="w-full h-full" allowFullScreen title={`Video ${index + 1}`} />;
+                                }
+                                if (vimeoMatch) {
+                                  return <iframe src={`https://player.vimeo.com/video/${vimeoMatch[1]}`} className="w-full h-full" allowFullScreen title={`Video ${index + 1}`} />;
+                                }
+                                return <img src={url} alt={`Galería ${index + 1}`} className="w-full h-full object-cover" onError={e => { e.target.style.display = 'none' }} />;
+                              })()}
                             </div>
                           )}
                         </div>
@@ -513,7 +569,7 @@ export default function AdminLanding() {
             </div>
 
             {/* 5. Encontranos */}
-            <div className="bg-cafe-surface border border-cafe-border p-6">
+            <div className="bg-cafe-surface border border-cafe-border p-6 rounded-xl">
               <h2 className="font-display text-lg text-cafe-accent mb-4">5 · ENCONTRANOS</h2>
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
@@ -578,7 +634,7 @@ export default function AdminLanding() {
             </div>
 
             {/* 6. Sobre Nosotros */}
-            <div className="bg-cafe-surface border border-cafe-border p-6">
+            <div className="bg-cafe-surface border border-cafe-border p-6 rounded-xl">
               <h2 className="font-display text-lg text-cafe-accent mb-4">6 · SOBRE NOSOTROS</h2>
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
@@ -746,7 +802,7 @@ export default function AdminLanding() {
                 {/* Encontranos */}
                 <div className="py-12 border-t border-cafe-border/60 px-4">
                   <div className="text-center mb-8">
-                    <p className="font-script text-cafe-cream text-sm mb-1">{settings.encontranos_subtitle || 'Visitanos'}</p>
+                    <p className="font-script text-cafe-cream text-lg mb-1">{settings.encontranos_subtitle || 'Visitanos'}</p>
                     <h2 className="font-display text-2xl sm:text-3xl text-cafe-text">{settings.encontranos_heading || 'ENCONTRANOS'}</h2>
                     <div className="w-12 h-0.5 bg-gradient-to-r from-transparent via-cafe-accent to-transparent mx-auto mt-3" />
                   </div>
@@ -778,7 +834,7 @@ export default function AdminLanding() {
                 {/* Sobre Nosotros */}
                 <div className="py-12 border-t border-cafe-border/60 px-4">
                   <div className="text-center mb-8">
-                    <p className="font-script text-cafe-cream text-sm mb-1">{settings.nosotros_subtitle || 'Nuestra historia'}</p>
+                    <p className="font-script text-cafe-cream text-lg mb-1">{settings.nosotros_subtitle || 'Nuestra historia'}</p>
                     <h2 className="font-display text-2xl sm:text-3xl text-cafe-text">{settings.nosotros_heading || 'SOBRE NOSOTROS'}</h2>
                     <div className="w-12 h-0.5 bg-gradient-to-r from-transparent via-cafe-accent to-transparent mx-auto mt-3" />
                   </div>
@@ -853,18 +909,41 @@ export default function AdminLanding() {
                 <div className="py-12 border-t border-cafe-border/60 px-4">
                   <div className="max-w-4xl mx-auto space-y-6">
                     <div className="text-center">
-                      <p className="font-script text-cafe-cream text-base">{settings.gallery_tagline_1 || 'más que un café de especialidad,'}</p>
-                      <p className="font-script text-cafe-cream text-base -mt-1">{settings.gallery_tagline_2 || 'una comunidad.'}</p>
+                      <p className="font-script text-cafe-burgundy text-2xl sm:text-3xl">{(settings.gallery_taglines || ['más que un café de especialidad,', 'una comunidad.'])[previewTaglineIdx % (settings.gallery_taglines || ['más que un café de especialidad,', 'una comunidad.']).length]}</p>
                     </div>
                     <div className="bg-cafe-surface border border-cafe-border/60 rounded-xl overflow-hidden">
                       {(settings.gallery_images || []).filter(Boolean).length > 0 ? (
-                        <div className="aspect-[16/9] bg-cafe-card flex items-center justify-center">
-                          <img
-                            src={(settings.gallery_images || []).filter(Boolean)[0]}
-                            alt=""
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
+                        (() => {
+                          const firstItem = (settings.gallery_images || []).filter(Boolean)[0];
+                          if (/\.(mp4|webm|mov)$/i.test(firstItem)) {
+                            return (
+                              <div className="aspect-[16/9] bg-cafe-card">
+                                <video src={firstItem} className="w-full h-full object-cover" controls playsInline />
+                              </div>
+                            );
+                          }
+                          const ytMatch = firstItem.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&?/]+)/);
+                          const vimeoMatch = firstItem.match(/vimeo\.com\/(\d+)/);
+                          if (ytMatch) {
+                            return (
+                              <div className="aspect-[16/9] bg-cafe-card">
+                                <iframe src={`https://www.youtube.com/embed/${ytMatch[1]}`} className="w-full h-full" allowFullScreen title="Galería" />
+                              </div>
+                            );
+                          }
+                          if (vimeoMatch) {
+                            return (
+                              <div className="aspect-[16/9] bg-cafe-card">
+                                <iframe src={`https://player.vimeo.com/video/${vimeoMatch[1]}`} className="w-full h-full" allowFullScreen title="Galería" />
+                              </div>
+                            );
+                          }
+                          return (
+                            <div className="aspect-[16/9] bg-cafe-card flex items-center justify-center">
+                              <img src={firstItem} alt="" className="w-full h-full object-cover" />
+                            </div>
+                          );
+                        })()
                       ) : (
                         <div className="flex items-center justify-center h-40 text-cafe-muted/40 text-xs">Sin imágenes</div>
                       )}

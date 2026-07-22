@@ -11,6 +11,13 @@ export default function useLandingData() {
     getLandingSettings()
       .then(res => {
         setSettings(res.data);
+        if (res.data?.hero_bg_image) {
+          const link = document.createElement('link');
+          link.rel = 'preload';
+          link.as = 'image';
+          link.href = res.data.hero_bg_image;
+          document.head.appendChild(link);
+        }
         if (res.data?.recommended_items?.length > 0) {
           setFeatured(res.data.recommended_items.filter(r => r.name));
         } else {

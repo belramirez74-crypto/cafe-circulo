@@ -23,13 +23,13 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 },
+  limits: { fileSize: 50 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
-    const allowed = /\.(jpg|jpeg|png|webp|gif|svg)$/i;
+    const allowed = /\.(jpg|jpeg|png|webp|gif|svg|mp4|webm|mov)$/i;
     if (allowed.test(path.extname(file.originalname))) {
       cb(null, true);
     } else {
-      cb(new Error('Solo imágenes (jpg, png, webp, gif, svg)'));
+      cb(new Error('Formato no soportado. Imágenes: jpg, png, webp, gif, svg. Videos: mp4, webm, mov'));
     }
   },
 });
@@ -45,15 +45,16 @@ router.post('/', authenticateAdmin, upload.single('image'), (req, res) => {
 router.get('/', authenticateAdmin, (req, res) => {
   fs.readdir(uploadsDir, (err, files) => {
     if (err) return res.status(500).json({ error: 'Error al leer archivos' });
-    const images = files
-      .filter(f => /\.(jpg|jpeg|png|webp|gif|svg)$/i.test(f))
+    const media = files
+      .filter(f => /\.(jpg|jpeg|png|webp|gif|svg|mp4|webm|mov)$/i.test(f))
       .map(f => ({
         filename: f,
         url: `/uploads/${f}`,
+        type: /\.(mp4|webm|mov)$/i.test(f) ? 'video' : 'image',
         uploaded_at: fs.statSync(path.join(uploadsDir, f)).mtime,
       }))
       .sort((a, b) => b.uploaded_at - a.uploaded_at);
-    res.json(images);
+    res.json(media);
   });
 });
 
