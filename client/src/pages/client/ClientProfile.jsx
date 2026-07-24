@@ -118,7 +118,7 @@ export default function ClientProfile() {
           <p className="relative text-white/60 text-sm">Tu espacio personal en Café Círculo</p>
         </div>
 
-        <div className="bg-gradient-to-br from-[#2A1C10] to-[#1a120c] border border-[#5c1514]/30 p-8 space-y-6 rounded-xl shadow-lg shadow-black/5">
+        <div className="bg-[#1e1310] border border-[#5c1514]/25 p-8 space-y-6 rounded-xl shadow-lg shadow-black/5">
           <div className="flex items-center gap-5 pb-6 border-b border-cafe-border/40">
             <div className="relative group">
               <div className="w-20 h-20 rounded-full overflow-hidden bg-gradient-to-br from-[#5c1514] to-[#491716] flex items-center justify-center border-3 border-[#5c1514] shadow-lg shadow-[#5c1514]/20">
@@ -180,7 +180,7 @@ export default function ClientProfile() {
             <h2 className="font-display text-2xl text-cafe-text">LO QUE SIEMPRE PEDÍS</h2>
           </div>
           {autoFavorites.length === 0 ? (
-            <div className="bg-gradient-to-br from-[#2A1C10] to-[#1a120c] border border-[#5c1514]/30 p-8 rounded-xl text-center shadow-lg shadow-black/5">
+            <div className="bg-[#1e1310] border border-[#5c1514]/25 p-8 rounded-xl text-center shadow-lg shadow-black/5">
               <div className="w-16 h-16 rounded-full bg-[#5c1514]/20 flex items-center justify-center mx-auto mb-3">
                 <Coffee className="w-7 h-7 text-[#5c1514]" />
               </div>
@@ -189,7 +189,7 @@ export default function ClientProfile() {
           ) : (
             <div className="space-y-3">
               {autoFavorites.map((item, i) => (
-                <div key={i} className="bg-gradient-to-br from-[#2A1C10] to-[#1a120c] border border-[#5c1514]/30 p-4 rounded-xl flex items-center gap-4 shadow-lg shadow-black/5 hover:border-[#5c1514]/50 transition-shadow">
+                <div key={i} className="bg-[#1e1310] border border-[#5c1514]/25 p-4 rounded-xl flex items-center gap-4 shadow-lg shadow-black/5 hover:border-[#5c1514]/50 transition-shadow">
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#5c1514] to-[#491716] flex items-center justify-center shrink-0 shadow-md shadow-[#5c1514]/20">
                     <span className="font-display text-sm text-white font-bold">#{i + 1}</span>
                   </div>
@@ -232,7 +232,7 @@ export default function ClientProfile() {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="bg-gradient-to-br from-[#2A1C10] to-[#1a120c] border border-[#5c1514]/30 p-4 rounded-xl mb-4 overflow-hidden shadow-lg shadow-black/5"
+                className="bg-[#1e1310] border border-[#5c1514]/25 p-4 rounded-xl mb-4 overflow-hidden shadow-lg shadow-black/5"
               >
                 <input
                   value={searchPin}
@@ -274,7 +274,7 @@ export default function ClientProfile() {
           </AnimatePresence>
 
           {pinnedFavorites.length === 0 && !showAddPin ? (
-            <div className="bg-gradient-to-br from-[#2A1C10] to-[#1a120c] border border-[#5c1514]/30 p-8 rounded-xl text-center shadow-lg shadow-black/5">
+            <div className="bg-[#1e1310] border border-[#5c1514]/25 p-8 rounded-xl text-center shadow-lg shadow-black/5">
               <div className="w-16 h-16 rounded-full bg-[#5c1514]/20 flex items-center justify-center mx-auto mb-3">
                 <Heart className="w-7 h-7 text-[#5c1514]" />
               </div>
@@ -285,7 +285,7 @@ export default function ClientProfile() {
               {pinnedFavorites.map(fav => {
                 const item = fav.menu_items;
                 return (
-                  <div key={fav.id} className="bg-gradient-to-br from-[#2A1C10] to-[#1a120c] border border-[#5c1514]/30 p-4 rounded-xl flex items-center gap-4 shadow-lg shadow-black/5 hover:border-[#5c1514]/50 transition-shadow">
+                  <div key={fav.id} className="bg-[#1e1310] border border-[#5c1514]/25 p-4 rounded-xl flex items-center gap-4 shadow-lg shadow-black/5 hover:border-[#5c1514]/50 transition-shadow">
                     <div className="w-12 h-12 rounded-xl overflow-hidden bg-cafe-card shrink-0">
                       {item?.image_url ? (
                         <img src={item.image_url} alt="" className="w-full h-full object-cover" />
