@@ -21,7 +21,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen pt-16">
-      <HeroSection settings={settings || {}} />
+      <HeroSection settings={settings} />
 
       {/* Role-based exclusive content */}
       {user && (
