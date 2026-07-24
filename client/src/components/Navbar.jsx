@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useUserAuth } from '../context/UserAuthContext';
-import { Store, Menu, LayoutDashboard, LogOut, User, Home, Sun, Moon } from 'lucide-react';
+import { Menu, LayoutDashboard, LogOut, User, Home, Sun, Moon } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
 function NavLink({ to, icon: Icon, label, active, blocked }) {
@@ -44,7 +44,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-2 group">
-            <Store className="w-6 h-6 text-cafe-burgundy-light" />
+            <img src="/logo.jpg" alt="Café Círculo" className="h-9 w-auto rounded shadow-[0_0_12px_rgba(255,255,255,0.1)] group-hover:shadow-[0_0_18px_rgba(255,255,255,0.18)] transition-all duration-300 border border-white/10" />
             <span className="font-display text-xl tracking-wider text-cafe-text group-hover:text-cafe-cream transition-colors">
               CAFÉ CÍRCULO
             </span>
