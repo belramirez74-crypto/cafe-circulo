@@ -8,9 +8,13 @@ export default function useLandingData() {
   const [galleryIdx, setGalleryIdx] = useState(0);
 
   useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (!settings) setSettings({});
+    }, 5000);
     getLandingSettings()
       .then(res => {
         setSettings(res.data);
+        clearTimeout(timeout);
         if (res.data?.hero_bg_image) {
           const link = document.createElement('link');
           link.rel = 'preload';
@@ -24,7 +28,7 @@ export default function useLandingData() {
           return getFeaturedItems().then(r => setFeatured(r.data));
         }
       })
-      .catch(() => {});
+      .catch(() => setSettings({}));
     getUpcomingEvents().then(res => setEvents(res.data)).catch(() => {});
   }, []);
 
