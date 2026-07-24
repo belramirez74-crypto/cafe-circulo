@@ -44,7 +44,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-2 group">
-            <img src="/logo.jpg" alt="Café Círculo" className="h-9 w-auto rounded shadow-[0_0_12px_rgba(255,255,255,0.1)] group-hover:shadow-[0_0_18px_rgba(255,255,255,0.18)] transition-all duration-300 border border-white/10" />
+            <img src="/logo.jpg" alt="Café Círculo" className="h-10 w-auto" />
             <span className="font-display text-xl tracking-wider text-cafe-text group-hover:text-cafe-cream transition-colors">
               CAFÉ CÍRCULO
             </span>
