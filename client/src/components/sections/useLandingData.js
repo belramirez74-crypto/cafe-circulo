@@ -4,7 +4,7 @@ import { getFeaturedItems, getUpcomingEvents, getLandingSettings } from '../../l
 export default function useLandingData() {
   const [featured, setFeatured] = useState([]);
   const [events, setEvents] = useState([]);
-  const [settings, setSettings] = useState({});
+  const [settings, setSettings] = useState(null);
   const [galleryIdx, setGalleryIdx] = useState(0);
 
   useEffect(() => {

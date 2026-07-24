@@ -14,14 +14,27 @@ export default function HeroSection({ settings }) {
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden -mt-16">
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-b from-cafe-burgundy/20 via-cafe-bg/50 to-cafe-bg" />
-        <img
-          src={settings?.hero_bg_image || 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=1920&q=80'}
-          alt=""
-          loading="eager"
-          fetchPriority="high"
-          className="absolute inset-0 w-full h-full object-cover"
-          style={{ filter: 'grayscale(20%) brightness(0.4) saturate(1.2)' }}
-        />
+        {settings?.hero_bg_image ? (
+          <img
+            src={settings.hero_bg_image}
+            alt=""
+            loading="eager"
+            fetchPriority="high"
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ filter: 'grayscale(20%) brightness(0.4) saturate(1.2)' }}
+          />
+        ) : !settings ? (
+          <div className="absolute inset-0 bg-cafe-bg" />
+        ) : (
+          <img
+            src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=1920&q=80"
+            alt=""
+            loading="eager"
+            fetchPriority="high"
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ filter: 'grayscale(20%) brightness(0.4) saturate(1.2)' }}
+          />
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-cafe-burgundy/10 to-transparent" />
       </div>
       <div className="relative z-10 text-center px-4 max-w-4xl pt-24 pb-12">
