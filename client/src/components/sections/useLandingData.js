@@ -4,17 +4,13 @@ import { getFeaturedItems, getUpcomingEvents, getLandingSettings } from '../../l
 export default function useLandingData() {
   const [featured, setFeatured] = useState([]);
   const [events, setEvents] = useState([]);
-  const [settings, setSettings] = useState(null);
+  const [settings, setSettings] = useState({});
   const [galleryIdx, setGalleryIdx] = useState(0);
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (!settings) setSettings({});
-    }, 5000);
     getLandingSettings()
       .then(res => {
         setSettings(res.data);
-        clearTimeout(timeout);
         if (res.data?.hero_bg_image) {
           const link = document.createElement('link');
           link.rel = 'preload';
