@@ -109,7 +109,7 @@ export default function ClientProfile() {
   }
 
   return (
-    <div className="min-h-screen pt-20 pb-16 bg-[#f5efe5]">
+    <div className="min-h-screen pt-20 pb-16 bg-cafe-bg">
       <div className="max-w-2xl mx-auto px-4">
         <div className="relative mb-8 overflow-hidden rounded-2xl bg-gradient-to-br from-[#5c1514] via-[#491716] to-[#2A1C10] p-8">
           <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
@@ -118,7 +118,7 @@ export default function ClientProfile() {
           <p className="relative text-white/60 text-sm">Tu espacio personal en Café Círculo</p>
         </div>
 
-        <div className="bg-[#faf7f2] border border-[#e8dfd4] p-8 space-y-6 rounded-xl shadow-lg shadow-black/5">
+        <div className="bg-gradient-to-br from-[#2A1C10] to-[#1a120c] border border-[#5c1514]/30 p-8 space-y-6 rounded-xl shadow-lg shadow-black/5">
           <div className="flex items-center gap-5 pb-6 border-b border-cafe-border/40">
             <div className="relative group">
               <div className="w-20 h-20 rounded-full overflow-hidden bg-gradient-to-br from-[#5c1514] to-[#491716] flex items-center justify-center border-3 border-[#5c1514] shadow-lg shadow-[#5c1514]/20">
@@ -148,7 +148,7 @@ export default function ClientProfile() {
                   <input
                     value={nameValue}
                     onChange={e => setNameValue(e.target.value)}
-                    className="flex-1 px-3 py-1.5 bg-cafe-bg border border-cafe-accent text-cafe-text text-sm rounded-xl focus:outline-none"
+                    className="flex-1 px-3 py-1.5 bg-cafe-bg border border-[#5c1514] text-cafe-text text-sm rounded-xl focus:outline-none"
                     autoFocus
                   />
                   <button onClick={handleNameSave} disabled={saving} className="text-green-400 hover:text-green-300">
@@ -174,22 +174,22 @@ export default function ClientProfile() {
         {/* Lo que siempre pedís - Auto favorites from sales history */}
         <div className="mt-8">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-8 h-8 rounded-lg bg-[#5c1514]/10 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-[#5c1514]/20 flex items-center justify-center">
               <Star className="w-4 h-4 text-[#5c1514]" />
             </div>
             <h2 className="font-display text-2xl text-cafe-text">LO QUE SIEMPRE PEDÍS</h2>
           </div>
           {autoFavorites.length === 0 ? (
-            <div className="bg-[#faf7f2] border border-[#e8dfd4] p-8 rounded-xl text-center shadow-lg shadow-black/5">
-              <div className="w-16 h-16 rounded-full bg-[#5c1514]/10 flex items-center justify-center mx-auto mb-3">
-                <Coffee className="w-7 h-7 text-[#5c1514]/50" />
+            <div className="bg-gradient-to-br from-[#2A1C10] to-[#1a120c] border border-[#5c1514]/30 p-8 rounded-xl text-center shadow-lg shadow-black/5">
+              <div className="w-16 h-16 rounded-full bg-[#5c1514]/20 flex items-center justify-center mx-auto mb-3">
+                <Coffee className="w-7 h-7 text-[#5c1514]" />
               </div>
-              <p className="text-[#8a7a6a] text-sm">Tus pedidos más frecuentes aparecerán acá cuando el staff registre ventas con tu nombre.</p>
+              <p className="text-[#b5a89a] text-sm">Tus pedidos más frecuentes aparecerán acá cuando el staff registre ventas con tu nombre.</p>
             </div>
           ) : (
             <div className="space-y-3">
               {autoFavorites.map((item, i) => (
-                <div key={i} className="bg-[#faf7f2] border border-[#e8dfd4] p-4 rounded-xl flex items-center gap-4 shadow-lg shadow-black/5 hover:shadow-[#5c1514]/5 transition-shadow">
+                <div key={i} className="bg-gradient-to-br from-[#2A1C10] to-[#1a120c] border border-[#5c1514]/30 p-4 rounded-xl flex items-center gap-4 shadow-lg shadow-black/5 hover:border-[#5c1514]/50 transition-shadow">
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#5c1514] to-[#491716] flex items-center justify-center shrink-0 shadow-md shadow-[#5c1514]/20">
                     <span className="font-display text-sm text-white font-bold">#{i + 1}</span>
                   </div>
@@ -210,7 +210,7 @@ export default function ClientProfile() {
         <div className="mt-8">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-[#5c1514]/10 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-[#5c1514]/20 flex items-center justify-center">
                 <Heart className="w-4 h-4 text-[#5c1514]" />
               </div>
               <h2 className="font-display text-2xl text-cafe-text">MIS FAVORITOS</h2>
@@ -232,13 +232,13 @@ export default function ClientProfile() {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="bg-[#faf7f2] border border-[#e8dfd4] p-4 rounded-xl mb-4 overflow-hidden shadow-lg shadow-black/5"
+                className="bg-gradient-to-br from-[#2A1C10] to-[#1a120c] border border-[#5c1514]/30 p-4 rounded-xl mb-4 overflow-hidden shadow-lg shadow-black/5"
               >
                 <input
                   value={searchPin}
                   onChange={e => setSearchPin(e.target.value)}
                   placeholder="Buscar en el menú..."
-                  className="w-full px-3 py-2 bg-[#f5efe5] border border-[#e8dfd4] text-[#1a1210] text-sm focus:outline-none focus:border-[#5c1514] rounded-xl mb-3"
+                  className="w-full px-3 py-2 bg-cafe-bg border border-[#5c1514]/30 text-cafe-text text-sm focus:outline-none focus:border-[#5c1514] rounded-xl mb-3"
                   autoFocus
                 />
                 <div className="max-h-48 overflow-y-auto space-y-2">
@@ -249,14 +249,14 @@ export default function ClientProfile() {
                       <button
                         key={item.id}
                         onClick={() => handlePin(item.id)}
-                        className="w-full flex items-center gap-3 p-3 bg-[#f5efe5] hover:bg-[#e8dfd4] hover:border-[#5c1514]/20 border border-transparent rounded-xl transition-all text-left"
+                        className="w-full flex items-center gap-3 p-3 bg-cafe-bg/50 hover:bg-cafe-bg hover:border-[#5c1514]/30 border border-transparent rounded-xl transition-all text-left"
                       >
-                        <div className="w-10 h-10 rounded-xl overflow-hidden bg-[#e8dfd4] shrink-0">
+                        <div className="w-10 h-10 rounded-xl overflow-hidden bg-cafe-card shrink-0">
                           {item.image_url ? (
                             <img src={item.image_url} alt="" className="w-full h-full object-cover" />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">
-                              <Coffee className="w-5 h-5 text-cafe-muted/30" />
+                              <Coffee className="w-5 h-5 text-[#5c1514]/60" />
                             </div>
                           )}
                         </div>
@@ -274,9 +274,9 @@ export default function ClientProfile() {
           </AnimatePresence>
 
           {pinnedFavorites.length === 0 && !showAddPin ? (
-            <div className="bg-[#faf7f2] border border-[#e8dfd4] p-8 rounded-xl text-center shadow-lg shadow-black/5">
-              <div className="w-16 h-16 rounded-full bg-[#5c1514]/10 flex items-center justify-center mx-auto mb-3">
-                <Heart className="w-7 h-7 text-[#5c1514]/50" />
+            <div className="bg-gradient-to-br from-[#2A1C10] to-[#1a120c] border border-[#5c1514]/30 p-8 rounded-xl text-center shadow-lg shadow-black/5">
+              <div className="w-16 h-16 rounded-full bg-[#5c1514]/20 flex items-center justify-center mx-auto mb-3">
+                <Heart className="w-7 h-7 text-[#5c1514]" />
               </div>
               <p className="text-cafe-muted text-sm">Agregá tus favoritos del menú con el botón "AGREGAR".</p>
             </div>
@@ -285,7 +285,7 @@ export default function ClientProfile() {
               {pinnedFavorites.map(fav => {
                 const item = fav.menu_items;
                 return (
-                  <div key={fav.id} className="bg-[#faf7f2] border border-[#e8dfd4] p-4 rounded-xl flex items-center gap-4 shadow-lg shadow-black/5 hover:shadow-[#5c1514]/5 transition-shadow">
+                  <div key={fav.id} className="bg-gradient-to-br from-[#2A1C10] to-[#1a120c] border border-[#5c1514]/30 p-4 rounded-xl flex items-center gap-4 shadow-lg shadow-black/5 hover:border-[#5c1514]/50 transition-shadow">
                     <div className="w-12 h-12 rounded-xl overflow-hidden bg-cafe-card shrink-0">
                       {item?.image_url ? (
                         <img src={item.image_url} alt="" className="w-full h-full object-cover" />
