@@ -21,7 +21,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(cors({ origin: ['http://localhost:5173', 'http://localhost:3001'], credentials: true }));
+app.use(cors({ origin: ['http://localhost:5173', 'http://localhost:3001', 'https://cafe-circulo.vercel.app', 'https://cafecirculo.netlify.app'], credentials: true }));
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.static(path.join(__dirname, '../client/dist')));
