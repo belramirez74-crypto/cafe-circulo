@@ -182,7 +182,7 @@ export default function ClientProfile() {
           {autoFavorites.length === 0 ? (
             <div className="bg-gradient-to-br from-[#5c1514] via-[#491716] to-[#2A1C10] border border-[#5c1514]/30 p-8 rounded-xl text-center shadow-lg shadow-black/5">
               <div className="w-16 h-16 rounded-full bg-[#5c1514]/20 flex items-center justify-center mx-auto mb-3">
-                <Coffee className="w-7 h-7 text-[#5c1514]" />
+                <Coffee className="w-7 h-7 text-white/70" />
               </div>
               <p className="text-[#b5a89a] text-sm">Tus pedidos más frecuentes aparecerán acá cuando el staff registre ventas con tu nombre.</p>
             </div>
@@ -256,7 +256,7 @@ export default function ClientProfile() {
                             <img src={item.image_url} alt="" className="w-full h-full object-cover" />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">
-                              <Coffee className="w-5 h-5 text-[#5c1514]/60" />
+                              <Coffee className="w-5 h-5 text-white/30" />
                             </div>
                           )}
                         </div>
@@ -276,7 +276,7 @@ export default function ClientProfile() {
           {pinnedFavorites.length === 0 && !showAddPin ? (
             <div className="bg-gradient-to-br from-[#5c1514] via-[#491716] to-[#2A1C10] border border-[#5c1514]/30 p-8 rounded-xl text-center shadow-lg shadow-black/5">
               <div className="w-16 h-16 rounded-full bg-[#5c1514]/20 flex items-center justify-center mx-auto mb-3">
-                <Heart className="w-7 h-7 text-[#5c1514]" />
+                <Heart className="w-7 h-7 text-white/70" />
               </div>
               <p className="text-cafe-muted text-sm">Agregá tus favoritos del menú con el botón "AGREGAR".</p>
             </div>
@@ -291,7 +291,7 @@ export default function ClientProfile() {
                         <img src={item.image_url} alt="" className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <Coffee className="w-5 h-5 text-[#5c1514]/30" />
+                          <Coffee className="w-5 h-5 text-white/30" />
                         </div>
                       )}
                     </div>
@@ -304,7 +304,7 @@ export default function ClientProfile() {
                     )}
                     <button
                       onClick={() => handleUnpin(fav.id)}
-                      className="p-1.5 text-cafe-muted hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors shrink-0"
+                      className="p-1.5 text-white/50 hover:text-red-300 hover:bg-red-400/10 rounded-lg transition-colors shrink-0"
                       title="Quitar de favoritos"
                     >
                       <Trash2 className="w-4 h-4" />
