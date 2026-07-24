@@ -10,6 +10,14 @@ import { useEffect, useState } from 'react';
 export default function Home() {
   const { user } = useUserAuth();
   const { settings, featured } = useLandingData();
+
+  if (!settings) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-cafe-bg">
+        <div className="w-8 h-8 border-2 border-cafe-accent border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
   const [promotions, setPromotions] = useState([]);
   const [clientBanners, setClientBanners] = useState([]);
 
