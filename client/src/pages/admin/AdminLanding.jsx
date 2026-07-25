@@ -70,6 +70,9 @@ const defaultSettings = {
     { key: 'latte', label: 'Latte' },
     { key: 'mocha', label: 'Mocha' },
   ],
+
+  // Categorías del menú
+  menu_categories: ['Cafetería', 'Dulces', 'Saladitos', 'Bebidas'],
 };
 
 export default function AdminLanding() {
@@ -744,7 +747,82 @@ export default function AdminLanding() {
                 </div>
               </div>
             </div>
-            {/* 7. Tipos de Café */}
+            {/* 7. Categorías del Menú */}
+            <div className="bg-cafe-surface border border-cafe-border p-6 rounded-xl">
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="font-display text-lg text-cafe-accent">7 · CATEGORÍAS DEL MENÚ</h2>
+                <button
+                  onClick={() => handleChange('menu_categories', [...(settings.menu_categories || []), ''])}
+                  className="flex items-center gap-1 px-3 py-1.5 bg-cafe-accent text-white font-display text-xs tracking-wider hover:bg-cafe-burgundy-light transition-colors rounded-xl shadow-lg shadow-black/30"
+                >
+                  <Plus className="w-3 h-3" /> AGREGAR
+                </button>
+              </div>
+              <p className="text-cafe-muted text-xs mb-4">Definí las categorías que aparecen en el menú. Arrastrá para reordenar.</p>
+              <div className="space-y-2">
+                {(settings.menu_categories || []).map((cat, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <span className="w-6 text-center text-xs text-cafe-muted/50 font-display">{idx + 1}</span>
+                    <input
+                      type="text"
+                      value={cat}
+                      onChange={e => {
+                        const updated = [...(settings.menu_categories || [])];
+                        updated[idx] = e.target.value;
+                        handleChange('menu_categories', updated);
+                      }}
+                      className="flex-1 px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text text-sm focus:outline-none focus:border-cafe-accent rounded-lg"
+                      placeholder="Nombre de categoría"
+                    />
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => {
+                          if (idx === 0) return;
+                          const updated = [...(settings.menu_categories || [])];
+                          [updated[idx - 1], updated[idx]] = [updated[idx], updated[idx - 1]];
+                          handleChange('menu_categories', updated);
+                        }}
+                        disabled={idx === 0}
+                        className="p-1.5 text-cafe-muted hover:text-cafe-text transition-colors disabled:opacity-20"
+                        title="Subir"
+                      >
+                        <ChevronRight className="w-3.5 h-3.5 rotate-[-90deg]" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          const updated = [...(settings.menu_categories || [])];
+                          if (idx < updated.length - 1) {
+                            [updated[idx], updated[idx + 1]] = [updated[idx + 1], updated[idx]];
+                            handleChange('menu_categories', updated);
+                          }
+                        }}
+                        disabled={idx >= (settings.menu_categories || []).length - 1}
+                        className="p-1.5 text-cafe-muted hover:text-cafe-text transition-colors disabled:opacity-20"
+                        title="Bajar"
+                      >
+                        <ChevronRight className="w-3.5 h-3.5 rotate-90" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          const updated = [...(settings.menu_categories || [])];
+                          updated.splice(idx, 1);
+                          handleChange('menu_categories', updated);
+                        }}
+                        className="p-1.5 text-cafe-muted hover:text-cafe-burgundy-light transition-colors"
+                        title="Eliminar"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                {(settings.menu_categories || []).length === 0 && (
+                  <p className="text-cafe-muted text-xs text-center py-3">Sin categorías. Agregá una.</p>
+                )}
+              </div>
+            </div>
+
+            {/* 8. Tipos de Café */}
             <div className="bg-cafe-surface border border-cafe-border p-6 rounded-xl">
               <div className="flex items-center justify-between mb-2">
                 <h2 className="font-display text-lg text-cafe-accent">7 · TIPOS DE CAFÉ</h2>

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { getMenuItems } from '../lib/api';
 import { Search, Coffee, Cookie, Sandwich, CupSoda } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import useLandingData from '../components/sections/useLandingData';
 
 const categoryIcons = {
   Cafetería: Coffee,
@@ -23,6 +24,7 @@ export default function MenuPage() {
   const [activeCategory, setActiveCategory] = useState('Todos');
   const [search, setSearch] = useState('');
   const { lang, t } = useLanguage();
+  const { settings } = useLandingData();
 
   useEffect(() => {
     getMenuItems()
@@ -30,7 +32,10 @@ export default function MenuPage() {
       .catch(() => {});
   }, []);
 
-  const categories = ['Todos', ...new Set(items.map(i => i.category))];
+  const settingsCategories = settings?.menu_categories || [];
+  const itemCategories = [...new Set(items.map(i => i.category))];
+  const allCategories = [...new Set([...settingsCategories, ...itemCategories])];
+  const categories = ['Todos', ...allCategories];
 
   const filtered = items.filter(item => {
     const matchCategory = activeCategory === 'Todos' || item.category === activeCategory;

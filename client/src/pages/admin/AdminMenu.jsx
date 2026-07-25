@@ -1,11 +1,9 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getAllMenuItems, createMenuItem, updateMenuItem, deleteMenuItem } from '../../lib/api';
+import { getAllMenuItems, createMenuItem, updateMenuItem, deleteMenuItem, getLandingSettings } from '../../lib/api';
 import { Plus, Pencil, Trash2, X, ToggleLeft, ToggleRight, Star, Upload, FileSpreadsheet, Check } from 'lucide-react';
 
 const emptyForm = { name: '', description: '', description_en: '', price: '', category: 'Cafetería', image_url: '', stock: true, featured: false };
-
-const categories = ['Cafetería', 'Dulces', 'Saladitos', 'Bebidas'];
 
 export default function AdminMenu() {
   const [items, setItems] = useState([]);
@@ -13,6 +11,7 @@ export default function AdminMenu() {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(emptyForm);
   const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState(['Cafetería', 'Dulces', 'Saladitos', 'Bebidas']);
 
   // Quick add
   const [quickAdd, setQuickAdd] = useState(false);
@@ -30,7 +29,16 @@ export default function AdminMenu() {
     getAllMenuItems().then(res => setItems(res.data)).catch(() => {});
   };
 
-  useEffect(() => { loadItems(); }, []);
+  useEffect(() => {
+    loadItems();
+    getLandingSettings()
+      .then(res => {
+        if (res.data?.menu_categories?.length > 0) {
+          setCategories(res.data.menu_categories);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const openCreate = () => {
     setForm(emptyForm);
