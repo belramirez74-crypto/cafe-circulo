@@ -259,14 +259,13 @@ export default function CoffeeTypesSection() {
                 transition={{ duration: 0.5, delay: i * 0.07 }}
                 className="group bg-cafe-surface border border-cafe-border/60 rounded-2xl overflow-hidden hover:border-cafe-accent/50 transition-all duration-300 hover:shadow-lg hover:shadow-cafe-accent/10"
               >
-                <div className={`aspect-square ${bgColors[i]} flex items-center justify-center relative overflow-hidden`}>
-                  <div className="w-14 h-14 group-hover:scale-110 transition-transform duration-300">
+                <div className={`${bgColors[i]} flex items-center justify-center relative overflow-hidden py-3`}>
+                  <div className="w-12 h-12 group-hover:scale-110 transition-transform duration-300">
                     <SvgComp />
                   </div>
-                  <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-cafe-surface to-transparent" />
                 </div>
-                <div className="p-4 pt-3">
-                  <h3 className="font-display text-base text-cafe-text mb-2 tracking-wide">{t(`coffee_${coffee.key}_name`)}</h3>
+                <div className="px-4 py-3">
+                  <h3 className="font-display text-sm text-cafe-text mb-1 tracking-wide">{t(`coffee_${coffee.key}_name`)}</h3>
                   <p className="text-cafe-muted text-sm leading-relaxed">{t(`coffee_${coffee.key}_desc`)}</p>
                 </div>
               </motion.div>
