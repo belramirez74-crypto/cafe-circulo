@@ -58,6 +58,18 @@ const defaultSettings = {
 
   // Tipos de Café (imágenes custom)
   coffee_images: {},
+  coffee_items: [
+    { key: 'espresso', label: 'Espresso' },
+    { key: 'doppio', label: 'Doppio' },
+    { key: 'cortado', label: 'Cortado' },
+    { key: 'americano', label: 'Americano' },
+    { key: 'lungo', label: 'Lungo' },
+    { key: 'ristretto', label: 'Ristretto' },
+    { key: 'capuchino', label: 'Capuchino' },
+    { key: 'flatwhite', label: 'Flat White' },
+    { key: 'latte', label: 'Latte' },
+    { key: 'mocha', label: 'Mocha' },
+  ],
 };
 
 export default function AdminLanding() {
@@ -734,21 +746,22 @@ export default function AdminLanding() {
             </div>
             {/* 7. Tipos de Café */}
             <div className="bg-cafe-surface border border-cafe-border p-6 rounded-xl">
-              <h2 className="font-display text-lg text-cafe-accent mb-2">7 · TIPOS DE CAFÉ</h2>
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="font-display text-lg text-cafe-accent">7 · TIPOS DE CAFÉ</h2>
+                <button
+                  onClick={() => {
+                    const items = settings.coffee_items || [];
+                    const newKey = `custom_${Date.now()}`;
+                    handleChange('coffee_items', [...items, { key: newKey, label: '' }]);
+                  }}
+                  className="flex items-center gap-1 px-3 py-1.5 bg-cafe-accent text-white font-display text-xs tracking-wider hover:bg-cafe-burgundy-light transition-colors rounded-xl shadow-lg shadow-black/30"
+                >
+                  <Plus className="w-3 h-3" /> AGREGAR
+                </button>
+              </div>
               <p className="text-cafe-muted text-xs mb-5">Subí fotos personalizadas para cada café. Si dejás vacío, se muestra la ilustración SVG por defecto.</p>
               <div className="grid grid-cols-2 gap-3">
-                {[
-                  { key: 'espresso', label: 'Espresso' },
-                  { key: 'doppio', label: 'Doppio' },
-                  { key: 'cortado', label: 'Cortado' },
-                  { key: 'americano', label: 'Americano' },
-                  { key: 'lungo', label: 'Lungo' },
-                  { key: 'ristretto', label: 'Ristretto' },
-                  { key: 'capuchino', label: 'Capuchino' },
-                  { key: 'flatwhite', label: 'Flat White' },
-                  { key: 'latte', label: 'Latte' },
-                  { key: 'mocha', label: 'Mocha' },
-                ].map(({ key, label }) => {
+                {(settings.coffee_items || []).map(({ key, label }, idx) => {
                   const hasImage = !!settings.coffee_images?.[key];
                   return (
                     <div
@@ -763,7 +776,7 @@ export default function AdminLanding() {
                         {hasImage ? (
                           <img
                             src={settings.coffee_images[key]}
-                            alt={label}
+                            alt={label || key}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           />
                         ) : (
@@ -772,22 +785,33 @@ export default function AdminLanding() {
                             <span className="text-cafe-muted/30 text-[10px] font-display tracking-wider">SIN IMAGEN</span>
                           </div>
                         )}
-                        {hasImage && (
-                          <button
-                            onClick={() => {
-                              const updated = { ...(settings.coffee_images || {}) };
-                              delete updated[key];
-                              handleChange('coffee_images', updated);
-                            }}
-                            className="absolute top-1.5 right-1.5 p-1 bg-black/50 rounded-lg text-white/70 hover:text-red-400 hover:bg-black/70 transition-all opacity-0 group-hover:opacity-100"
-                            title="Quitar imagen"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        )}
+                        <button
+                          onClick={() => {
+                            const items = [...(settings.coffee_items || [])];
+                            items.splice(idx, 1);
+                            handleChange('coffee_items', items);
+                            const images = { ...(settings.coffee_images || {}) };
+                            delete images[key];
+                            handleChange('coffee_images', images);
+                          }}
+                          className="absolute top-1.5 right-1.5 p-1 bg-black/50 rounded-lg text-white/70 hover:text-red-400 hover:bg-black/70 transition-all opacity-0 group-hover:opacity-100"
+                          title="Quitar café"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
                       </div>
-                      <div className="px-3 py-2.5">
-                        <p className="font-display text-xs text-cafe-text tracking-wide mb-2">{label}</p>
+                      <div className="px-3 py-2.5 space-y-2">
+                        <input
+                          type="text"
+                          value={label}
+                          onChange={e => {
+                            const items = [...(settings.coffee_items || [])];
+                            items[idx] = { ...items[idx], label: e.target.value };
+                            handleChange('coffee_items', items);
+                          }}
+                          className="w-full px-2.5 py-1.5 bg-cafe-surface border border-cafe-border text-cafe-text text-xs font-display tracking-wide focus:outline-none focus:border-cafe-accent rounded-lg"
+                          placeholder="Nombre del café"
+                        />
                         <div className="flex items-center gap-1.5">
                           <input
                             type="url"

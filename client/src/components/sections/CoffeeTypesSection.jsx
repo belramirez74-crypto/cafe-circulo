@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Coffee } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 
 const EspressoSVG = () => (
@@ -235,8 +236,22 @@ const bgColors = [
   'bg-[#261408]',
 ];
 
+const defaultCoffees = [
+  { key: 'espresso' },
+  { key: 'doppio' },
+  { key: 'cortado' },
+  { key: 'americano' },
+  { key: 'lungo' },
+  { key: 'ristretto' },
+  { key: 'capuchino' },
+  { key: 'flatwhite' },
+  { key: 'latte' },
+  { key: 'mocha' },
+];
+
 export default function CoffeeTypesSection({ settings }) {
   const { t } = useLanguage();
+  const coffees = settings?.coffee_items?.length > 0 ? settings.coffee_items : defaultCoffees;
 
   return (
     <section className="py-20 bg-gradient-to-b from-cafe-bg via-cafe-burgundy/[0.03] to-cafe-bg">
@@ -251,6 +266,8 @@ export default function CoffeeTypesSection({ settings }) {
           {coffees.map((coffee, i) => {
             const SvgComp = coffeeSvgs[coffee.key];
             const customImage = settings?.coffee_images?.[coffee.key];
+            const label = coffee.label || t(`coffee_${coffee.key}_name`);
+            const desc = coffee.label ? '' : t(`coffee_${coffee.key}_desc`);
             return (
               <motion.div
                 key={coffee.key}
@@ -260,23 +277,25 @@ export default function CoffeeTypesSection({ settings }) {
                 transition={{ duration: 0.5, delay: i * 0.07 }}
                 className="group bg-cafe-surface border border-cafe-border/60 rounded-2xl overflow-hidden hover:border-cafe-accent/50 transition-all duration-300 hover:shadow-lg hover:shadow-cafe-accent/10"
               >
-                <div className={`aspect-square overflow-hidden ${!customImage ? bgColors[i] : ''} flex items-center justify-center`}>
+                <div className={`aspect-square overflow-hidden ${!customImage ? (bgColors[i % bgColors.length] || 'bg-[#2a1608]') : ''} flex items-center justify-center`}>
                   {customImage ? (
                     <img
                       src={customImage}
-                      alt={t(`coffee_${coffee.key}_name`)}
+                      alt={label}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       loading="lazy"
                     />
-                  ) : (
+                  ) : SvgComp ? (
                     <div className="w-16 h-16 group-hover:scale-110 transition-transform duration-300">
                       <SvgComp />
                     </div>
+                  ) : (
+                    <Coffee className="w-10 h-10 text-cafe-muted/20" />
                   )}
                 </div>
                 <div className="px-4 py-3">
-                  <h3 className="font-display text-sm text-cafe-text mb-1 tracking-wide">{t(`coffee_${coffee.key}_name`)}</h3>
-                  <p className="text-cafe-muted text-sm leading-relaxed">{t(`coffee_${coffee.key}_desc`)}</p>
+                  <h3 className="font-display text-sm text-cafe-text mb-1 tracking-wide">{label}</h3>
+                  {desc && <p className="text-cafe-muted text-sm leading-relaxed">{desc}</p>}
                 </div>
               </motion.div>
             );
