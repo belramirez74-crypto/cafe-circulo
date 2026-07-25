@@ -43,7 +43,7 @@ export default function HeroSection({ settings }) {
           transition={{ duration: 0.6, delay: 0.1 }}
           className={`font-display text-5xl sm:text-7xl ${h} mb-4 tracking-tight leading-none`}
         >
-          {settings?.hero_title_line1 || 'CAFÉ'}
+          <span className="animate-fade-in-up-big inline-block">{settings?.hero_title_line1 || 'CAFÉ'}</span>
           <br />
           <span className="font-script text-[#5c1514] text-6xl sm:text-8xl inline-block drop-shadow-[0_6px_30px_rgba(92,21,20,1)] animate-fade-in-up" style={{ fontWeight: 600 }}>
             {settings?.hero_title_line2 || 'Círculo'}

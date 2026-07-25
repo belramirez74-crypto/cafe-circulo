@@ -155,3 +155,14 @@ body {
   animation-delay: 0.3s;
   opacity: 0;
 }
+
+@keyframes fadeInUpBig {
+  0% { opacity: 0; transform: translateY(48px) scale(0.9); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.animate-fade-in-up-big {
+  animation: fadeInUpBig 0.8s ease-out forwards;
+  animation-delay: 0.1s;
+  opacity: 0;
+}
