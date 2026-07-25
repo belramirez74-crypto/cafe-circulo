@@ -6,25 +6,23 @@ import {
   CalendarPlus, LogOut, Store, ChevronLeft, PanelRightClose, PanelRightOpen,
   CircleUser, BarChart3, DollarSign
 } from 'lucide-react';
-import { useLanguage } from '../context/LanguageContext';
 
 export default function AdminLayout({ children }) {
   const { admin, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
-  const { t } = useLanguage();
 
   const sidebarLinks = [
-    { to: '/admin/profile', icon: User, label: t('layout_my_profile') },
-    { to: '/admin', icon: LayoutDashboard, label: t('layout_dashboard') },
-    { to: '/admin/stats', icon: BarChart3, label: t('layout_reports') },
-    { to: '/admin/ventas', icon: DollarSign, label: t('layout_sales') },
-    { to: '/admin/landing', icon: Layout, label: t('layout_landing_page') },
-    { to: '/admin/menu', icon: ShoppingBag, label: t('layout_menu_mgmt') },
-    { to: '/admin/clients', icon: UserCog, label: t('layout_clients_mgmt') },
-    { to: '/admin/staff', icon: Users, label: t('layout_staff_mgmt') },
-    { to: '/admin/events', icon: CalendarPlus, label: t('layout_events_promos') },
+    { to: '/admin/profile', icon: User, label: 'MI PERFIL' },
+    { to: '/admin', icon: LayoutDashboard, label: 'DASHBOARD' },
+    { to: '/admin/stats', icon: BarChart3, label: 'REPORTES' },
+    { to: '/admin/ventas', icon: DollarSign, label: 'VENTAS' },
+    { to: '/admin/landing', icon: Layout, label: 'LANDING PAGE' },
+    { to: '/admin/menu', icon: ShoppingBag, label: 'GESTIÓN DE MENÚ' },
+    { to: '/admin/clients', icon: UserCog, label: 'GESTIÓN DE CLIENTES' },
+    { to: '/admin/staff', icon: Users, label: 'GESTIÓN DE STAFF' },
+    { to: '/admin/events', icon: CalendarPlus, label: 'EVENTOS Y PROMOS' },
   ];
 
   const handleLogout = () => {
@@ -100,7 +98,7 @@ export default function AdminLayout({ children }) {
             className="mt-3 flex items-center gap-2 w-full px-3 py-2 text-sm text-cafe-muted hover:text-cafe-burgundy-light hover:bg-cafe-card/30 rounded transition-colors"
           >
             <LogOut className="w-4 h-4 shrink-0" />
-            {!collapsed && <span>{t('layout_logout')}</span>}
+            {!collapsed && <span>SALIR</span>}
           </button>
         </div>
       </aside>
