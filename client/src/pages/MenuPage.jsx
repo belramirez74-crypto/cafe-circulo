@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { getMenuItems } from '../lib/api';
 import { Search, Coffee, Cookie, Sandwich, CupSoda } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 const categoryIcons = {
   Cafetería: Coffee,
@@ -21,6 +22,7 @@ export default function MenuPage() {
   const [items, setItems] = useState([]);
   const [activeCategory, setActiveCategory] = useState('Todos');
   const [search, setSearch] = useState('');
+  const { t } = useLanguage();
 
   useEffect(() => {
     getMenuItems()
@@ -46,7 +48,7 @@ export default function MenuPage() {
             animate={{ opacity: 1, y: 0 }}
             className="font-script text-cafe-accent text-2xl sm:text-3xl mb-2"
           >
-            Nuestras especialidades
+            {t('menu_subtitle')}
           </motion.p>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -54,7 +56,7 @@ export default function MenuPage() {
             transition={{ delay: 0.1 }}
             className="font-display text-4xl sm:text-6xl text-cafe-text"
           >
-            MENÚ
+            {t('menu_title')}
           </motion.h1>
           <div className="w-16 h-0.5 bg-cafe-accent mx-auto mt-4" />
         </div>
@@ -72,7 +74,7 @@ export default function MenuPage() {
               type="text"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              placeholder="Buscar en el menú..."
+              placeholder={t('menu_search')}
               className="w-full pl-10 pr-4 py-3 bg-cafe-surface border border-cafe-border text-cafe-text placeholder-cafe-muted/50 focus:outline-none focus:border-cafe-accent transition-colors rounded-xl"
             />
           </div>
@@ -107,7 +109,7 @@ export default function MenuPage() {
         {/* Menu Grid */}
         {filtered.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-cafe-muted text-lg">No encontramos nada con ese nombre</p>
+            <p className="text-cafe-muted text-lg">{t('menu_no_results')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -57,7 +57,7 @@ function LocalVideo({ src, isActive }) {
       <button
         onClick={toggleMute}
         className="absolute bottom-4 right-4 z-10 p-2 bg-black/50 hover:bg-black/70 rounded-full text-white transition-colors backdrop-blur-sm"
-        title={muted ? 'Activar sonido' : 'Silenciar'}
+        title={muted ? t('gallery_activate_sound') : t('gallery_mute')}
       >
         {muted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
       </button>
@@ -68,9 +68,10 @@ function LocalVideo({ src, isActive }) {
 export default function GallerySection({ galleryImages, galleryIdx, setGalleryIdx, settings }) {
   const [taglineIdx, setTaglineIdx] = useState(0);
   const timerRef = useRef(null);
-  const { t } = useLanguage();
+  const { lang, t } = useLanguage();
+  const st = (key, sKey) => lang === 'en' ? t(key) : (settings?.[sKey] || t(key));
   const defaultLines = [t('gallery_tagline_1'), t('gallery_tagline_2')];
-  const lines = settings?.gallery_taglines || defaultLines;
+  const lines = lang === 'en' ? defaultLines : (settings?.gallery_taglines || defaultLines);
   const currentLine = lines[taglineIdx % lines.length];
 
   useEffect(() => {

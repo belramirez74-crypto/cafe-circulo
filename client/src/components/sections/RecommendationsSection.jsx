@@ -1,6 +1,8 @@
 import { Coffee } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function RecommendationsSection({ featured }) {
+  const { t } = useLanguage();
   return (
     <section className="min-h-screen pt-24 pb-16 flex items-center justify-center">
       <div className="max-w-4xl mx-auto px-4">
@@ -29,7 +31,7 @@ export default function RecommendationsSection({ featured }) {
               ))}
             </div>
           ) : (
-            <div className="flex items-center justify-center h-48 text-cafe-muted text-sm">Sin recomendaciones</div>
+            <div className="flex items-center justify-center h-48 text-cafe-muted text-sm">{t('recommendations_empty')}</div>
           )}
         </div>
       </div>

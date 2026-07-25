@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Upload, Image, Link, X, Loader, Film } from 'lucide-react';
 import { uploadImage, getUploadedImages } from '../lib/api';
+import { useLanguage } from '../context/LanguageContext';
 
 function isVideoUrl(url) {
   return /\.(mp4|webm|mov)$/i.test(url) || url.includes('youtube.com') || url.includes('youtu.be') || url.includes('vimeo.com');
@@ -13,6 +14,7 @@ export default function ImagePicker({ value, onChange, onClose }) {
   const [gallery, setGallery] = useState([]);
   const [loadingGallery, setLoadingGallery] = useState(false);
   const fileRef = useRef();
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (tab === 'gallery') {
@@ -30,7 +32,7 @@ export default function ImagePicker({ value, onChange, onClose }) {
       onChange(res.data.url);
       onClose?.();
     } catch (err) {
-      alert(err.response?.data?.error || 'Error al subir archivo');
+      alert(err.response?.data?.error || t('upload_error'));
     } finally {
       setUploading(false);
     }
@@ -60,7 +62,7 @@ export default function ImagePicker({ value, onChange, onClose }) {
       <div className="bg-cafe-surface border border-cafe-border w-full max-w-lg rounded-xl" onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-cafe-border">
-          <h2 className="font-display text-lg text-cafe-text">SELECCIONAR ARCHIVO</h2>
+          <h2 className="font-display text-lg text-cafe-text">{t('picker_title')}</h2>
           <button onClick={onClose} className="text-cafe-muted hover:text-cafe-text">
             <X className="w-5 h-5" />
           </button>
@@ -69,10 +71,10 @@ export default function ImagePicker({ value, onChange, onClose }) {
         {/* Tabs */}
         <div className="flex border-b border-cafe-border">
           <button onClick={() => setTab('upload')} className={`flex-1 flex items-center justify-center gap-2 py-3 font-display text-xs tracking-wider transition-colors ${tab === 'upload' ? 'text-cafe-accent border-b-2 border-cafe-accent' : 'text-cafe-muted hover:text-cafe-text'}`}>
-            <Upload className="w-4 h-4" /> SUBIR
+            <Upload className="w-4 h-4" /> {t('picker_upload')}
           </button>
           <button onClick={() => setTab('gallery')} className={`flex-1 flex items-center justify-center gap-2 py-3 font-display text-xs tracking-wider transition-colors ${tab === 'gallery' ? 'text-cafe-accent border-b-2 border-cafe-accent' : 'text-cafe-muted hover:text-cafe-text'}`}>
-            <Image className="w-4 h-4" /> GALERÍA
+            <Image className="w-4 h-4" /> {t('picker_gallery')}
           </button>
           <button onClick={() => setTab('url')} className={`flex-1 flex items-center justify-center gap-2 py-3 font-display text-xs tracking-wider transition-colors ${tab === 'url' ? 'text-cafe-accent border-b-2 border-cafe-accent' : 'text-cafe-muted hover:text-cafe-text'}`}>
             <Link className="w-4 h-4" /> URL
@@ -93,8 +95,8 @@ export default function ImagePicker({ value, onChange, onClose }) {
               ) : (
                 <>
                   <Upload className="w-10 h-10 text-cafe-muted" />
-                  <p className="text-cafe-muted text-sm">Hacé click para seleccionar imagen o video</p>
-                  <p className="text-cafe-muted-dark text-xs">Imágenes: JPG, PNG, WebP, GIF · Videos: MP4, WebM, MOV · Max 50MB</p>
+                  <p className="text-cafe-muted text-sm">{t('picker_click')}</p>
+                  <p className="text-cafe-muted-dark text-xs">{t('picker_formats')}</p>
                 </>
               )}
             </button>
@@ -109,7 +111,7 @@ export default function ImagePicker({ value, onChange, onClose }) {
                 <Loader className="w-6 h-6 text-cafe-accent animate-spin" />
               </div>
             ) : gallery.length === 0 ? (
-              <p className="text-center text-cafe-muted text-sm py-8">No hay archivos subidos todavía</p>
+              <p className="text-center text-cafe-muted text-sm py-8">{t('picker_empty')}</p>
             ) : (
               <div className="grid grid-cols-3 gap-3">
                 {gallery.map(item => (
@@ -130,7 +132,7 @@ export default function ImagePicker({ value, onChange, onClose }) {
         {tab === 'url' && (
           <div className="p-6 space-y-4">
             <div>
-              <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">URL (imagen, video o YouTube/Vimeo)</label>
+              <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">{t('picker_url_label')}</label>
               <input
                 type="url"
                 value={url}
@@ -146,10 +148,10 @@ export default function ImagePicker({ value, onChange, onClose }) {
                   const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&?/]+)/);
                   const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
                   if (ytMatch) {
-                    return <iframe src={`https://www.youtube.com/embed/${ytMatch[1]}`} className="w-full h-full" allowFullScreen title="Vista previa" />;
+                    return <iframe src={`https://www.youtube.com/embed/${ytMatch[1]}`} className="w-full h-full" allowFullScreen title={t('picker_preview')} />;
                   }
                   if (vimeoMatch) {
-                    return <iframe src={`https://player.vimeo.com/video/${vimeoMatch[1]}`} className="w-full h-full" allowFullScreen title="Vista previa" />;
+                    return <iframe src={`https://player.vimeo.com/video/${vimeoMatch[1]}`} className="w-full h-full" allowFullScreen title={t('picker_preview')} />;
                   }
                   if (/\.(mp4|webm|mov)$/i.test(url)) {
                     return <video src={url} className="w-full h-full object-cover" controls />;
@@ -163,7 +165,7 @@ export default function ImagePicker({ value, onChange, onClose }) {
               disabled={!url.trim()}
               className="w-full py-2 bg-cafe-accent text-white font-display text-sm tracking-wider hover:bg-cafe-burgundy-light transition-colors disabled:opacity-50 rounded-xl shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-black/40"
             >
-              USAR ESTA URL
+              {t('picker_use_url')}
             </button>
           </div>
         )}

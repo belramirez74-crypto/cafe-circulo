@@ -6,10 +6,12 @@ import useLandingData from '../components/sections/useLandingData';
 import HeroSection from '../components/sections/HeroSection';
 import { getClientPromotions, getClientEventBanners } from '../lib/api';
 import { useEffect, useState } from 'react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Home() {
   const { user } = useUserAuth();
   const { settings, featured } = useLandingData();
+  const { t } = useLanguage();
   const [promotions, setPromotions] = useState([]);
   const [clientBanners, setClientBanners] = useState([]);
 
@@ -33,9 +35,9 @@ export default function Home() {
               viewport={{ once: true }}
             >
               <Crown className="w-8 h-8 text-cafe-burgundy-light mx-auto mb-3" />
-              <p className="font-script text-cafe-cream text-4xl sm:text-5xl mb-2">Bienvenido</p>
+              <p className="font-script text-cafe-cream text-4xl sm:text-5xl mb-2">{t('home_welcome')}</p>
               <h2 className="font-display text-3xl sm:text-4xl text-cafe-text mb-4">
-                {user.role === 'admin' ? 'ADMINISTRADOR' : user.role === 'staff' ? 'STAFF' : 'CLIENTE EXCLUSIVO'}
+                {user.role === 'admin' ? t('home_role_admin') : user.role === 'staff' ? t('home_role_staff') : t('home_role_client')}
               </h2>
               <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-cafe-accent to-transparent mx-auto mb-8" />
 
@@ -43,11 +45,11 @@ export default function Home() {
                 <div className="max-w-xl mx-auto space-y-4">
                   <Link to="/staff" className="flex items-center gap-3 p-4 bg-cafe-surface border border-cafe-border/60 hover:border-cafe-accent transition-colors group rounded-xl">
                     <Shield className="w-5 h-5 text-cafe-burgundy-light shrink-0 group-hover:text-cafe-accent transition-colors" />
-                    <p className="text-cafe-muted text-sm text-left group-hover:text-cafe-text transition-colors">Dashboard staff — fichado, tareas, clientes</p>
+                    <p className="text-cafe-muted text-sm text-left group-hover:text-cafe-text transition-colors">{t('home_staff_dashboard')}</p>
                   </Link>
                   <Link to="/staff/profile" className="flex items-center gap-3 p-4 bg-cafe-surface border border-cafe-border/60 hover:border-cafe-accent transition-colors group rounded-xl">
                     <User className="w-5 h-5 text-cafe-burgundy-light shrink-0 group-hover:text-cafe-accent transition-colors" />
-                    <p className="text-cafe-muted text-sm text-left group-hover:text-cafe-text transition-colors">Mi perfil — notas, recordatorios, tareas</p>
+                    <p className="text-cafe-muted text-sm text-left group-hover:text-cafe-text transition-colors">{t('home_staff_profile')}</p>
                   </Link>
                 </div>
               )}
@@ -56,12 +58,12 @@ export default function Home() {
                 <div className="max-w-2xl mx-auto space-y-6">
                   <div className="flex items-center gap-3 justify-center p-4 bg-cafe-surface border border-cafe-border/60 rounded-xl">
                     <Sparkles className="w-5 h-5 text-cafe-burgundy-light shrink-0" />
-                    <p className="text-cafe-muted text-sm text-left">Beneficios exclusivos, promociones y contenido especial para clientes registrados.</p>
+                    <p className="text-cafe-muted text-sm text-left">{t('home_client_benefits')}</p>
                   </div>
 
                   {promotions.length > 0 && (
                     <div className="space-y-3">
-                      <h3 className="font-display text-sm tracking-widest text-cafe-accent">PROMOCIONES EXCLUSIVAS</h3>
+                      <h3 className="font-display text-sm tracking-widest text-cafe-accent">{t('home_promotions')}</h3>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {promotions.map(p => (
                           <div key={p.id} className="flex items-start gap-3 p-4 bg-cafe-surface border border-cafe-border/60 text-left rounded-xl">
@@ -82,7 +84,7 @@ export default function Home() {
 
                   {clientBanners.length > 0 && (
                     <div className="space-y-3">
-                      <h3 className="font-display text-sm tracking-widest text-cafe-accent">EVENTOS</h3>
+                      <h3 className="font-display text-sm tracking-widest text-cafe-accent">{t('home_events')}</h3>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {clientBanners.map(b => (
                           <div key={b.id} className="aspect-[16/9] rounded-xl overflow-hidden border border-cafe-border/60 bg-cafe-card group">
@@ -108,7 +110,7 @@ export default function Home() {
                     className="flex items-center gap-3 justify-center p-4 bg-cafe-surface border border-cafe-border/60 hover:border-cafe-accent transition-colors group rounded-xl"
                   >
                     <Crown className="w-5 h-5 text-cafe-burgundy-light shrink-0 group-hover:text-cafe-accent transition-colors" />
-                    <p className="text-cafe-muted text-sm group-hover:text-cafe-text transition-colors">Ir al panel de administración</p>
+                    <p className="text-cafe-muted text-sm group-hover:text-cafe-text transition-colors">{t('home_admin_panel')}</p>
                   </Link>
                 </div>
               )}
@@ -121,8 +123,8 @@ export default function Home() {
       <section className="py-20 border-t border-cafe-border/60">
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center mb-8">
-            <p className="font-script text-cafe-cream text-4xl sm:text-5xl">lo más destacado</p>
-            <h2 className="font-display text-2xl sm:text-3xl text-cafe-text tracking-[0.15em]">{user?.role === 'staff' ? 'RECOMENDACIONES PARA CLIENTES' : 'RECOMENDACIONES'}</h2>
+            <p className="font-script text-cafe-cream text-4xl sm:text-5xl">{t('home_featured_subtitle')}</p>
+            <h2 className="font-display text-2xl sm:text-3xl text-cafe-text tracking-[0.15em]">{user?.role === 'staff' ? t('home_recommendations_staff') : t('home_recommendations')}</h2>
             <div className="w-12 h-0.5 bg-gradient-to-r from-transparent via-cafe-accent to-transparent mx-auto mt-3" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -145,13 +147,13 @@ export default function Home() {
                       <span className="font-display text-xl text-cafe-accent">
                         ${item.price ? (typeof item.price === 'number' ? parseFloat(item.price).toLocaleString('es-AR') : item.price) : ''}
                       </span>
-                      <span className="text-xs text-cafe-muted/60 group-hover:text-cafe-accent transition-colors">VER →</span>
+                      <span className="text-xs text-cafe-muted/60 group-hover:text-cafe-accent transition-colors">{t('home_view')}</span>
                     </div>
                   </div>
                 </div>
               ))
             ) : (
-              <div className="col-span-full flex items-center justify-center h-48 text-cafe-muted text-sm">Sin recomendaciones</div>
+              <div className="col-span-full flex items-center justify-center h-48 text-cafe-muted text-sm">{t('recommendations_empty')}</div>
             )}
           </div>
         </div>

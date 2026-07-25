@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { userLogin } from '../lib/api';
 import { Lock, Mail, Store, X, Eye, EyeOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function LoginModal({ open, onClose }) {
   const [email, setEmail] = useState('');
@@ -13,6 +14,7 @@ export default function LoginModal({ open, onClose }) {
   const [showPassword, setShowPassword] = useState(false);
   const { setUser } = useUserAuth();
   const { setAdmin } = useAuth();
+  const { t } = useLanguage();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,7 +33,7 @@ export default function LoginModal({ open, onClose }) {
       }
       onClose();
     } catch (err) {
-      setError(err.response?.data?.error || 'Error al iniciar sesión');
+      setError(err.response?.data?.error || t('login_error'));
     } finally {
       setLoading(false);
     }
@@ -57,7 +59,7 @@ export default function LoginModal({ open, onClose }) {
             <div className="flex items-center justify-between p-4 border-b border-cafe-border">
               <div className="flex items-center gap-2">
                 <Store className="w-5 h-5 text-cafe-burgundy-light" />
-                <h2 className="font-display text-lg text-cafe-text">INICIAR SESIÓN</h2>
+                <h2 className="font-display text-lg text-cafe-text">{t('login_title')}</h2>
               </div>
               <button onClick={onClose} className="text-cafe-muted hover:text-cafe-text transition-colors">
                 <X className="w-5 h-5" />
@@ -87,7 +89,7 @@ export default function LoginModal({ open, onClose }) {
               </div>
 
               <div>
-                <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">CONTRASEÑA</label>
+                <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">{t('login_password')}</label>
                 <div className="flex items-center border border-cafe-border bg-cafe-bg focus-within:border-cafe-accent transition-colors">
                   <Lock className="w-4 h-4 text-cafe-muted ml-3 shrink-0" />
                   <input
@@ -110,7 +112,7 @@ export default function LoginModal({ open, onClose }) {
                 className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-cafe-accent text-white font-display tracking-wider hover:bg-cafe-burgundy-light transition-colors disabled:opacity-50 rounded-xl shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-black/40"
               >
                 <Lock className="w-4 h-4" />
-                {loading ? 'INGRESANDO...' : 'INGRESAR'}
+                {loading ? t('login_loading') : t('login_submit')}
               </button>
             </form>
           </motion.div>

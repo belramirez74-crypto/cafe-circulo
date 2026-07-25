@@ -82,7 +82,7 @@ export default function LandingNavbar() {
             <button
               onClick={toggleTheme}
               className="p-2 text-cafe-cream/70 hover:text-white hover:bg-white/5 rounded transition-colors"
-              title={light ? 'Modo oscuro' : 'Modo claro'}
+              title={light ? t('theme_dark') : t('theme_light')}
             >
               {light ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
             </button>
@@ -113,7 +113,7 @@ export default function LandingNavbar() {
                 <NavLink
                   to="/staff"
                   icon={User}
-                  label="Staff"
+                  label={t('nav_staff')}
                   active={location.pathname.startsWith('/staff')}
                 />
                 <span className="text-xs font-display tracking-wider uppercase text-cafe-accent font-bold">{user.name}</span>
@@ -131,7 +131,7 @@ export default function LandingNavbar() {
                       <User className="w-4 h-4 text-[#c4a882]" />
                     )}
                   </div>
-                  <span className="text-xs font-display tracking-wider uppercase text-[#c4a882] font-bold group-hover:text-white transition-colors">{user.name || 'Cliente'}</span>
+                  <span className="text-xs font-display tracking-wider uppercase text-[#c4a882] font-bold group-hover:text-white transition-colors">{user.name || t('profile_fallback_name')}</span>
                 </Link>
               </>
             )}
@@ -158,7 +158,7 @@ export default function LandingNavbar() {
             <button
               onClick={toggleTheme}
               className="p-2 text-cafe-cream/70 hover:text-white"
-              title={light ? 'Modo oscuro' : 'Modo claro'}
+              title={light ? t('theme_dark') : t('theme_light')}
             >
               {light ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
             </button>
@@ -181,7 +181,7 @@ export default function LandingNavbar() {
                         <User className="w-3.5 h-3.5 text-[#c4a882]" />
                       )}
                     </div>
-                    <span className="text-xs text-[#c4a882] font-display font-bold">{user.name || 'Cliente'}</span>
+                    <span className="text-xs text-[#c4a882] font-display font-bold">{user.name || t('profile_fallback_name')}</span>
                   </Link>
                 ) : (
                   <span className="text-xs text-white">{admin?.name || user?.name}</span>

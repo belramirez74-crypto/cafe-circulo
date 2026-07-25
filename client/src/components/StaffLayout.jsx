@@ -5,17 +5,19 @@ import {
   LayoutDashboard, User, LogOut, Store, ChevronLeft, PanelRightOpen, CircleUser
 } from 'lucide-react';
 import TaskNotification from './TaskNotification';
-
-const sidebarLinks = [
-  { to: '/staff', icon: LayoutDashboard, label: 'Dashboard' },
-  { to: '/staff/profile', icon: User, label: 'Mi Perfil' },
-];
+import { useLanguage } from '../context/LanguageContext';
 
 export default function StaffLayout({ children }) {
   const { user, logout } = useUserAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
+  const { t } = useLanguage();
+
+  const sidebarLinks = [
+    { to: '/staff', icon: LayoutDashboard, label: t('layout_dashboard') },
+    { to: '/staff/profile', icon: User, label: t('layout_my_profile') },
+  ];
 
   const handleLogout = () => {
     logout();
@@ -83,7 +85,7 @@ export default function StaffLayout({ children }) {
             className="mt-3 flex items-center gap-2 w-full px-3 py-2 text-sm text-cafe-muted hover:text-cafe-burgundy-light hover:bg-cafe-card/30 rounded transition-colors"
           >
             <LogOut className="w-4 h-4 shrink-0" />
-            {!collapsed && <span>Cerrar sesión</span>}
+            {!collapsed && <span>{t('layout_logout')}</span>}
           </button>
         </div>
       </aside>

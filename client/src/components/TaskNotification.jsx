@@ -2,11 +2,13 @@ import { useEffect, useState, useRef } from 'react';
 import { getStaffTasks } from '../lib/api';
 import { Bell, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function TaskNotification() {
   const [tasks, setTasks] = useState([]);
   const [notification, setNotification] = useState(null);
   const prevIdsRef = useRef(new Set());
+  const { t } = useLanguage();
 
   useEffect(() => {
     const check = () => {
@@ -53,14 +55,14 @@ export default function TaskNotification() {
               <Bell className="w-4 h-4 text-cafe-accent" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-display tracking-wider text-cafe-accent mb-1">NUEVA TAREA</p>
+              <p className="text-xs font-display tracking-wider text-cafe-accent mb-1">{t('task_new')}</p>
               <p className="text-sm text-cafe-text font-display truncate">{notification.title}</p>
               {notification.description && (
                 <p className="text-xs text-cafe-muted mt-0.5 truncate">{notification.description}</p>
               )}
               {notification.due_date && (
                 <p className="text-xs text-cafe-muted-dark mt-1">
-                  Vence: {new Date(notification.due_date).toLocaleDateString('es-AR')}
+                  {t('task_due')} {new Date(notification.due_date).toLocaleDateString('es-AR')}
                 </p>
               )}
             </div>

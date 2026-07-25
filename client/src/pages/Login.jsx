@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useUserAuth } from '../context/UserAuthContext';
 import { userLogin } from '../lib/api';
 import { Lock, Mail, Store, ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -12,6 +13,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const { setUser } = useUserAuth();
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,7 +26,7 @@ export default function Login() {
       setUser(res.data.user);
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.error || 'Error al iniciar sesión');
+      setError(err.response?.data?.error || t('login_error'));
     } finally {
       setLoading(false);
     }
@@ -35,11 +37,11 @@ export default function Login() {
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 text-cafe-muted hover:text-cafe-text transition-colors mb-6">
-            <ArrowLeft className="w-4 h-4" /> Volver al inicio
+            <ArrowLeft className="w-4 h-4" /> {t('login_back')}
           </Link>
           <Store className="w-10 h-10 text-cafe-burgundy-light mx-auto mb-3" />
           <h1 className="font-display text-3xl text-cafe-text">CAFÉ CÍRCULO</h1>
-          <p className="text-cafe-muted text-sm mt-1">Iniciar sesión</p>
+          <p className="text-cafe-muted text-sm mt-1">{t('login_subtitle')}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="bg-cafe-surface border border-cafe-border p-6 space-y-4 rounded-xl">
@@ -65,7 +67,7 @@ export default function Login() {
           </div>
 
           <div>
-            <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">CONTRASEÑA</label>
+            <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">{t('login_password')}</label>
             <div className="flex items-center border border-cafe-border bg-cafe-bg focus-within:border-cafe-accent transition-colors">
               <Lock className="w-4 h-4 text-cafe-muted ml-3 shrink-0" />
               <input
@@ -88,12 +90,12 @@ export default function Login() {
             className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-cafe-accent text-white font-display tracking-wider hover:bg-cafe-burgundy-light transition-colors disabled:opacity-50 rounded-xl shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-black/40"
           >
             <Lock className="w-4 h-4" />
-            {loading ? 'INGRESANDO...' : 'INGRESAR'}
+            {loading ? t('login_loading') : t('login_submit')}
           </button>
         </form>
 
         <p className="text-center text-cafe-muted text-xs mt-6">
-          ¿No tenés cuenta? Contactanos en el café para registrarte.
+          {t('login_no_account')}
         </p>
       </div>
     </div>

@@ -13,6 +13,7 @@ const translations = {
     gallery_tagline_1: 'más que un café de especialidad,',
     gallery_tagline_2: 'una comunidad.',
     gallery_empty: 'Sin imágenes',
+    recommendations_empty: 'Sin recomendaciones',
 
     // Sobre Nosotros
     about_subtitle: 'Nuestra historia',
@@ -39,6 +40,52 @@ const translations = {
     encontranos_city: 'Villa Allende, Córdoba',
     encontranos_country: 'Argentina',
 
+    // Home
+    home_welcome: 'Bienvenido',
+    home_role_admin: 'ADMINISTRADOR',
+    home_role_staff: 'STAFF',
+    home_role_client: 'CLIENTE EXCLUSIVO',
+    home_staff_dashboard: 'Dashboard staff — fichado, tareas, clientes',
+    home_staff_profile: 'Mi perfil — notas, recordatorios, tareas',
+    home_client_benefits: 'Beneficios exclusivos, promociones y contenido especial para clientes registrados.',
+    home_promotions: 'PROMOCIONES EXCLUSIVAS',
+    home_events: 'EVENTOS',
+    home_admin_panel: 'Ir al panel de administración',
+    home_featured_subtitle: 'lo más destacado',
+    home_recommendations_staff: 'RECOMENDACIONES PARA CLIENTES',
+    home_recommendations: 'RECOMENDACIONES',
+    home_view: 'VER →',
+
+    // Menu
+    menu_subtitle: 'Nuestras especialidades',
+    menu_title: 'MENÚ',
+    menu_search: 'Buscar en el menú...',
+    menu_all: 'Todos',
+    menu_no_results: 'No encontramos nada con ese nombre',
+
+    // Login
+    login_back: 'Volver al inicio',
+    login_subtitle: 'Iniciar sesión',
+    login_title: 'INICIAR SESIÓN',
+    login_error: 'Error al iniciar sesión',
+    login_password: 'CONTRASEÑA',
+    login_submit: 'INGRESAR',
+    login_loading: 'INGRESANDO...',
+    login_no_account: '¿No tenés cuenta? Contactanos en el café para registrarte.',
+
+    // Navbar
+    nav_reserva: 'Reserva',
+    nav_menu: 'Menú',
+    nav_location: 'Encontranos',
+    nav_about: 'Nosotros',
+    nav_login: 'Ingresar',
+    nav_logout: 'Salir',
+    nav_admin: 'Administrador',
+    nav_staff: 'Staff',
+    nav_home: 'Inicio',
+    theme_dark: 'Modo oscuro',
+    theme_light: 'Modo claro',
+
     // Client Profile
     profile_title: 'MI PERFIL',
     profile_subtitle: 'Tu espacio personal en Café Círculo',
@@ -56,16 +103,33 @@ const translations = {
     profile_fav_item: 'Item',
     profile_fav_remove: 'Quitar de favoritos',
 
-    // Navbar
-    nav_reserva: 'Reserva',
-    nav_menu: 'Menú',
-    nav_location: 'Encontranos',
-    nav_about: 'Nosotros',
-    nav_login: 'Ingresar',
-    nav_logout: 'Salir',
-    nav_admin: 'Administrador',
-    nav_staff: 'Staff',
-    nav_home: 'Inicio',
+    // Task Notification
+    task_new: 'NUEVA TAREA',
+    task_due: 'Vence:',
+
+    // Image Picker
+    picker_title: 'SELECCIONAR ARCHIVO',
+    picker_upload: 'SUBIR',
+    picker_gallery: 'GALERÍA',
+    picker_click: 'Hacé click para seleccionar imagen o video',
+    picker_formats: 'Imágenes: JPG, PNG, WebP, GIF · Videos: MP4, WebM, MOV · Max 50MB',
+    picker_empty: 'No hay archivos subidos todavía',
+    picker_url_label: 'URL (imagen, video o YouTube/Vimeo)',
+    picker_preview: 'Vista previa',
+    picker_use_url: 'USAR ESTA URL',
+    upload_error: 'Error al subir archivo',
+
+    // Layout (Admin / Staff)
+    layout_my_profile: 'Mi Perfil',
+    layout_dashboard: 'Dashboard',
+    layout_reports: 'Reportes',
+    layout_sales: 'Ventas',
+    layout_landing_page: 'Landing Page',
+    layout_menu_mgmt: 'Gestión de Menú',
+    layout_clients_mgmt: 'Gestión de Clientes',
+    layout_staff_mgmt: 'Gestión de Staff',
+    layout_events_promos: 'Eventos & Promos',
+    layout_logout: 'Cerrar sesión',
   },
   en: {
     // Hero
@@ -81,6 +145,7 @@ const translations = {
     gallery_tagline_1: 'more than a specialty coffee,',
     gallery_tagline_2: 'a community.',
     gallery_empty: 'No images',
+    recommendations_empty: 'No recommendations',
 
     // Sobre Nosotros
     about_subtitle: 'Our story',
@@ -107,6 +172,52 @@ const translations = {
     encontranos_city: 'Villa Allende, Córdoba',
     encontranos_country: 'Argentina',
 
+    // Home
+    home_welcome: 'Welcome',
+    home_role_admin: 'ADMINISTRATOR',
+    home_role_staff: 'STAFF',
+    home_role_client: 'EXCLUSIVE CLIENT',
+    home_staff_dashboard: 'Staff dashboard — clock-in, tasks, clients',
+    home_staff_profile: 'My profile — notes, reminders, tasks',
+    home_client_benefits: 'Exclusive benefits, promotions and special content for registered clients.',
+    home_promotions: 'EXCLUSIVE PROMOTIONS',
+    home_events: 'EVENTS',
+    home_admin_panel: 'Go to admin panel',
+    home_featured_subtitle: 'our highlights',
+    home_recommendations_staff: 'RECOMMENDATIONS FOR CLIENTS',
+    home_recommendations: 'RECOMMENDATIONS',
+    home_view: 'VIEW →',
+
+    // Menu
+    menu_subtitle: 'Our specialties',
+    menu_title: 'MENU',
+    menu_search: 'Search the menu...',
+    menu_all: 'All',
+    menu_no_results: "We couldn't find anything with that name",
+
+    // Login
+    login_back: 'Back to home',
+    login_subtitle: 'Log in',
+    login_title: 'LOG IN',
+    login_error: 'Login error',
+    login_password: 'PASSWORD',
+    login_submit: 'LOG IN',
+    login_loading: 'LOGGING IN...',
+    login_no_account: "Don't have an account? Visit us at the café to register.",
+
+    // Navbar
+    nav_reserva: 'Reserve',
+    nav_menu: 'Menu',
+    nav_location: 'Find Us',
+    nav_about: 'About',
+    nav_login: 'Log In',
+    nav_logout: 'Log Out',
+    nav_admin: 'Admin',
+    nav_staff: 'Staff',
+    nav_home: 'Home',
+    theme_dark: 'Dark mode',
+    theme_light: 'Light mode',
+
     // Client Profile
     profile_title: 'MY PROFILE',
     profile_subtitle: 'Your personal space at Café Círculo',
@@ -124,16 +235,33 @@ const translations = {
     profile_fav_item: 'Item',
     profile_fav_remove: 'Remove from favorites',
 
-    // Navbar
-    nav_reserva: 'Reserve',
-    nav_menu: 'Menu',
-    nav_location: 'Find Us',
-    nav_about: 'About',
-    nav_login: 'Log In',
-    nav_logout: 'Log Out',
-    nav_admin: 'Admin',
-    nav_staff: 'Staff',
-    nav_home: 'Home',
+    // Task Notification
+    task_new: 'NEW TASK',
+    task_due: 'Due:',
+
+    // Image Picker
+    picker_title: 'SELECT FILE',
+    picker_upload: 'UPLOAD',
+    picker_gallery: 'GALLERY',
+    picker_click: 'Click to select an image or video',
+    picker_formats: 'Images: JPG, PNG, WebP, GIF · Videos: MP4, WebM, MOV · Max 50MB',
+    picker_empty: 'No files uploaded yet',
+    picker_url_label: 'URL (image, video or YouTube/Vimeo)',
+    picker_preview: 'Preview',
+    picker_use_url: 'USE THIS URL',
+    upload_error: 'Error uploading file',
+
+    // Layout (Admin / Staff)
+    layout_my_profile: 'My Profile',
+    layout_dashboard: 'Dashboard',
+    layout_reports: 'Reports',
+    layout_sales: 'Sales',
+    layout_landing_page: 'Landing Page',
+    layout_menu_mgmt: 'Menu Management',
+    layout_clients_mgmt: 'Client Management',
+    layout_staff_mgmt: 'Staff Management',
+    layout_events_promos: 'Events & Promos',
+    layout_logout: 'Log out',
   },
 };
 

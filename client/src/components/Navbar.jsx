@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useUserAuth } from '../context/UserAuthContext';
 import { Menu, LayoutDashboard, LogOut, User, Home, Sun, Moon } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
 
 function NavLink({ to, icon: Icon, label, active, blocked }) {
   const isActive = active || false;
@@ -32,6 +33,7 @@ export default function Navbar() {
   const { admin, logout: adminLogout } = useAuth();
   const { user, logout: userLogout } = useUserAuth();
   const { light, toggle: toggleTheme } = useTheme();
+  const { t } = useLanguage();
   const location = useLocation();
 
   const handleLogout = () => {
@@ -56,7 +58,7 @@ export default function Navbar() {
                 <NavLink
                   to="/admin"
                   icon={LayoutDashboard}
-                  label="Administrador"
+                  label={t('nav_admin')}
                   active={location.pathname.startsWith('/admin')}
                 />
                 <span className="text-xs font-display tracking-wider uppercase text-cafe-accent font-bold">{admin.name}</span>
@@ -68,7 +70,7 @@ export default function Navbar() {
                 <NavLink
                   to="/staff"
                   icon={User}
-                  label="Staff"
+                  label={t('nav_staff')}
                   active={location.pathname.startsWith('/staff')}
                 />
                 <span className="text-xs font-display tracking-wider uppercase text-cafe-accent font-bold">{user.name}</span>
@@ -80,7 +82,7 @@ export default function Navbar() {
                 <NavLink
                   to="/"
                   icon={Home}
-                  label="Inicio"
+                  label={t('nav_home')}
                   active={location.pathname === '/'}
                 />
                 <Link to="/client/profile" className="flex items-center gap-2 group cursor-pointer">
@@ -91,7 +93,7 @@ export default function Navbar() {
                       <User className="w-4 h-4 text-[#c4a882]" />
                     )}
                   </div>
-                  <span className="text-xs font-display tracking-wider uppercase text-[#c4a882] font-bold group-hover:text-white transition-colors">{user.name || 'Cliente'}</span>
+                  <span className="text-xs font-display tracking-wider uppercase text-[#c4a882] font-bold group-hover:text-white transition-colors">{user.name || t('profile_fallback_name')}</span>
                 </Link>
               </>
             )}
@@ -101,7 +103,7 @@ export default function Navbar() {
                 <button
                   onClick={toggleTheme}
                   className="p-2 text-cafe-muted hover:text-cafe-text hover:bg-white/5 rounded transition-colors"
-                  title={light ? 'Modo oscuro' : 'Modo claro'}
+                  title={light ? t('theme_dark') : t('theme_light')}
                 >
                   {light ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
                 </button>
@@ -113,7 +115,7 @@ export default function Navbar() {
                     transition-all duration-200"
                 >
                   <LogOut className="w-4 h-4" />
-                  <span className="hidden sm:inline">Salir</span>
+                  <span className="hidden sm:inline">{t('nav_logout')}</span>
                 </button>
               </>
             )}
