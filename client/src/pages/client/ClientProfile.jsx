@@ -121,8 +121,8 @@ export default function ClientProfile() {
         </div>
 
         <div className="relative overflow-hidden bg-gradient-to-br from-[#5c1514] via-[#491716] to-[#2A1C10] border border-[#5c1514]/30 p-8 space-y-6 rounded-xl shadow-lg shadow-black/5">
-          <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-          <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
+          <div className="absolute -top-10 -left-10 w-48 h-48 bg-white/5 rounded-full" />
+          <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-white/5 rounded-full" />
           <div className="flex items-center gap-5 pb-6 border-b border-cafe-border/40">
             <div className="relative group">
               <div className="w-20 h-20 rounded-full overflow-hidden bg-gradient-to-br from-[#5c1514] to-[#491716] flex items-center justify-center border-3 border-[#5c1514] shadow-lg shadow-[#5c1514]/20">
@@ -185,8 +185,8 @@ export default function ClientProfile() {
           </div>
           {autoFavorites.length === 0 ? (
             <div className="relative overflow-hidden bg-gradient-to-br from-[#5c1514] via-[#491716] to-[#2A1C10] border border-[#5c1514]/30 p-8 rounded-xl text-center shadow-lg shadow-black/5">
-              <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-              <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
+              <div className="absolute top-0 right-0 w-36 h-36 bg-white/5 rounded-full -translate-y-1/3 translate-x-1/3" />
+              <div className="absolute bottom-0 left-4 w-20 h-20 bg-white/5 rounded-full translate-y-1/2" />
               <div className="w-16 h-16 rounded-full bg-[#5c1514]/20 flex items-center justify-center mx-auto mb-3 relative">
                 <Coffee className="w-7 h-7 text-white/70" />
               </div>
@@ -281,8 +281,8 @@ export default function ClientProfile() {
 
           {pinnedFavorites.length === 0 && !showAddPin ? (
             <div className="relative overflow-hidden bg-gradient-to-br from-[#5c1514] via-[#491716] to-[#2A1C10] border border-[#5c1514]/30 p-8 rounded-xl text-center shadow-lg shadow-black/5">
-              <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-              <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
+              <div className="absolute top-4 -left-8 w-28 h-28 bg-white/5 rounded-full" />
+              <div className="absolute -bottom-6 right-0 w-40 h-40 bg-white/5 rounded-full translate-y-1/2 translate-x-1/4" />
               <div className="w-16 h-16 rounded-full bg-[#5c1514]/20 flex items-center justify-center mx-auto mb-3 relative">
                 <Heart className="w-7 h-7 text-white/70" />
               </div>
