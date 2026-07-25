@@ -4,7 +4,7 @@ import { useLanguage } from '../../context/LanguageContext';
 const coffees = [
   {
     key: 'espresso',
-    image: 'https://images.unsplash.com/photo-1754847551888-f1d8d043fd7f?fm=jpg&q=60&w=600&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1755284489925-d19df2884899?fm=jpg&q=60&w=600&auto=format&fit=crop',
   },
   {
     key: 'doppio',
@@ -16,11 +16,11 @@ const coffees = [
   },
   {
     key: 'americano',
-    image: 'https://images.unsplash.com/photo-1714415632243-079d9a86071a?fm=jpg&q=60&w=600&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1770494347735-4a6b50086124?fm=jpg&q=60&w=600&auto=format&fit=crop',
   },
   {
     key: 'lungo',
-    image: 'https://images.unsplash.com/photo-1769264963664-36eed2f7eb4d?fm=jpg&q=60&w=600&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1769262122923-f7796ba58638?fm=jpg&q=60&w=600&auto=format&fit=crop',
   },
   {
     key: 'ristretto',
@@ -28,19 +28,19 @@ const coffees = [
   },
   {
     key: 'capuchino',
-    image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?fm=jpg&q=60&w=600&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1777463940280-6de275a1a3e3?fm=jpg&q=60&w=600&auto=format&fit=crop',
   },
   {
     key: 'flatwhite',
-    image: 'https://images.unsplash.com/photo-1769775092114-c569476f89ae?fm=jpg&q=60&w=600&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-d1zRhWY2TyY?fm=jpg&q=60&w=600&auto=format&fit=crop',
   },
   {
     key: 'latte',
-    image: 'https://images.unsplash.com/photo-1770123024494-776bc2d3836b?fm=jpg&q=60&w=600&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-bQLcZYn1CZY?fm=jpg&q=60&w=600&auto=format&fit=crop',
   },
   {
     key: 'mocha',
-    image: 'https://images.unsplash.com/photo-1530629159325-9c378fc150b9?fm=jpg&q=60&w=600&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1533651441215-d01c13c8c4ad?fm=jpg&q=60&w=600&auto=format&fit=crop',
   },
 ];
 
