@@ -1,11 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
 import { useUserAuth } from '../../context/UserAuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import { getClientProfile, updateClientAvatar, updateClientName, getAutoFavorites, getPinnedFavorites, pinFavorite, unpinFavorite, getMenuItems } from '../../lib/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, Camera, Check, X, Mail, Heart, Star, Plus, Coffee, Trash2 } from 'lucide-react';
 
 export default function ClientProfile() {
   const { user, setUser } = useUserAuth();
+  const { light } = useTheme();
   const fileRef = useRef(null);
   const [profile, setProfile] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -197,7 +199,7 @@ export default function ClientProfile() {
                     <h3 className="font-display text-base text-cafe-text truncate">{item.item_name}</h3>
                     <p className="text-xs text-cafe-muted">{item.category} · Pedido {item.order_count} {item.order_count === 1 ? 'vez' : 'veces'}</p>
                   </div>
-                  <span className="font-display text-sm text-[#5c1514] font-semibold shrink-0">
+                  <span className={`font-display text-sm font-semibold shrink-0 ${light ? 'text-white' : 'text-black'}`}>
                     ${parseFloat(item.unit_price).toLocaleString('es-AR')}
                   </span>
                 </div>
@@ -300,7 +302,7 @@ export default function ClientProfile() {
                       <p className="text-xs text-cafe-muted">{item?.category}</p>
                     </div>
                     {item?.price && (
-                      <span className="font-display text-sm text-[#5c1514] font-semibold shrink-0">${parseFloat(item.price).toLocaleString('es-AR')}</span>
+                      <span className={`font-display text-sm font-semibold shrink-0 ${light ? 'text-white' : 'text-black'}`}>${parseFloat(item.price).toLocaleString('es-AR')}</span>
                     )}
                     <button
                       onClick={() => handleUnpin(fav.id)}
