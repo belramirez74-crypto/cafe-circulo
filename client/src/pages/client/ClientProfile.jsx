@@ -196,7 +196,7 @@ export default function ClientProfile() {
                     <span className="font-display text-sm text-white font-bold">#{i + 1}</span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-display text-base text-cafe-text truncate">{item.item_name}</h3>
+                    <h3 className={`font-display text-base truncate ${light ? 'text-white' : 'text-black'}`}>{item.item_name}</h3>
                     <p className="text-xs text-cafe-muted">{item.category} · Pedido {item.order_count} {item.order_count === 1 ? 'vez' : 'veces'}</p>
                   </div>
                   <span className={`font-display text-sm font-semibold shrink-0 ${light ? 'text-white' : 'text-black'}`}>
@@ -298,7 +298,7 @@ export default function ClientProfile() {
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-display text-base text-cafe-text truncate">{item?.name || 'Item'}</h3>
+                      <h3 className={`font-display text-base truncate ${light ? 'text-white' : 'text-black'}`}>{item?.name || 'Item'}</h3>
                       <p className="text-xs text-cafe-muted">{item?.category}</p>
                     </div>
                     {item?.price && (
