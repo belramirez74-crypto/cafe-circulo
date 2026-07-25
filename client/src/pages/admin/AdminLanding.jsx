@@ -73,6 +73,7 @@ const defaultSettings = {
 
   // Categorías del menú
   menu_categories: ['Cafetería', 'Dulces', 'Saladitos', 'Bebidas'],
+  menu_categories_en: ['Coffee', 'Sweets', 'Savory', 'Drinks'],
 };
 
 export default function AdminLanding() {
@@ -819,6 +820,27 @@ export default function AdminLanding() {
                 {(settings.menu_categories || []).length === 0 && (
                   <p className="text-cafe-muted text-xs text-center py-3">Sin categorías. Agregá una.</p>
                 )}
+              </div>
+              <div className="mt-4 pt-4 border-t border-cafe-border/40">
+                <p className="text-xs font-display tracking-wider text-cafe-muted mb-3">NOMBRES EN INGLÉS (EN)</p>
+                <div className="space-y-2">
+                  {(settings.menu_categories || []).map((cat, idx) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <span className="w-6 text-center text-xs text-cafe-muted/50 font-display">{idx + 1}</span>
+                      <input
+                        type="text"
+                        value={settings.menu_categories_en?.[idx] || ''}
+                        onChange={e => {
+                          const updated = [...(settings.menu_categories_en || [])];
+                          updated[idx] = e.target.value;
+                          handleChange('menu_categories_en', updated);
+                        }}
+                        className="flex-1 px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text text-sm focus:outline-none focus:border-cafe-accent rounded-lg"
+                        placeholder={`English name for "${cat}"`}
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 

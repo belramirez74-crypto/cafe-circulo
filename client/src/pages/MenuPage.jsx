@@ -37,9 +37,19 @@ export default function MenuPage() {
   }, []);
 
   const settingsCategories = settings?.menu_categories || [];
+  const settingsCategoriesEn = settings?.menu_categories_en || [];
   const itemCategories = [...new Set(items.map(i => i.category))];
   const allCategories = [...new Set([...settingsCategories, ...itemCategories])];
   const categories = ['Todos', ...allCategories];
+
+  const getCategoryLabel = (cat) => {
+    if (cat === 'Todos') return lang === 'en' ? 'All' : 'Todos';
+    if (lang === 'en') {
+      const idx = settingsCategories.indexOf(cat);
+      if (idx !== -1 && settingsCategoriesEn[idx]) return settingsCategoriesEn[idx];
+    }
+    return cat;
+  };
 
   const filtered = items.filter(item => {
     const matchCategory = activeCategory === 'Todos' || item.category === activeCategory;
@@ -109,7 +119,7 @@ export default function MenuPage() {
                 }`}
               >
                 {cat !== 'Todos' && <Icon className="w-4 h-4" />}
-                {cat}
+                {getCategoryLabel(cat)}
               </button>
             );
           })}
@@ -154,7 +164,7 @@ export default function MenuPage() {
                     <p className="text-cafe-muted text-sm">{lang === 'en' && item.description_en ? item.description_en : item.description}</p>
                   )}
                   <span className="inline-block mt-2 text-xs text-cafe-muted/60 font-display tracking-wider uppercase">
-                    {item.category}
+                    {getCategoryLabel(item.category)}
                   </span>
                 </div>
               </motion.div>
