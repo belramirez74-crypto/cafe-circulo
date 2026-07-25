@@ -89,9 +89,11 @@ export default function LandingNavbar() {
 
             <button
               onClick={toggleLang}
-              className="px-2 py-1 text-xs font-display tracking-wider text-cafe-cream/70 hover:text-white hover:bg-white/5 rounded transition-colors border border-white/10"
+              className="px-2 py-1 text-xs font-display tracking-wider rounded transition-colors border"
             >
-              {lang === 'es' ? 'EN' : 'ES'}
+              <span className={lang === 'es' ? 'text-white font-bold bg-white/20 px-1 rounded' : 'text-cafe-cream/50'}>ES</span>
+              <span className="text-cafe-cream/30 mx-0.5">|</span>
+              <span className={lang === 'en' ? 'text-white font-bold bg-white/20 px-1 rounded' : 'text-cafe-cream/50'}>EN</span>
             </button>
 
             {admin && (
@@ -162,9 +164,11 @@ export default function LandingNavbar() {
             </button>
             <button
               onClick={toggleLang}
-              className="px-2 py-1 text-xs font-display tracking-wider text-cafe-cream/70 hover:text-white border border-white/10 rounded"
+              className="px-2 py-1 text-xs font-display tracking-wider rounded border"
             >
-              {lang === 'es' ? 'EN' : 'ES'}
+              <span className={lang === 'es' ? 'text-white font-bold bg-white/20 px-1 rounded' : 'text-cafe-cream/50'}>ES</span>
+              <span className="text-cafe-cream/30 mx-0.5">|</span>
+              <span className={lang === 'en' ? 'text-white font-bold bg-white/20 px-1 rounded' : 'text-cafe-cream/50'}>EN</span>
             </button>
             {user || admin ? (
               <>
