@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getLandingSettings, updateLandingSettings } from '../../lib/api';
-import { Save, Clock, MapPin, Music, Plus, X, Image, GripVertical, ChevronRight, Video } from 'lucide-react';
+import { Save, Clock, MapPin, Music, Plus, X, Image, GripVertical, ChevronRight, Video, Coffee } from 'lucide-react';
 import ImagePicker from '../../components/ImagePicker';
 
 function isVideoUrl(url) {
@@ -734,51 +734,87 @@ export default function AdminLanding() {
             </div>
             {/* 7. Tipos de Café */}
             <div className="bg-cafe-surface border border-cafe-border p-6 rounded-xl">
-              <h2 className="font-display text-lg text-cafe-accent mb-4">7 · TIPOS DE CAFÉ (IMÁGENES)</h2>
-              <p className="text-cafe-muted text-xs mb-4">Subí tus propias fotos para cada tipo de café. Si dejás vacío, se muestra la ilustración SVG por defecto.</p>
-              <div className="space-y-3">
-                {['espresso', 'doppio', 'cortado', 'americano', 'lungo', 'ristretto', 'capuchino', 'flatwhite', 'latte', 'mocha'].map(key => (
-                  <div key={key} className="flex items-center gap-3 border border-cafe-border/40 p-2 rounded-lg">
-                    <div className="w-12 h-12 shrink-0 rounded-lg overflow-hidden bg-cafe-bg border border-cafe-border flex items-center justify-center">
-                      {settings.coffee_images?.[key] ? (
-                        <img src={settings.coffee_images[key]} alt={key} className="w-full h-full object-cover" />
-                      ) : (
-                        <span className="text-cafe-muted/40 text-[10px] uppercase">{key}</span>
-                      )}
+              <h2 className="font-display text-lg text-cafe-accent mb-2">7 · TIPOS DE CAFÉ</h2>
+              <p className="text-cafe-muted text-xs mb-5">Subí fotos personalizadas para cada café. Si dejás vacío, se muestra la ilustración SVG por defecto.</p>
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { key: 'espresso', label: 'Espresso' },
+                  { key: 'doppio', label: 'Doppio' },
+                  { key: 'cortado', label: 'Cortado' },
+                  { key: 'americano', label: 'Americano' },
+                  { key: 'lungo', label: 'Lungo' },
+                  { key: 'ristretto', label: 'Ristretto' },
+                  { key: 'capuchino', label: 'Capuchino' },
+                  { key: 'flatwhite', label: 'Flat White' },
+                  { key: 'latte', label: 'Latte' },
+                  { key: 'mocha', label: 'Mocha' },
+                ].map(({ key, label }) => {
+                  const hasImage = !!settings.coffee_images?.[key];
+                  return (
+                    <div
+                      key={key}
+                      className={`group relative border rounded-xl overflow-hidden transition-all duration-200 ${
+                        hasImage
+                          ? 'border-cafe-accent/40 bg-cafe-bg'
+                          : 'border-cafe-border/40 bg-cafe-bg/50'
+                      }`}
+                    >
+                      <div className="aspect-[4/3] relative overflow-hidden bg-cafe-card">
+                        {hasImage ? (
+                          <img
+                            src={settings.coffee_images[key]}
+                            alt={label}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex flex-col items-center justify-center gap-1.5">
+                            <Coffee className="w-6 h-6 text-cafe-muted/25" />
+                            <span className="text-cafe-muted/30 text-[10px] font-display tracking-wider">SIN IMAGEN</span>
+                          </div>
+                        )}
+                        {hasImage && (
+                          <button
+                            onClick={() => {
+                              const updated = { ...(settings.coffee_images || {}) };
+                              delete updated[key];
+                              handleChange('coffee_images', updated);
+                            }}
+                            className="absolute top-1.5 right-1.5 p-1 bg-black/50 rounded-lg text-white/70 hover:text-red-400 hover:bg-black/70 transition-all opacity-0 group-hover:opacity-100"
+                            title="Quitar imagen"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        )}
+                      </div>
+                      <div className="px-3 py-2.5">
+                        <p className="font-display text-xs text-cafe-text tracking-wide mb-2">{label}</p>
+                        <div className="flex items-center gap-1.5">
+                          <input
+                            type="url"
+                            value={settings.coffee_images?.[key] || ''}
+                            onChange={e => {
+                              const updated = { ...(settings.coffee_images || {}), [key]: e.target.value };
+                              handleChange('coffee_images', updated);
+                            }}
+                            className="flex-1 px-2.5 py-1.5 bg-cafe-surface border border-cafe-border text-cafe-text text-[11px] focus:outline-none focus:border-cafe-accent rounded-lg"
+                            placeholder="https://..."
+                          />
+                          <button
+                            onClick={() => setPickerTarget(`coffee_${key}`)}
+                            className={`p-1.5 border rounded-lg transition-colors ${
+                              hasImage
+                                ? 'bg-cafe-accent/10 border-cafe-accent/30 text-cafe-accent'
+                                : 'bg-cafe-surface border-cafe-border text-cafe-muted hover:text-cafe-accent hover:border-cafe-accent/40'
+                            }`}
+                            title="Seleccionar imagen"
+                          >
+                            <Image className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex-1 flex items-center gap-2">
-                      <input
-                        type="url"
-                        value={settings.coffee_images?.[key] || ''}
-                        onChange={e => {
-                          const updated = { ...(settings.coffee_images || {}), [key]: e.target.value };
-                          handleChange('coffee_images', updated);
-                        }}
-                        className="flex-1 px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text text-sm focus:outline-none focus:border-cafe-accent"
-                        placeholder={`URL de imagen para ${key}`}
-                      />
-                      <button
-                        onClick={() => setPickerTarget(`coffee_${key}`)}
-                        className="px-2 py-2 bg-cafe-bg border border-cafe-border text-cafe-muted hover:text-cafe-accent transition-colors"
-                        title="Seleccionar imagen"
-                      >
-                        <Image className="w-3.5 h-3.5" />
-                      </button>
-                      {settings.coffee_images?.[key] && (
-                        <button
-                          onClick={() => {
-                            const updated = { ...(settings.coffee_images || {}) };
-                            delete updated[key];
-                            handleChange('coffee_images', updated);
-                          }}
-                          className="p-2 text-cafe-muted hover:text-cafe-burgundy-light transition-colors"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
