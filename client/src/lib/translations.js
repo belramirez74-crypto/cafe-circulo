@@ -135,7 +135,7 @@ const translations = {
   },
   en: {
     // Hero
-    hero_title_line1: 'CAFE',
+    hero_title_line1: 'COFFEE',
     hero_title_line2: 'Círculo',
     hero_hours_weekdays: 'Mon - Fri: 8:00 AM - 8:30 PM',
     hero_hours_weekends: 'Sat - Sun: 9:00 AM - 8:30 PM',
