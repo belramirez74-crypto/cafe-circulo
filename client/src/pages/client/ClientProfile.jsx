@@ -164,7 +164,7 @@ export default function ClientProfile() {
                 </div>
               ) : (
                 <button onClick={() => setEditingName(true)} className="text-left group/name">
-                  <h2 className="font-display text-xl text-cafe-text group-hover/name:text-[#5c1514] transition-colors">{profile?.name || 'Cliente'}</h2>
+                  <h2 className={`font-display text-xl transition-colors ${light ? 'text-white group-hover/name:text-white/80' : 'text-black group-hover/name:text-black/70'}`}>{profile?.name || 'Cliente'}</h2>
                 </button>
               )}
               <div className="flex items-center gap-2 mt-1 text-cafe-muted">
