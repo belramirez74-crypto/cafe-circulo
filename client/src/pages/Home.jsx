@@ -26,7 +26,7 @@ export default function Home() {
     <div className="min-h-screen pt-20">
       <HeroSection settings={settings} />
 
-      <CoffeeTypesSection />
+      <CoffeeTypesSection settings={settings} />
 
       {/* Role-based exclusive content */}
       {user && (

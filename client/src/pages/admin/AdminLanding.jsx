@@ -55,6 +55,9 @@ const defaultSettings = {
   hours_weekends: '',
   culture_line1: '',
   culture_line2: '',
+
+  // Tipos de Café (imágenes custom)
+  coffee_images: {},
 };
 
 export default function AdminLanding() {
@@ -729,6 +732,55 @@ export default function AdminLanding() {
                 </div>
               </div>
             </div>
+            {/* 7. Tipos de Café */}
+            <div className="bg-cafe-surface border border-cafe-border p-6 rounded-xl">
+              <h2 className="font-display text-lg text-cafe-accent mb-4">7 · TIPOS DE CAFÉ (IMÁGENES)</h2>
+              <p className="text-cafe-muted text-xs mb-4">Subí tus propias fotos para cada tipo de café. Si dejás vacío, se muestra la ilustración SVG por defecto.</p>
+              <div className="space-y-3">
+                {['espresso', 'doppio', 'cortado', 'americano', 'lungo', 'ristretto', 'capuchino', 'flatwhite', 'latte', 'mocha'].map(key => (
+                  <div key={key} className="flex items-center gap-3 border border-cafe-border/40 p-2 rounded-lg">
+                    <div className="w-12 h-12 shrink-0 rounded-lg overflow-hidden bg-cafe-bg border border-cafe-border flex items-center justify-center">
+                      {settings.coffee_images?.[key] ? (
+                        <img src={settings.coffee_images[key]} alt={key} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-cafe-muted/40 text-[10px] uppercase">{key}</span>
+                      )}
+                    </div>
+                    <div className="flex-1 flex items-center gap-2">
+                      <input
+                        type="url"
+                        value={settings.coffee_images?.[key] || ''}
+                        onChange={e => {
+                          const updated = { ...(settings.coffee_images || {}), [key]: e.target.value };
+                          handleChange('coffee_images', updated);
+                        }}
+                        className="flex-1 px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text text-sm focus:outline-none focus:border-cafe-accent"
+                        placeholder={`URL de imagen para ${key}`}
+                      />
+                      <button
+                        onClick={() => setPickerTarget(`coffee_${key}`)}
+                        className="px-2 py-2 bg-cafe-bg border border-cafe-border text-cafe-muted hover:text-cafe-accent transition-colors"
+                        title="Seleccionar imagen"
+                      >
+                        <Image className="w-3.5 h-3.5" />
+                      </button>
+                      {settings.coffee_images?.[key] && (
+                        <button
+                          onClick={() => {
+                            const updated = { ...(settings.coffee_images || {}) };
+                            delete updated[key];
+                            handleChange('coffee_images', updated);
+                          }}
+                          className="p-2 text-cafe-muted hover:text-cafe-burgundy-light transition-colors"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Right: Live Preview */}
@@ -961,13 +1013,19 @@ export default function AdminLanding() {
           value={
             pickerTarget === 'hero_bg_image'
               ? settings.hero_bg_image
-              : pickerTarget.startsWith('gallery_')
-                ? (settings.gallery_images || [])[parseInt(pickerTarget.split('_')[1])] || ''
-                : (settings.recommended_items || [])[parseInt(pickerTarget.split('_')[1])]?.image_url || ''
+              : pickerTarget.startsWith('coffee_')
+                ? (settings.coffee_images || {})[pickerTarget.replace('coffee_', '')] || ''
+                : pickerTarget.startsWith('gallery_')
+                  ? (settings.gallery_images || [])[parseInt(pickerTarget.split('_')[1])] || ''
+                  : (settings.recommended_items || [])[parseInt(pickerTarget.split('_')[1])]?.image_url || ''
           }
           onChange={(url) => {
             if (pickerTarget === 'hero_bg_image') {
               handleChange('hero_bg_image', url);
+            } else if (pickerTarget.startsWith('coffee_')) {
+              const key = pickerTarget.replace('coffee_', '');
+              const updated = { ...(settings.coffee_images || {}), [key]: url };
+              handleChange('coffee_images', updated);
             } else if (pickerTarget.startsWith('gallery_')) {
               const idx = parseInt(pickerTarget.split('_')[1]);
               updateGalleryImage(idx, url);
