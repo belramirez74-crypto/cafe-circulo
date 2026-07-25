@@ -1,21 +1,23 @@
 import { MapPin } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function EncontranosSection({ settings }) {
+  const { t } = useLanguage();
   return (
     <section className="min-h-screen pt-24 pb-16 flex items-center justify-center">
       <div className="max-w-6xl mx-auto px-4">
         <div className="text-center mb-12">
-          <p className="font-script text-cafe-cream text-2xl sm:text-3xl mb-2">{settings?.encontranos_subtitle || 'Visitanos'}</p>
-          <h2 className="font-display text-3xl sm:text-4xl text-cafe-text">{settings?.encontranos_heading || 'ENCONTRANOS'}</h2>
+          <p className="font-script text-cafe-cream text-2xl sm:text-3xl mb-2">{settings?.encontranos_subtitle || t('encontranos_subtitle')}</p>
+          <h2 className="font-display text-3xl sm:text-4xl text-cafe-text">{settings?.encontranos_heading || t('encontranos_title')}</h2>
           <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-cafe-accent to-transparent mx-auto mt-4" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
           <div className="flex items-start gap-4">
             <MapPin className="w-6 h-6 text-cafe-accent shrink-0 mt-1" />
             <div>
-              <h3 className="font-display text-xl text-cafe-text mb-2">{settings?.ubicacion_heading || 'UBICACIÓN'}</h3>
-              <p className="text-cafe-muted">{settings?.location_line1 || 'Villa Allende, Córdoba'}</p>
-              <p className="text-cafe-muted">{settings?.location_line2 || 'Argentina'}</p>
+              <h3 className="font-display text-xl text-cafe-text mb-2">{settings?.ubicacion_heading || t('encontranos_location')}</h3>
+               <p className="text-cafe-muted">{settings?.location_line1 || t('encontranos_city')}</p>
+               <p className="text-cafe-muted">{settings?.location_line2 || t('encontranos_country')}</p>
             </div>
           </div>
           <div className="aspect-[16/9] rounded-xl overflow-hidden border border-cafe-border/60 bg-cafe-card">

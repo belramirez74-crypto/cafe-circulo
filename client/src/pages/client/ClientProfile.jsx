@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useUserAuth } from '../../context/UserAuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { getClientProfile, updateClientAvatar, updateClientName, getAutoFavorites, getPinnedFavorites, pinFavorite, unpinFavorite, getMenuItems } from '../../lib/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, Camera, Check, X, Mail, Heart, Star, Plus, Coffee, Trash2 } from 'lucide-react';
@@ -8,6 +9,7 @@ import { User, Camera, Check, X, Mail, Heart, Star, Plus, Coffee, Trash2 } from 
 export default function ClientProfile() {
   const { user, setUser } = useUserAuth();
   const { light } = useTheme();
+  const { t } = useLanguage();
   const fileRef = useRef(null);
   const [profile, setProfile] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -116,8 +118,8 @@ export default function ClientProfile() {
         <div className="relative mb-8 overflow-hidden rounded-2xl bg-gradient-to-br from-[#5c1514] via-[#491716] to-[#2A1C10] p-8">
           <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
           <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
-          <h1 className="relative font-display text-4xl text-white mb-2">MI PERFIL</h1>
-          <p className="relative text-white/60 text-sm">Tu espacio personal en Café Círculo</p>
+          <h1 className="relative font-display text-4xl text-white mb-2">{t('profile_title')}</h1>
+          <p className="relative text-white/60 text-sm">{t('profile_subtitle')}</p>
         </div>
 
         <div className="relative overflow-hidden bg-gradient-to-br from-[#5c1514] via-[#491716] to-[#2A1C10] border border-[#5c1514]/30 p-8 space-y-6 rounded-xl shadow-lg shadow-black/5">
@@ -164,7 +166,7 @@ export default function ClientProfile() {
                 </div>
               ) : (
                 <button onClick={() => setEditingName(true)} className="text-left group/name">
-                  <h2 className={`font-display text-xl transition-colors ${light ? 'text-white group-hover/name:text-white/80' : 'text-black group-hover/name:text-black/70'}`}>{profile?.name || 'Cliente'}</h2>
+                  <h2 className={`font-display text-xl transition-colors ${light ? 'text-white group-hover/name:text-white/80' : 'text-black group-hover/name:text-black/70'}`}>{profile?.name || t('profile_fallback_name')}</h2>
                 </button>
               )}
               <div className="flex items-center gap-2 mt-1 text-cafe-muted">
@@ -181,7 +183,7 @@ export default function ClientProfile() {
             <div className="w-8 h-8 rounded-lg bg-[#5c1514]/20 flex items-center justify-center">
               <Star className="w-4 h-4 text-[#5c1514]" />
             </div>
-            <h2 className="font-display text-2xl text-cafe-text">LO QUE SIEMPRE PEDÍS</h2>
+            <h2 className="font-display text-2xl text-cafe-text">{t('profile_auto_title')}</h2>
           </div>
           {autoFavorites.length === 0 ? (
             <div className="relative overflow-hidden bg-gradient-to-br from-[#5c1514] via-[#491716] to-[#2A1C10] border border-[#5c1514]/30 p-8 rounded-xl text-center shadow-lg shadow-black/5">
@@ -190,7 +192,7 @@ export default function ClientProfile() {
               <div className="w-16 h-16 rounded-full bg-[#5c1514]/20 flex items-center justify-center mx-auto mb-3 relative">
                 <Coffee className="w-7 h-7 text-white/70" />
               </div>
-              <p className="text-[#b5a89a] text-sm relative">Tus pedidos más frecuentes aparecerán acá cuando el staff registre ventas con tu nombre.</p>
+              <p className="text-[#b5a89a] text-sm relative">{t('profile_auto_empty')}</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -201,7 +203,7 @@ export default function ClientProfile() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className={`font-display text-base truncate ${light ? 'text-white' : 'text-black'}`}>{item.item_name}</h3>
-                    <p className="text-xs text-cafe-muted">{item.category} · Pedido {item.order_count} {item.order_count === 1 ? 'vez' : 'veces'}</p>
+                    <p className="text-xs text-cafe-muted">{item.category} · {t('profile_ordered')} {item.order_count} {item.order_count === 1 ? t('profile_once') : t('profile_times')}</p>
                   </div>
                   <span className={`font-display text-sm font-semibold shrink-0 ${light ? 'text-white' : 'text-black'}`}>
                     ${parseFloat(item.unit_price).toLocaleString('es-AR')}
@@ -219,13 +221,13 @@ export default function ClientProfile() {
               <div className="w-8 h-8 rounded-lg bg-[#5c1514]/20 flex items-center justify-center">
                 <Heart className="w-4 h-4 text-[#5c1514]" />
               </div>
-              <h2 className="font-display text-2xl text-cafe-text">MIS FAVORITOS</h2>
+              <h2 className="font-display text-2xl text-cafe-text">{t('profile_fav_title')}</h2>
             </div>
             <button
               onClick={() => setShowAddPin(!showAddPin)}
               className="flex items-center gap-2 px-4 py-2 bg-[#5c1514] text-white font-display text-sm tracking-wider hover:bg-[#731c1a] transition-colors rounded-xl shadow-lg shadow-[#5c1514]/30"
             >
-              <Plus className="w-4 h-4" /> AGREGAR
+              <Plus className="w-4 h-4" /> {t('profile_fav_add')}
             </button>
           </div>
           {favError && (
@@ -243,13 +245,13 @@ export default function ClientProfile() {
                 <input
                   value={searchPin}
                   onChange={e => setSearchPin(e.target.value)}
-                  placeholder="Buscar en el menú..."
+                  placeholder={t('profile_fav_search')}
                   className="w-full px-3 py-2 bg-cafe-bg border border-[#5c1514]/30 text-cafe-text text-sm focus:outline-none focus:border-[#5c1514] rounded-xl mb-3"
                   autoFocus
                 />
                 <div className="max-h-48 overflow-y-auto space-y-2">
                   {filteredMenu.length === 0 ? (
-                    <p className="text-cafe-muted text-sm text-center py-4">Sin resultados</p>
+                    <p className="text-cafe-muted text-sm text-center py-4">{t('profile_fav_no_results')}</p>
                   ) : (
                     filteredMenu.map(item => (
                       <button
@@ -286,7 +288,7 @@ export default function ClientProfile() {
               <div className="w-16 h-16 rounded-full bg-[#5c1514]/20 flex items-center justify-center mx-auto mb-3 relative">
                 <Heart className="w-7 h-7 text-white/70" />
               </div>
-              <p className="text-cafe-muted text-sm relative">Agregá tus favoritos del menú con el botón "AGREGAR".</p>
+              <p className="text-cafe-muted text-sm relative">{t('profile_fav_empty')}</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -304,7 +306,7 @@ export default function ClientProfile() {
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className={`font-display text-base truncate ${light ? 'text-white' : 'text-black'}`}>{item?.name || 'Item'}</h3>
+                      <h3 className={`font-display text-base truncate ${light ? 'text-white' : 'text-black'}`}>{item?.name || t('profile_fav_item')}</h3>
                       <p className="text-xs text-cafe-muted">{item?.category}</p>
                     </div>
                     {item?.price && (
@@ -313,7 +315,7 @@ export default function ClientProfile() {
                     <button
                       onClick={() => handleUnpin(fav.id)}
                       className="p-1.5 text-white/50 hover:text-red-300 hover:bg-red-400/10 rounded-lg transition-colors shrink-0"
-                      title="Quitar de favoritos"
+                      title={t('profile_fav_remove')}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>

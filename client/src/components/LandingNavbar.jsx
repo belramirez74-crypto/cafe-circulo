@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Menu, MapPin, Info, LogIn, User, LogOut, Star, LayoutDashboard, Home, Sun, Moon } from 'lucide-react';
 import LoginModal from './LoginModal';
 import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
 
 function NavLink({ to, icon: Icon, label, active, blocked }) {
   const isActive = active || false;
@@ -53,6 +54,7 @@ export default function LandingNavbar() {
   const { user, logout: userLogout } = useUserAuth();
   const { admin, logout: adminLogout } = useAuth();
   const { light, toggle: toggleTheme } = useTheme();
+  const { lang, toggle: toggleLang, t } = useLanguage();
   const location = useLocation();
   const [showLogin, setShowLogin] = useState(false);
 
@@ -70,10 +72,10 @@ export default function LandingNavbar() {
           </Link>
 
           <div className="hidden md:flex items-center gap-2">
-            <NavLink to="/reserva" icon={Star} label="Reserva" active={location.pathname === '/reserva'} />
-            <NavLink to="/menu" icon={Menu} label="Menú" active={location.pathname === '/menu'} />
-            <NavLink to="/encontranos" icon={MapPin} label="Encontranos" active={location.pathname === '/encontranos'} />
-            <NavLink to="/sobre-nosotros" icon={Info} label="Nosotros" active={location.pathname === '/sobre-nosotros'} />
+            <NavLink to="/reserva" icon={Star} label={t('nav_reserva')} active={location.pathname === '/reserva'} />
+            <NavLink to="/menu" icon={Menu} label={t('nav_menu')} active={location.pathname === '/menu'} />
+            <NavLink to="/encontranos" icon={MapPin} label={t('nav_location')} active={location.pathname === '/encontranos'} />
+            <NavLink to="/sobre-nosotros" icon={Info} label={t('nav_about')} active={location.pathname === '/sobre-nosotros'} />
 
             <div className="w-px h-5 bg-cafe-cream/10 mx-2" />
 
@@ -85,12 +87,19 @@ export default function LandingNavbar() {
               {light ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
             </button>
 
+            <button
+              onClick={toggleLang}
+              className="px-2 py-1 text-xs font-display tracking-wider text-cafe-cream/70 hover:text-white hover:bg-white/5 rounded transition-colors border border-white/10"
+            >
+              {lang === 'es' ? 'EN' : 'ES'}
+            </button>
+
             {admin && (
               <>
                 <NavLink
                   to="/admin"
                   icon={LayoutDashboard}
-                  label="Administrador"
+                  label={t('nav_admin')}
                   active={location.pathname.startsWith('/admin')}
                 />
                 <span className="text-xs font-display tracking-wider uppercase text-cafe-accent font-bold">{admin.name}</span>
@@ -111,7 +120,7 @@ export default function LandingNavbar() {
 
             {user && user.role === 'client' && (
               <>
-                <NavLink to="/" icon={Home} label="Inicio" active={location.pathname === '/'} />
+                <NavLink to="/" icon={Home} label={t('nav_home')} active={location.pathname === '/'} />
                 <Link to="/client/profile" className="flex items-center gap-2 group cursor-pointer">
                   <div className="w-8 h-8 rounded-full overflow-hidden bg-white/15 flex items-center justify-center border-2 border-[#c4a882]">
                     {user.avatar_url ? (
@@ -126,7 +135,7 @@ export default function LandingNavbar() {
             )}
 
             {!user && !admin && (
-              <CtaButton onClick={() => setShowLogin(true)} icon={LogIn} label="Ingresar" />
+              <CtaButton onClick={() => setShowLogin(true)} icon={LogIn} label={t('nav_login')} />
             )}
 
             {(admin || user) && (
@@ -138,7 +147,7 @@ export default function LandingNavbar() {
                   transition-all duration-200"
               >
                 <LogOut className="w-4 h-4" />
-                <span className="hidden sm:inline">Salir</span>
+                <span className="hidden sm:inline">{t('nav_logout')}</span>
               </button>
             )}
           </div>
@@ -150,6 +159,12 @@ export default function LandingNavbar() {
               title={light ? 'Modo oscuro' : 'Modo claro'}
             >
               {light ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+            </button>
+            <button
+              onClick={toggleLang}
+              className="px-2 py-1 text-xs font-display tracking-wider text-cafe-cream/70 hover:text-white border border-white/10 rounded"
+            >
+              {lang === 'es' ? 'EN' : 'ES'}
             </button>
             {user || admin ? (
               <>

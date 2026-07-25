@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
 import { Volume2, VolumeX } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
 function isLocalVideo(url) {
   return /\.(mp4|webm|mov)$/i.test(url);
@@ -67,7 +68,9 @@ function LocalVideo({ src, isActive }) {
 export default function GallerySection({ galleryImages, galleryIdx, setGalleryIdx, settings }) {
   const [taglineIdx, setTaglineIdx] = useState(0);
   const timerRef = useRef(null);
-  const lines = settings?.gallery_taglines || ['más que un café de especialidad,', 'una comunidad.'];
+  const { t } = useLanguage();
+  const defaultLines = [t('gallery_tagline_1'), t('gallery_tagline_2')];
+  const lines = settings?.gallery_taglines || defaultLines;
   const currentLine = lines[taglineIdx % lines.length];
 
   useEffect(() => {
@@ -133,7 +136,7 @@ export default function GallerySection({ galleryImages, galleryIdx, setGalleryId
               )}
             </div>
           ) : (
-            <div className="flex items-center justify-center h-48 text-cafe-muted text-sm">Sin imágenes</div>
+            <div className="flex items-center justify-center h-48 text-cafe-muted text-sm">{t('gallery_empty')}</div>
           )}
         </div>
       </div>

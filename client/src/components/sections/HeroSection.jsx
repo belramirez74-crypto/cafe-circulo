@@ -2,9 +2,11 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Clock, ChevronRight } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function HeroSection({ settings }) {
   const { light } = useTheme();
+  const { t } = useLanguage();
   const h = light ? 'text-white' : 'text-[#0D0804]';
   const hd = light ? 'text-white/80' : 'text-cafe-muted';
   const hr = light ? 'text-white/70' : 'text-cafe-cream/70';
@@ -40,10 +42,10 @@ export default function HeroSection({ settings }) {
           transition={{ duration: 0.6, delay: 0.1 }}
           className={`font-display text-5xl sm:text-7xl ${h} mb-4 tracking-tight leading-none`}
         >
-          <span className="animate-fade-in-up-big inline-block">{settings?.hero_title_line1 || 'CAFÉ'}</span>
+          <span className="animate-fade-in-up-big inline-block">{settings?.hero_title_line1 || t('hero_title_line1')}</span>
           <br />
           <span className="font-script text-[#5c1514] text-6xl sm:text-8xl inline-block drop-shadow-[0_6px_30px_rgba(92,21,20,1)] animate-fade-in-up" style={{ fontWeight: 600 }}>
-            {settings?.hero_title_line2 || 'Círculo'}
+            {settings?.hero_title_line2 || t('hero_title_line2')}
           </span>
         </motion.h1>
         {settings?.hero_description && (
@@ -63,9 +65,9 @@ export default function HeroSection({ settings }) {
           className={`flex flex-wrap items-center gap-x-2 justify-center mb-8 text-sm sm:text-base ${hr}`}
         >
           <Clock className="w-3.5 h-3.5 text-cafe-accent shrink-0" />
-          <span className="tracking-wide">{settings?.hours_weekdays || 'Lun - Vie: 8:00 - 20:30'}</span>
+          <span className="tracking-wide">{settings?.hours_weekdays || t('hero_hours_weekdays')}</span>
           <span className={`${dot} mx-1`}>·</span>
-          <span className="tracking-wide">{settings?.hours_weekends || 'Sáb - Dom: 9:00 - 20:30'}</span>
+          <span className="tracking-wide">{settings?.hours_weekends || t('hero_hours_weekends')}</span>
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -76,7 +78,7 @@ export default function HeroSection({ settings }) {
             to="/menu"
             className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#5c1514] text-white font-display text-sm tracking-wider hover:bg-[#731c1a] transition-colors animate-glow-pulse rounded-full shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-black/40"
           >
-            {settings?.hero_button_text || 'VER MENÚ'} <ChevronRight className="w-4 h-4" />
+            {settings?.hero_button_text || t('hero_button')} <ChevronRight className="w-4 h-4" />
           </Link>
         </motion.div>
       </div>
