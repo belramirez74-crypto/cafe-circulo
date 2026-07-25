@@ -32,7 +32,7 @@ export default function HeroSection({ settings }) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="font-display text-[#5c1514] text-base sm:text-lg mb-3 tracking-widest uppercase font-semibold drop-shadow-[0_0_14px_rgba(255,255,255,0.35)]"
+            className={`font-display text-[#5c1514] text-base sm:text-lg mb-3 tracking-widest uppercase font-semibold ${light ? 'drop-shadow-[0_0_14px_rgba(255,255,255,0.35)]' : 'drop-shadow-[0_0_14px_rgba(0,0,0,0.7)]'}`}
           >
             {settings.hero_subtitle}
           </motion.p>
