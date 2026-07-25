@@ -120,7 +120,9 @@ export default function ClientProfile() {
           <p className="relative text-white/60 text-sm">Tu espacio personal en Café Círculo</p>
         </div>
 
-        <div className="bg-gradient-to-br from-[#5c1514] via-[#491716] to-[#2A1C10] border border-[#5c1514]/30 p-8 space-y-6 rounded-xl shadow-lg shadow-black/5">
+        <div className="relative overflow-hidden bg-gradient-to-br from-[#5c1514] via-[#491716] to-[#2A1C10] border border-[#5c1514]/30 p-8 space-y-6 rounded-xl shadow-lg shadow-black/5">
+          <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
           <div className="flex items-center gap-5 pb-6 border-b border-cafe-border/40">
             <div className="relative group">
               <div className="w-20 h-20 rounded-full overflow-hidden bg-gradient-to-br from-[#5c1514] to-[#491716] flex items-center justify-center border-3 border-[#5c1514] shadow-lg shadow-[#5c1514]/20">
@@ -182,11 +184,13 @@ export default function ClientProfile() {
             <h2 className="font-display text-2xl text-cafe-text">LO QUE SIEMPRE PEDÍS</h2>
           </div>
           {autoFavorites.length === 0 ? (
-            <div className="bg-gradient-to-br from-[#5c1514] via-[#491716] to-[#2A1C10] border border-[#5c1514]/30 p-8 rounded-xl text-center shadow-lg shadow-black/5">
-              <div className="w-16 h-16 rounded-full bg-[#5c1514]/20 flex items-center justify-center mx-auto mb-3">
+            <div className="relative overflow-hidden bg-gradient-to-br from-[#5c1514] via-[#491716] to-[#2A1C10] border border-[#5c1514]/30 p-8 rounded-xl text-center shadow-lg shadow-black/5">
+              <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+              <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
+              <div className="w-16 h-16 rounded-full bg-[#5c1514]/20 flex items-center justify-center mx-auto mb-3 relative">
                 <Coffee className="w-7 h-7 text-white/70" />
               </div>
-              <p className="text-[#b5a89a] text-sm">Tus pedidos más frecuentes aparecerán acá cuando el staff registre ventas con tu nombre.</p>
+              <p className="text-[#b5a89a] text-sm relative">Tus pedidos más frecuentes aparecerán acá cuando el staff registre ventas con tu nombre.</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -276,11 +280,13 @@ export default function ClientProfile() {
           </AnimatePresence>
 
           {pinnedFavorites.length === 0 && !showAddPin ? (
-            <div className="bg-gradient-to-br from-[#5c1514] via-[#491716] to-[#2A1C10] border border-[#5c1514]/30 p-8 rounded-xl text-center shadow-lg shadow-black/5">
-              <div className="w-16 h-16 rounded-full bg-[#5c1514]/20 flex items-center justify-center mx-auto mb-3">
+            <div className="relative overflow-hidden bg-gradient-to-br from-[#5c1514] via-[#491716] to-[#2A1C10] border border-[#5c1514]/30 p-8 rounded-xl text-center shadow-lg shadow-black/5">
+              <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+              <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
+              <div className="w-16 h-16 rounded-full bg-[#5c1514]/20 flex items-center justify-center mx-auto mb-3 relative">
                 <Heart className="w-7 h-7 text-white/70" />
               </div>
-              <p className="text-cafe-muted text-sm">Agregá tus favoritos del menú con el botón "AGREGAR".</p>
+              <p className="text-cafe-muted text-sm relative">Agregá tus favoritos del menú con el botón "AGREGAR".</p>
             </div>
           ) : (
             <div className="space-y-3">
