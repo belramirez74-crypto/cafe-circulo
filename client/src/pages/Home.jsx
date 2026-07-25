@@ -20,7 +20,7 @@ export default function Home() {
   }, [user]);
 
   return (
-    <div className="min-h-screen pt-16">
+    <div className="min-h-screen pt-20">
       <HeroSection settings={settings} />
 
       {/* Role-based exclusive content */}

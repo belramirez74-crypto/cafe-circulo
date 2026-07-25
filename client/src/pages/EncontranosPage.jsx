@@ -4,7 +4,7 @@ import EncontranosSection from '../components/sections/EncontranosSection';
 export default function EncontranosPage() {
   const { settings } = useLandingData();
   return (
-    <div className="min-h-screen pt-16">
+    <div className="min-h-screen pt-20">
       <EncontranosSection settings={settings} />
     </div>
   );
