@@ -28,14 +28,11 @@ export default function HeroSection({ settings }) {
       </div>
       <div className="relative z-10 text-center px-4 max-w-4xl pt-24 pb-12">
         {settings?.hero_subtitle && (
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className={`font-display text-[#5c1514] text-lg sm:text-xl mb-3 tracking-widest uppercase font-semibold ${light ? 'drop-shadow-[0_0_18px_rgba(255,255,255,0.6)]' : 'drop-shadow-[0_0_18px_rgba(0,0,0,1)]'}`}
+          <p
+            className={`animate-fade-in-down font-display text-[#5c1514] text-lg sm:text-xl mb-3 tracking-widest uppercase font-semibold ${light ? 'drop-shadow-[0_0_18px_rgba(255,255,255,0.6)]' : 'drop-shadow-[0_0_18px_rgba(0,0,0,1)]'}`}
           >
             {settings.hero_subtitle}
-          </motion.p>
+          </p>
         )}
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
