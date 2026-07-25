@@ -4,6 +4,7 @@ import { useUserAuth } from '../context/UserAuthContext';
 import { Crown, Shield, User, Sparkles, Image, Coffee } from 'lucide-react';
 import useLandingData from '../components/sections/useLandingData';
 import HeroSection from '../components/sections/HeroSection';
+import CoffeeTypesSection from '../components/sections/CoffeeTypesSection';
 import { getClientPromotions, getClientEventBanners } from '../lib/api';
 import { useEffect, useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
@@ -24,6 +25,8 @@ export default function Home() {
   return (
     <div className="min-h-screen pt-20">
       <HeroSection settings={settings} />
+
+      <CoffeeTypesSection />
 
       {/* Role-based exclusive content */}
       {user && (
