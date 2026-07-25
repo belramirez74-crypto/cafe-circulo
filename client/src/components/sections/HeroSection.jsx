@@ -30,11 +30,11 @@ export default function HeroSection({ settings }) {
         <div className="absolute inset-0 bg-gradient-to-t from-cafe-burgundy/10 to-transparent" />
       </div>
       <div className="relative z-10 text-center px-4 max-w-4xl pt-24 pb-12">
-        {settings?.hero_subtitle && (
+        {st('hero_subtitle', 'hero_subtitle') && (
           <p
             className={`animate-fade-in-down font-display text-[#5c1514] text-lg sm:text-xl mb-3 tracking-widest uppercase font-semibold ${light ? 'drop-shadow-[0_0_18px_rgba(255,255,255,0.6)]' : 'drop-shadow-[0_0_18px_rgba(0,0,0,1)]'}`}
           >
-            {settings.hero_subtitle}
+            {st('hero_subtitle', 'hero_subtitle')}
           </p>
         )}
         <motion.h1
@@ -49,14 +49,14 @@ export default function HeroSection({ settings }) {
             {st('hero_title_line2', 'hero_title_line2')}
           </span>
         </motion.h1>
-        {settings?.hero_description && (
+        {st('hero_description', 'hero_description') && (
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             className={`${hd} text-sm sm:text-base mb-8 max-w-xl mx-auto`}
           >
-            {settings.hero_description}
+            {st('hero_description', 'hero_description')}
           </motion.p>
         )}
         <motion.div

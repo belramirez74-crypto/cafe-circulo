@@ -6,6 +6,8 @@ const translations = {
     hero_hours_weekdays: 'Lun - Vie: 8:00 - 20:30',
     hero_hours_weekends: 'Sáb - Dom: 9:00 - 20:30',
     hero_button: 'VER MENÚ',
+    hero_subtitle: 'Desde 2025 en Villa Allende',
+    hero_description: 'Circulo, ese ciclo cotidiano, donde el tiempo se detiene por un momento.',
 
     // Gallery
     gallery_activate_sound: 'Activar sonido',
@@ -138,6 +140,8 @@ const translations = {
     hero_hours_weekdays: 'Mon - Fri: 8:00 AM - 8:30 PM',
     hero_hours_weekends: 'Sat - Sun: 9:00 AM - 8:30 PM',
     hero_button: 'VIEW MENU',
+    hero_subtitle: 'Since 2025 in Villa Allende',
+    hero_description: 'A circle, that daily cycle, where time stops for a moment.',
 
     // Gallery
     gallery_activate_sound: 'Enable sound',
