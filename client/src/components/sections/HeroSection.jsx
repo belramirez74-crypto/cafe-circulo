@@ -45,7 +45,7 @@ export default function HeroSection({ settings }) {
         >
           {settings?.hero_title_line1 || 'CAFÉ'}
           <br />
-          <span className="font-script text-[#5c1514] text-6xl sm:text-8xl inline-block drop-shadow-[0_2px_8px_rgba(92,21,20,0.6)]" style={{ fontWeight: 600 }}>
+          <span className="font-script text-[#5c1514] text-6xl sm:text-8xl inline-block drop-shadow-[0_4px_20px_rgba(92,21,20,1)]" style={{ fontWeight: 600 }}>
             {settings?.hero_title_line2 || 'Círculo'}
           </span>
         </motion.h1>
