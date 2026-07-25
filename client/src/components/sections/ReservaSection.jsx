@@ -2,14 +2,15 @@ import { Coffee, Image } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 
 export default function ReservaSection({ settings }) {
-  const { t } = useLanguage();
+  const { lang, t } = useLanguage();
+  const st = (key, sKey) => lang === 'en' ? t(key) : (settings?.[sKey] || t(key));
   return (
     <section className="min-h-screen pt-24 pb-16 flex items-center justify-center">
       <div className="max-w-6xl mx-auto px-4 text-center">
-        <h2 className="font-display text-3xl sm:text-4xl text-cafe-text mb-4">{settings?.reserva_heading || t('reserva_title')}</h2>
+        <h2 className="font-display text-3xl sm:text-4xl text-cafe-text mb-4">{st('reserva_title', 'reserva_heading')}</h2>
         <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-cafe-accent to-transparent mx-auto mb-8" />
         <p className="text-cafe-muted max-w-xl mx-auto mb-8">
-          {settings?.reserva_description || t('reserva_desc')}
+          {st('reserva_desc', 'reserva_description')}
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <a
