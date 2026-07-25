@@ -147,7 +147,7 @@ export default function Home() {
                     <h3 className="font-display text-base text-cafe-text truncate">{item.name}</h3>
                     {item.description && <p className="text-cafe-muted text-sm mt-1 line-clamp-3 leading-relaxed">{item.description}</p>}
                     <div className="flex items-center justify-between mt-3 pt-3 border-t border-cafe-border/40">
-                      <span className="font-display text-xl text-cafe-accent">
+                      <span className="font-display text-xl font-bold text-white bg-cafe-accent px-3 py-1 rounded-lg">
                         ${item.price ? (typeof item.price === 'number' ? parseFloat(item.price).toLocaleString('es-AR') : item.price) : ''}
                       </span>
                       <span className="text-xs text-cafe-muted/60 group-hover:text-cafe-accent transition-colors">{t('home_view')}</span>
