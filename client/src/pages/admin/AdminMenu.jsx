@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { getAllMenuItems, createMenuItem, updateMenuItem, deleteMenuItem } from '../../lib/api';
 import { Plus, Pencil, Trash2, X, ToggleLeft, ToggleRight, Star, Upload, FileSpreadsheet, Check } from 'lucide-react';
 
-const emptyForm = { name: '', description: '', price: '', category: 'Cafetería', image_url: '', stock: true, featured: false };
+const emptyForm = { name: '', description: '', description_en: '', price: '', category: 'Cafetería', image_url: '', stock: true, featured: false };
 
 const categories = ['Cafetería', 'Dulces', 'Saladitos', 'Bebidas'];
 
@@ -369,6 +369,15 @@ export default function AdminMenu() {
                       value={form.description}
                       onChange={e => setForm({ ...form, description: e.target.value })}
                       className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-[#5c1514] resize-none h-20"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">DESCRIPCIÓN (EN)</label>
+                    <textarea
+                      value={form.description_en}
+                      onChange={e => setForm({ ...form, description_en: e.target.value })}
+                      className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-[#5c1514] resize-none h-20"
+                      placeholder="English description..."
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-4">

@@ -22,7 +22,7 @@ export default function MenuPage() {
   const [items, setItems] = useState([]);
   const [activeCategory, setActiveCategory] = useState('Todos');
   const [search, setSearch] = useState('');
-  const { t } = useLanguage();
+  const { lang, t } = useLanguage();
 
   useEffect(() => {
     getMenuItems()
@@ -34,7 +34,7 @@ export default function MenuPage() {
 
   const filtered = items.filter(item => {
     const matchCategory = activeCategory === 'Todos' || item.category === activeCategory;
-    const matchSearch = !search || item.name.toLowerCase().includes(search.toLowerCase()) || item.description?.toLowerCase().includes(search.toLowerCase());
+    const matchSearch = !search || item.name.toLowerCase().includes(search.toLowerCase()) || item.description?.toLowerCase().includes(search.toLowerCase()) || item.description_en?.toLowerCase().includes(search.toLowerCase());
     return matchCategory && matchSearch;
   });
 
@@ -144,7 +144,7 @@ export default function MenuPage() {
                     </span>
                   </div>
                   {item.description && (
-                    <p className="text-cafe-muted text-sm">{item.description}</p>
+                    <p className="text-cafe-muted text-sm">{lang === 'en' && item.description_en ? item.description_en : item.description}</p>
                   )}
                   <span className="inline-block mt-2 text-xs text-cafe-muted/60 font-display tracking-wider uppercase">
                     {item.category}
