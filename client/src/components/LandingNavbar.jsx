@@ -67,9 +67,6 @@ export default function LandingNavbar() {
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-3 group">
             <img src="/logo.jpg" alt="Café Círculo" className="h-14 w-auto" />
-            <span className="hidden sm:block font-display text-lg tracking-widest text-white/90 group-hover:text-white transition-colors">
-              CAFÉ CÍRCULO
-            </span>
           </Link>
 
           <div className="hidden md:flex items-center gap-2">
