@@ -66,7 +66,7 @@ export default function LandingNavbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           <Link to="/" className="flex items-center gap-3 group">
-            <img src="/logo.jpg" alt="Café Círculo" className="h-20 w-auto" style={{ filter: light ? 'contrast(1.15) brightness(0.85)' : 'contrast(1.3) brightness(1.1)' }} />
+            <img src="/logo.jpg" alt="Café Círculo" className="h-20 w-auto" />
           </Link>
 
           <div className="hidden md:flex items-center gap-2">
