@@ -5,19 +5,23 @@ import { Search, Coffee, Cookie, Sandwich, CupSoda } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import useLandingData from '../components/sections/useLandingData';
 
-const categoryIcons = {
-  Cafetería: Coffee,
-  Dulces: Cookie,
-  Saladitos: Sandwich,
-  Bebidas: CupSoda,
-};
+function getCategoryIcon(cat) {
+  const lower = cat.toLowerCase();
+  if (/caf|espresso|latte|capu|cortado|doppio|americano|lungo|ristretto|flat|coffee|mocha/.test(lower)) return Coffee;
+  if (/dulce|cookie|pastel|torta|brownie|scon|alfajor|sweet/.test(lower)) return Cookie;
+  if (/sal|sand|empanad|tostad|sandwich|snack|savory/.test(lower)) return Sandwich;
+  if (/beb|agua|jugo|limonad|soda|tea|te |mate|smoothie|drink/.test(lower)) return CupSoda;
+  return Coffee;
+}
 
-const categoryColors = {
-  Cafetería: 'border-l-cafe-accent',
-  Dulces: 'border-l-cafe-cream',
-  Saladitos: 'border-l-cafe-burgundy-light',
-  Bebidas: 'border-l-cafe-burgundy',
-};
+function getCategoryColor(cat) {
+  const lower = cat.toLowerCase();
+  if (/caf|espresso|latte|capu|cortado|doppio|americano|lungo|ristretto|flat|coffee|mocha/.test(lower)) return 'border-l-cafe-accent';
+  if (/dulce|cookie|pastel|torta|brownie|scon|alfajor|sweet/.test(lower)) return 'border-l-cafe-cream';
+  if (/sal|sand|empanad|tostad|sandwich|snack|savory/.test(lower)) return 'border-l-cafe-burgundy-light';
+  if (/beb|agua|jugo|limonad|soda|tea|te |mate|smoothie|drink/.test(lower)) return 'border-l-cafe-burgundy';
+  return 'border-l-cafe-accent';
+}
 
 export default function MenuPage() {
   const [items, setItems] = useState([]);
@@ -93,7 +97,7 @@ export default function MenuPage() {
           className="flex flex-wrap justify-center gap-2 mb-12"
         >
           {categories.map(cat => {
-            const Icon = categoryIcons[cat] || Coffee;
+            const Icon = getCategoryIcon(cat);
             return (
               <button
                 key={cat}
@@ -124,9 +128,7 @@ export default function MenuPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
-                className={`group bg-cafe-surface border border-cafe-border border-l-4 overflow-hidden hover:border-cafe-accent transition-colors rounded-2xl ${
-                  categoryColors[item.category] || 'border-l-cafe-accent'
-                }`}
+                className={`group bg-cafe-surface border border-cafe-border border-l-4 overflow-hidden hover:border-cafe-accent transition-colors rounded-2xl ${getCategoryColor(item.category)}`}
               >
                 <div className="aspect-[4/3] overflow-hidden bg-cafe-card">
                   {item.image_url ? (
