@@ -1,24 +1,11 @@
 import { Router } from 'express';
 import multer from 'multer';
 import path from 'path';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
 import { supabase } from '../lib/supabase.js';
 import { authenticateUser } from '../middleware/auth.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const uploadsDir = path.join(__dirname, '..', 'uploads');
-if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
-
-const avatarStorage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadsDir),
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    cb(null, `client-avatar-${Date.now()}${ext}`);
-  },
-});
 const avatarUpload = multer({
-  storage: avatarStorage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: 3 * 1024 * 1024 },
 });
 
@@ -68,7 +55,20 @@ router.put('/profile/avatar', authenticateUser, (req, res, next) => {
 }, async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No se envió imagen' });
-    const avatarUrl = `/uploads/${req.file.filename}`;
+    const ext = path.extname(req.file.originalname) || '.jpg';
+    const fileName = `client-avatar-${req.user.id}-${Date.now()}${ext}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('avatars')
+      .upload(fileName, req.file.buffer, {
+        contentType: req.file.mimetype,
+        upsert: true,
+      });
+    if (uploadError) throw uploadError;
+
+    const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(fileName);
+    const avatarUrl = urlData.publicUrl;
+
     const { error } = await supabase
       .from('app_users')
       .update({ avatar_url: avatarUrl })
