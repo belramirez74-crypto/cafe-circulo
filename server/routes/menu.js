@@ -110,17 +110,47 @@ router.post('/import', authenticateAdmin, upload.single('file'), async (req, res
     const ws = wb.Sheets[wb.SheetNames[0]];
     const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
 
-    const items = rows.map(r => ({
-      name: r.Nombre || r.nombre || r.name || '',
-      description: r.Descripción || r.Descripcion || r.description || '',
-      description_en: r.Descripción_EN || r.descripcion_en || r.description_en || '',
-      price: parseFloat(r.Precio || r.precio || r.price || 0),
-      category: r.Sección || r.seccion || r.Seccion || r.Categoría || r.Categoria || r.category || 'Cafetería',
-      sku: r.sku || r.SKU || r.Sku || '',
-      image_url: r.Imagen || r.imagen || r.image_url || '',
-      stock: true,
-      featured: false,
-    })).filter(i => i.name);
+    if (!rows.length) return res.status(400).json({ error: 'El archivo está vacío' });
+
+    const cols = Object.keys(rows[0]);
+
+    const findCol = (keywords) => {
+      for (const col of cols) {
+        const lower = col.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        for (const kw of keywords) {
+          if (lower.includes(kw)) return col;
+        }
+      }
+      return null;
+    };
+
+    const nameCol = findCol(['nombre', 'name', 'producto', 'item']);
+    const descCol = findCol(['descripcion', 'descripción', 'description', 'desc']);
+    const descEnCol = findCol(['descripcion_en', 'descripción_en', 'description_en', 'desc_en', 'inglés', 'ingles', 'english']);
+    const priceCol = findCol(['precio', 'price', 'costo', 'cost', 'importe']);
+    const catCol = findCol(['seccion', 'sección', 'categoria', 'categoría', 'category', 'section', 'sección']);
+    const skuCol = findCol(['sku', 'código', 'codigo', 'code']);
+    const imgCol = findCol(['imagen', 'image', 'foto', 'photo', 'img', 'url']);
+
+    if (!nameCol) {
+      return res.status(400).json({ error: `No se encontró columna de nombre. Columnas encontradas: ${cols.join(', ')}` });
+    }
+
+    const items = rows.map(r => {
+      const name = r[nameCol] || '';
+      if (!name) return null;
+      return {
+        name: String(name).trim(),
+        description: descCol ? String(r[descCol] || '').trim() : '',
+        description_en: descEnCol ? String(r[descEnCol] || '').trim() : '',
+        price: parseFloat(String(r[priceCol] || '0').replace(',', '.')) || 0,
+        category: catCol ? String(r[catCol] || 'Cafetería').trim() : 'Cafetería',
+        sku: skuCol ? String(r[skuCol] || '').trim() : '',
+        image_url: imgCol ? String(r[imgCol] || '').trim() : '',
+        stock: true,
+        featured: false,
+      };
+    }).filter(Boolean);
 
     if (!items.length) return res.status(400).json({ error: 'No se encontraron items válidos' });
 
