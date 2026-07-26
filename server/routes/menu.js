@@ -113,8 +113,10 @@ router.post('/import', authenticateAdmin, upload.single('file'), async (req, res
     const items = rows.map(r => ({
       name: r.Nombre || r.nombre || r.name || '',
       description: r.Descripción || r.Descripcion || r.description || '',
+      description_en: r.Descripción_EN || r.descripcion_en || r.description_en || '',
       price: parseFloat(r.Precio || r.precio || r.price || 0),
-      category: r.Categoría || r.Categoria || r.category || 'Cafetería',
+      category: r.Sección || r.seccion || r.Seccion || r.Categoría || r.Categoria || r.category || 'Cafetería',
+      sku: r.sku || r.SKU || r.Sku || '',
       image_url: r.Imagen || r.imagen || r.image_url || '',
       stock: true,
       featured: false,

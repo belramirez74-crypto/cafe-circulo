@@ -483,7 +483,7 @@ export default function AdminMenu() {
                 <div className="flex items-center justify-between p-6 border-b border-cafe-border">
                   <div>
                     <h2 className="font-display text-xl text-cafe-text">IMPORTAR DESDE EXCEL</h2>
-                    <p className="text-xs text-cafe-muted mt-1">Columnas: Nombre, Descripción, Precio, Categoría, Imagen</p>
+                    <p className="text-xs text-cafe-muted mt-1">Columnas: Sección, Nombre, Descripción, Precio, SKU</p>
                   </div>
                   <button onClick={() => setShowImport(false)} className="text-cafe-muted hover:text-cafe-text">
                     <X className="w-5 h-5" />
@@ -522,7 +522,7 @@ export default function AdminMenu() {
 
                   <div className="bg-cafe-bg/50 border border-cafe-border/50 rounded-xl p-4">
                     <p className="text-xs text-cafe-muted leading-relaxed">
-                      <strong className="text-cafe-text">Formato del archivo:</strong> Creá un Excel con las columnas: Nombre, Descripción, Precio, Categoría, Imagen (URL). Las categorías válidas son: Cafetería, Dulces, Saladitos, Bebidas.
+                      <strong className="text-cafe-text">Formato del archivo:</strong> Creá un Excel con las columnas: Sección, Nombre, Descripción, Precio, SKU. La sección define la categoría del item.
                     </p>
                   </div>
 
