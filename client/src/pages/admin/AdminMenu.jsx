@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getAllMenuItems, createMenuItem, updateMenuItem, deleteMenuItem, getLandingSettings } from '../../lib/api';
-import { Plus, Pencil, Trash2, X, ToggleLeft, ToggleRight, Star, Upload, FileSpreadsheet, Check, Image } from 'lucide-react';
+import { Plus, Pencil, Trash2, X, ToggleLeft, ToggleRight, Star, Upload, FileSpreadsheet, Check, Image, Coffee, Cookie, Sandwich, CupSoda } from 'lucide-react';
 import ImagePicker from '../../components/ImagePicker';
 
 const emptyForm = { name: '', description: '', description_en: '', price: '', category: 'Cafetería', image_url: '', stock: true, featured: false };
@@ -13,6 +13,7 @@ export default function AdminMenu() {
   const [form, setForm] = useState(emptyForm);
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState(['Cafetería', 'Dulces', 'Saladitos', 'Bebidas']);
+  const [activeFilter, setActiveFilter] = useState('Todos');
 
   // Quick add
   const [quickAdd, setQuickAdd] = useState(false);
@@ -157,6 +158,11 @@ export default function AdminMenu() {
     grouped[item.category].push(item);
   });
 
+  const allCats = [...new Set([...categories, ...Object.keys(grouped)])];
+  const filteredGrouped = activeFilter === 'Todos'
+    ? grouped
+    : { [activeFilter]: grouped[activeFilter] || [] };
+
   return (
     <div>
       <div className="max-w-7xl mx-auto px-4">
@@ -264,11 +270,42 @@ export default function AdminMenu() {
           )}
         </AnimatePresence>
 
+        {/* Category Filter Tabs */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          <button
+            onClick={() => setActiveFilter('Todos')}
+            className={`px-4 py-2 text-xs font-display tracking-wider rounded-xl transition-colors ${
+              activeFilter === 'Todos'
+                ? 'bg-[#5c1514] text-white'
+                : 'bg-cafe-surface border border-cafe-border text-cafe-muted hover:text-cafe-text'
+            }`}
+          >
+            TODOS ({items.length})
+          </button>
+          {allCats.map(cat => (
+            <button
+              key={cat}
+              onClick={() => setActiveFilter(cat)}
+              className={`px-4 py-2 text-xs font-display tracking-wider rounded-xl transition-colors ${
+                activeFilter === cat
+                  ? 'bg-[#5c1514] text-white'
+                  : 'bg-cafe-surface border border-cafe-border text-cafe-muted hover:text-cafe-text'
+              }`}
+            >
+              {cat} ({(grouped[cat] || []).length})
+            </button>
+          ))}
+        </div>
+
         {/* Items grouped by category */}
         <div className="space-y-6">
-          {Object.entries(grouped).map(([cat, catItems]) => (
+          {Object.entries(filteredGrouped).map(([cat, catItems]) => {
             <div key={cat}>
-              <h3 className="font-display text-sm tracking-widest text-[#5c1514] mb-3 uppercase">{cat}</h3>
+              <h3 className="font-display text-sm tracking-widest text-[#5c1514] mb-3 uppercase flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#5c1514]" />
+                {cat}
+                <span className="text-cafe-muted font-normal text-xs">({catItems.length} items)</span>
+              </h3>
               <div className="bg-cafe-surface border border-cafe-border overflow-x-auto rounded-xl">
                 <table className="w-full text-left">
                   <thead>
