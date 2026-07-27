@@ -359,28 +359,30 @@ export default function AdminMenu() {
         </div>
 
         {/* Category Filter Tabs */}
-        <div className="flex flex-wrap gap-2 mb-6">
+        <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
           <button
             onClick={() => setActiveFilter('Todos')}
-            className={`px-4 py-2 text-xs font-display tracking-wider rounded-xl transition-colors ${
+            className={`shrink-0 px-5 py-3 text-sm font-display tracking-wider rounded-xl transition-all duration-200 ${
               activeFilter === 'Todos'
-                ? 'bg-[#5c1514] text-white'
-                : 'bg-cafe-surface border border-cafe-border text-cafe-muted hover:text-cafe-text'
+                ? 'bg-[#5c1514] text-white shadow-lg shadow-[#5c1514]/30'
+                : 'bg-cafe-surface border border-cafe-border text-cafe-muted hover:text-cafe-text hover:border-[#5c1514]/40'
             }`}
           >
-            TODOS ({items.length})
+            TODOS
+            <span className="ml-1.5 text-xs opacity-70">({items.length})</span>
           </button>
           {allCats.map(cat => (
             <button
               key={cat}
               onClick={() => setActiveFilter(cat)}
-              className={`px-4 py-2 text-xs font-display tracking-wider rounded-xl transition-colors ${
+              className={`shrink-0 px-5 py-3 text-sm font-display tracking-wider rounded-xl transition-all duration-200 ${
                 activeFilter === cat
-                  ? 'bg-[#5c1514] text-white'
-                  : 'bg-cafe-surface border border-cafe-border text-cafe-muted hover:text-cafe-text'
+                  ? 'bg-[#5c1514] text-white shadow-lg shadow-[#5c1514]/30'
+                  : 'bg-cafe-surface border border-cafe-border text-cafe-muted hover:text-cafe-text hover:border-[#5c1514]/40'
               }`}
             >
-              {cat} ({(grouped[cat] || []).length})
+              {cat}
+              <span className="ml-1.5 text-xs opacity-70">({(grouped[cat] || []).length})</span>
             </button>
           ))}
         </div>
