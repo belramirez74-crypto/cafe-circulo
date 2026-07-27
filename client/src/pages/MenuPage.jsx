@@ -130,7 +130,7 @@ export default function MenuPage() {
           <div className="text-center py-20">
             <p className="text-cafe-muted text-lg">{t('menu_no_results')}</p>
           </div>
-        ) : (
+        ) : activeCategory !== 'Todos' ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filtered.map((item, i) => (
               <motion.div
@@ -163,12 +163,70 @@ export default function MenuPage() {
                   {item.description && (
                     <p className="text-cafe-muted text-sm">{lang === 'en' && item.description_en ? item.description_en : item.description}</p>
                   )}
-                  <span className="inline-block mt-2 text-xs text-cafe-muted/60 font-display tracking-wider uppercase">
-                    {getCategoryLabel(item.category)}
-                  </span>
                 </div>
               </motion.div>
             ))}
+          </div>
+        ) : (
+          <div className="space-y-12">
+            {allCategories.filter(cat => items.some(i => i.category === cat)).map((cat, catIdx) => {
+              const catItems = filtered.filter(i => i.category === cat);
+              if (catItems.length === 0) return null;
+              const Icon = getCategoryIcon(cat);
+              return (
+                <motion.div
+                  key={cat}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: catIdx * 0.1 }}
+                >
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className={`p-2 rounded-xl ${getCategoryColor(cat).replace('border-l-', 'bg-')}/10`}>
+                      <Icon className="w-5 h-5 text-cafe-accent" />
+                    </div>
+                    <h2 className="font-display text-2xl text-cafe-text tracking-wider">{getCategoryLabel(cat)}</h2>
+                    <div className="flex-1 h-px bg-cafe-border/40" />
+                    <span className="text-xs text-cafe-muted font-display">{catItems.length}</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {catItems.map((item, i) => (
+                      <motion.div
+                        key={item.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.05 }}
+                        className={`group bg-cafe-surface border border-cafe-border border-l-4 overflow-hidden hover:border-cafe-accent transition-colors rounded-2xl ${getCategoryColor(item.category)}`}
+                      >
+                        <div className="aspect-[4/3] overflow-hidden bg-cafe-card">
+                          {item.image_url ? (
+                            <img
+                              src={item.image_url}
+                              alt={item.name}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <Coffee className="w-16 h-16 text-cafe-muted/20" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="p-4">
+                          <div className="flex items-start justify-between gap-4 mb-1">
+                            <h3 className="font-display text-lg text-cafe-text">{item.name}</h3>
+                            <span className="font-display text-xl text-cafe-cream shrink-0">
+                              ${parseFloat(item.price).toLocaleString('es-AR')}
+                            </span>
+                          </div>
+                          {item.description && (
+                            <p className="text-cafe-muted text-sm">{lang === 'en' && item.description_en ? item.description_en : item.description}</p>
+                          )}
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         )}
       </div>
