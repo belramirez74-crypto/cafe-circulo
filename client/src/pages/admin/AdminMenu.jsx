@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getAllMenuItems, createMenuItem, updateMenuItem, deleteMenuItem, getLandingSettings } from '../../lib/api';
-import { Plus, Pencil, Trash2, X, ToggleLeft, ToggleRight, Star, Upload, FileSpreadsheet, Check, Image, Coffee, Cookie, Sandwich, CupSoda } from 'lucide-react';
+import { getAllMenuItems, createMenuItem, updateMenuItem, deleteMenuItem, getLandingSettings, updateLandingSettings } from '../../lib/api';
+import { Plus, Pencil, Trash2, X, ToggleLeft, ToggleRight, Star, Upload, FileSpreadsheet, Check, Image, Coffee, Cookie, Sandwich, CupSoda, Save } from 'lucide-react';
 import ImagePicker from '../../components/ImagePicker';
 
 const emptyForm = { name: '', description: '', description_en: '', price: '', category: 'Cafetería', image_url: '', stock: true, featured: false };
@@ -14,6 +14,9 @@ export default function AdminMenu() {
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState(['Cafetería', 'Dulces', 'Saladitos', 'Bebidas']);
   const [activeFilter, setActiveFilter] = useState('Todos');
+  const [editingCats, setEditingCats] = useState(false);
+  const [catDraft, setCatDraft] = useState([]);
+  const [catSaving, setCatSaving] = useState(false);
 
   // Quick add
   const [quickAdd, setQuickAdd] = useState(false);
@@ -36,8 +39,9 @@ export default function AdminMenu() {
     loadItems();
     getLandingSettings()
       .then(res => {
-        if (res.data?.menu_categories?.length > 0) {
-          setCategories(res.data.menu_categories);
+        const cats = res.data?.menu_mgmt_categories;
+        if (cats?.length > 0) {
+          setCategories(cats);
         }
       })
       .catch(() => {});
@@ -269,6 +273,90 @@ export default function AdminMenu() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Category Management */}
+        <div className="bg-cafe-surface border border-cafe-border p-4 rounded-xl mb-6">
+          <div className="flex items-center justify-between">
+            <h3 className="font-display text-sm tracking-widest text-[#5c1514]">CATEGORÍAS DEL MENÚ</h3>
+            <button
+              onClick={() => {
+                if (editingCats) {
+                  setEditingCats(false);
+                } else {
+                  setCatDraft([...categories]);
+                  setEditingCats(true);
+                }
+              }}
+              className={`text-xs font-display tracking-wider px-3 py-1.5 rounded-lg transition-colors ${
+                editingCats ? 'bg-cafe-bg border border-cafe-border text-cafe-muted' : 'text-[#5c1514] hover:bg-[#5c1514]/10'
+              }`}
+            >
+              {editingCats ? 'CANCELAR' : 'EDITAR'}
+            </button>
+          </div>
+
+          {!editingCats ? (
+            <div className="flex flex-wrap gap-2 mt-3">
+              {categories.map(cat => (
+                <span key={cat} className="px-3 py-1.5 bg-cafe-bg border border-cafe-border text-cafe-text text-xs font-display tracking-wider rounded-lg">
+                  {cat}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <div className="mt-3 space-y-2">
+              {catDraft.map((cat, idx) => (
+                <div key={idx} className="flex items-center gap-2">
+                  <span className="w-5 text-center text-xs text-cafe-muted/50">{idx + 1}</span>
+                  <input
+                    type="text"
+                    value={cat}
+                    onChange={e => {
+                      const updated = [...catDraft];
+                      updated[idx] = e.target.value;
+                      setCatDraft(updated);
+                    }}
+                    className="flex-1 px-3 py-1.5 bg-cafe-bg border border-cafe-border text-cafe-text text-sm focus:outline-none focus:border-[#5c1514] rounded-lg"
+                  />
+                  <button
+                    onClick={() => setCatDraft(catDraft.filter((_, i) => i !== idx))}
+                    className="p-1.5 text-cafe-muted hover:text-red-400"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+              <div className="flex items-center gap-2 pt-2">
+                <button
+                  onClick={() => setCatDraft([...catDraft, ''])}
+                  className="flex items-center gap-1 text-xs text-[#5c1514] hover:bg-[#5c1514]/10 px-3 py-1.5 rounded-lg"
+                >
+                  <Plus className="w-3 h-3" /> AGREGAR
+                </button>
+                <div className="flex-1" />
+                <button
+                  onClick={async () => {
+                    const cleaned = catDraft.filter(c => c.trim());
+                    setCatSaving(true);
+                    try {
+                      await updateLandingSettings({ menu_mgmt_categories: cleaned });
+                      setCategories(cleaned);
+                      setEditingCats(false);
+                    } catch {
+                      alert('Error al guardar categorías');
+                    }
+                    setCatSaving(false);
+                  }}
+                  disabled={catSaving}
+                  className="flex items-center gap-1 px-4 py-1.5 bg-[#5c1514] text-white text-xs font-display tracking-wider rounded-lg hover:bg-[#731c1a] disabled:opacity-50"
+                >
+                  {catSaving ? <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Save className="w-3 h-3" />}
+                  GUARDAR
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Category Filter Tabs */}
         <div className="flex flex-wrap gap-2 mb-6">
