@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getAllMenuItems, createMenuItem, updateMenuItem, deleteMenuItem, getLandingSettings } from '../../lib/api';
-import { Plus, Pencil, Trash2, X, ToggleLeft, ToggleRight, Star, Upload, FileSpreadsheet, Check } from 'lucide-react';
+import { Plus, Pencil, Trash2, X, ToggleLeft, ToggleRight, Star, Upload, FileSpreadsheet, Check, Image } from 'lucide-react';
 
 const emptyForm = { name: '', description: '', description_en: '', price: '', category: 'Cafetería', image_url: '', stock: true, featured: false };
 
@@ -15,7 +15,7 @@ export default function AdminMenu() {
 
   // Quick add
   const [quickAdd, setQuickAdd] = useState(false);
-  const [quick, setQuick] = useState({ name: '', price: '', category: 'Cafetería' });
+  const [quick, setQuick] = useState({ name: '', price: '', category: 'Cafetería', image_url: '' });
   const [quickSaving, setQuickSaving] = useState(false);
   const quickRef = useRef(null);
 
@@ -106,8 +106,8 @@ export default function AdminMenu() {
     if (!quick.name.trim() || !quick.price) return;
     setQuickSaving(true);
     try {
-      await createMenuItem({ ...quick, price: parseFloat(quick.price), description: '', image_url: '', stock: true, featured: false });
-      setQuick({ name: '', price: '', category: quick.category });
+      await createMenuItem({ ...quick, price: parseFloat(quick.price), description: '', stock: true, featured: false });
+      setQuick({ name: '', price: '', category: quick.category, image_url: '' });
       loadItems();
       if (quickRef.current) quickRef.current.focus();
     } catch {
@@ -229,6 +229,23 @@ export default function AdminMenu() {
                   >
                     {categories.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
+                </div>
+                <div className="flex-1 max-w-xs">
+                  <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">IMAGEN (URL)</label>
+                  <div className="flex items-center gap-1">
+                    <input
+                      type="url"
+                      value={quick.image_url}
+                      onChange={e => setQuick({ ...quick, image_url: e.target.value })}
+                      className="flex-1 px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text text-sm focus:outline-none focus:border-[#5c1514] rounded-lg"
+                      placeholder="https://..."
+                    />
+                    {quick.image_url && (
+                      <div className="w-8 h-8 shrink-0 rounded overflow-hidden border border-cafe-border">
+                        <img src={quick.image_url} alt="" className="w-full h-full object-cover" />
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <button
                   type="submit"
