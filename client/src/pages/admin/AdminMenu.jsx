@@ -325,6 +325,13 @@ export default function AdminMenu() {
                         <td className="p-4 text-right">
                           <div className="flex items-center justify-end gap-2">
                             <button
+                              onClick={() => setPickerTarget(`row_image_${item.id}`)}
+                              className="p-2 text-cafe-muted hover:text-[#5c1514] transition-colors"
+                              title="Cambiar imagen"
+                            >
+                              <Image className="w-4 h-4" />
+                            </button>
+                            <button
                               onClick={() => openEdit(item)}
                               className="p-2 text-cafe-muted hover:text-[#5c1514] transition-colors"
                               title="Editar"
@@ -591,11 +598,19 @@ export default function AdminMenu() {
                   ? form.image_url
                   : ''
             }
-            onChange={(url) => {
+            onChange={async (url) => {
               if (pickerTarget === 'quick_image') {
                 setQuick({ ...quick, image_url: url });
               } else if (pickerTarget === 'form_image') {
                 setForm({ ...form, image_url: url });
+              } else if (pickerTarget.startsWith('row_image_')) {
+                const id = pickerTarget.replace('row_image_', '');
+                try {
+                  await updateMenuItem(id, { image_url: url });
+                  loadItems();
+                } catch {
+                  alert('Error al actualizar imagen');
+                }
               }
               setPickerTarget(null);
             }}
