@@ -49,8 +49,9 @@ export default function MenuPage() {
     return cat;
   };
 
+  const normalize = (s) => s?.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') || '';
   const filtered = items.filter(item => {
-    const matchCategory = activeCategory === 'Todos' || item.category === activeCategory;
+    const matchCategory = activeCategory === 'Todos' || normalize(item.category) === normalize(activeCategory);
     const matchSearch = !search || item.name.toLowerCase().includes(search.toLowerCase()) || item.description?.toLowerCase().includes(search.toLowerCase()) || item.description_en?.toLowerCase().includes(search.toLowerCase());
     return matchCategory && matchSearch;
   });
