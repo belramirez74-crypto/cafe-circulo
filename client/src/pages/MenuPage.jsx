@@ -36,16 +36,16 @@ export default function MenuPage() {
       .catch(() => {});
   }, []);
 
-  const settingsCategories = settings?.menu_categories || [];
+  const mgmtCategories = settings?.menu_mgmt_categories || [];
   const settingsCategoriesEn = settings?.menu_categories_en || [];
   const itemCategories = [...new Set(items.map(i => i.category))];
-  const allCategories = [...new Set([...settingsCategories, ...itemCategories])];
+  const allCategories = [...new Set([...mgmtCategories, ...itemCategories])];
   const categories = ['Todos', ...allCategories];
 
   const getCategoryLabel = (cat) => {
     if (cat === 'Todos') return lang === 'en' ? 'All' : 'Todos';
     if (lang === 'en') {
-      const idx = settingsCategories.indexOf(cat);
+      const idx = mgmtCategories.indexOf(cat);
       if (idx !== -1 && settingsCategoriesEn[idx]) return settingsCategoriesEn[idx];
     }
     return cat;
