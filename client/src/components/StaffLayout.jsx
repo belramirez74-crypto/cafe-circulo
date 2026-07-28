@@ -57,8 +57,8 @@ export default function StaffLayout({ children }) {
                 to={link.to}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded transition-colors ${
                   isActive
-                    ? 'bg-cafe-accent/15 text-cafe-accent font-semibold'
-                    : 'text-cafe-accent hover:bg-cafe-accent/10'
+                    ? 'bg-cafe-text/15 text-cafe-text font-semibold'
+                    : 'text-cafe-text hover:bg-cafe-text/10'
                 }`}
               >
                 <Icon className="w-5 h-5 shrink-0" />
