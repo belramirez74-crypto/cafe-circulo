@@ -36,16 +36,14 @@ export default function MenuPage() {
       .catch(() => {});
   }, []);
 
-  const mgmtCategories = settings?.menu_mgmt_categories || [];
+  const settingsCategories = settings?.menu_categories || [];
   const settingsCategoriesEn = settings?.menu_categories_en || [];
-  const itemCategories = [...new Set(items.map(i => i.category))];
-  const allCategories = [...new Set([...mgmtCategories, ...itemCategories])];
-  const categories = ['Todos', ...allCategories];
+  const categories = ['Todos', ...settingsCategories];
 
   const getCategoryLabel = (cat) => {
     if (cat === 'Todos') return lang === 'en' ? 'All' : 'Todos';
     if (lang === 'en') {
-      const idx = mgmtCategories.indexOf(cat);
+      const idx = settingsCategories.indexOf(cat);
       if (idx !== -1 && settingsCategoriesEn[idx]) return settingsCategoriesEn[idx];
     }
     return cat;
@@ -169,7 +167,7 @@ export default function MenuPage() {
           </div>
         ) : (
           <div className="space-y-12">
-            {allCategories.filter(cat => items.some(i => i.category === cat)).map((cat, catIdx) => {
+            {settingsCategories.filter(cat => items.some(i => i.category === cat)).map((cat, catIdx) => {
               const catItems = filtered.filter(i => i.category === cat);
               if (catItems.length === 0) return null;
               const Icon = getCategoryIcon(cat);
