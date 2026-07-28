@@ -1,61 +1,78 @@
 import { Router } from 'express';
 import multer from 'multer';
 import path from 'path';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
+import { supabase } from '../lib/supabase.js';
 import { authenticateAdmin } from '../middleware/auth.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const uploadsDir = path.join(__dirname, '..', 'uploads');
-
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadsDir),
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    const name = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext}`;
-    cb(null, name);
-  },
-});
-
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: 50 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const allowed = /\.(jpg|jpeg|png|webp|gif|svg|mp4|webm|mov)$/i;
     if (allowed.test(path.extname(file.originalname))) {
       cb(null, true);
     } else {
-      cb(new Error('Formato no soportado. Imágenes: jpg, png, webp, gif, svg. Videos: mp4, webm, mov'));
+      cb(new Error('Formato no soportado'));
     }
   },
 });
 
+const BUCKET = 'media';
+
+async function ensureBucket() {
+  const { data: buckets } = await supabase.storage.listBuckets();
+  if (!buckets?.find(b => b.name === BUCKET)) {
+    await supabase.storage.createBucket(BUCKET, { public: true });
+  }
+}
+ensureBucket().catch(() => {});
+
 const router = Router();
 
-router.post('/', authenticateAdmin, upload.single('image'), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: 'No se envió ninguna imagen' });
-  const url = `/uploads/${req.file.filename}`;
-  res.json({ url, filename: req.file.filename });
+router.post('/', authenticateAdmin, upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No se envió ninguna imagen' });
+    const ext = path.extname(req.file.originalname) || '.jpg';
+    const fileName = `menu-${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from(BUCKET)
+      .upload(fileName, req.file.buffer, {
+        contentType: req.file.mimetype,
+        upsert: false,
+      });
+    if (uploadError) throw uploadError;
+
+    const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(fileName);
+    res.json({ url: urlData.publicUrl, filename: fileName });
+  } catch (err) {
+    res.status(500).json({ error: err.message || 'Error al subir imagen' });
+  }
 });
 
-router.get('/', authenticateAdmin, (req, res) => {
-  fs.readdir(uploadsDir, (err, files) => {
-    if (err) return res.status(500).json({ error: 'Error al leer archivos' });
-    const media = files
-      .filter(f => /\.(jpg|jpeg|png|webp|gif|svg|mp4|webm|mov)$/i.test(f))
-      .map(f => ({
-        filename: f,
-        url: `/uploads/${f}`,
-        type: /\.(mp4|webm|mov)$/i.test(f) ? 'video' : 'image',
-        uploaded_at: fs.statSync(path.join(uploadsDir, f)).mtime,
-      }))
-      .sort((a, b) => b.uploaded_at - a.uploaded_at);
+router.get('/', authenticateAdmin, async (req, res) => {
+  try {
+    const { data: files, error } = await supabase.storage.from(BUCKET).list('', {
+      limit: 200,
+      sortBy: { column: 'created_at', order: 'desc' },
+    });
+    if (error) throw error;
+
+    const media = (files || [])
+      .filter(f => /\.(jpg|jpeg|png|webp|gif|svg|mp4|webm|mov)$/i.test(f.name))
+      .map(f => {
+        const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(f.name);
+        return {
+          filename: f.name,
+          url: urlData.publicUrl,
+          type: /\.(mp4|webm|mov)$/i.test(f.name) ? 'video' : 'image',
+          uploaded_at: f.created_at,
+        };
+      });
     res.json(media);
-  });
+  } catch (err) {
+    res.status(500).json({ error: err.message || 'Error al listar archivos' });
+  }
 });
 
 export default router;
