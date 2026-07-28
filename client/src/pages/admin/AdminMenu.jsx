@@ -188,7 +188,7 @@ export default function AdminMenu() {
             </button>
             <button
               onClick={openCreate}
-              className="flex items-center gap-2 px-4 py-2 bg-[#5c1514] text-white font-display text-sm tracking-wider hover:bg-[#731c1a] transition-colors rounded-xl shadow-lg shadow-black/30"
+              className="flex items-center gap-2 px-4 py-2 bg-[cafe-accent] text-white font-display text-sm tracking-wider hover:bg-[cafe-burgundy-light] transition-colors rounded-xl shadow-lg shadow-black/30"
             >
               <Plus className="w-4 h-4" /> NUEVO ITEM
             </button>
@@ -212,7 +212,7 @@ export default function AdminMenu() {
                     type="text"
                     value={quick.name}
                     onChange={e => setQuick({ ...quick, name: e.target.value })}
-                    className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text text-sm focus:outline-none focus:border-[#5c1514] rounded-lg"
+                    className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text text-sm focus:outline-none focus:border-[cafe-accent] rounded-lg"
                     placeholder="Ej: Cortado"
                     required
                     autoFocus
@@ -225,7 +225,7 @@ export default function AdminMenu() {
                     step="0.01"
                     value={quick.price}
                     onChange={e => setQuick({ ...quick, price: e.target.value })}
-                    className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text text-sm focus:outline-none focus:border-[#5c1514] rounded-lg"
+                    className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text text-sm focus:outline-none focus:border-[cafe-accent] rounded-lg"
                     placeholder="1500"
                     required
                   />
@@ -235,7 +235,7 @@ export default function AdminMenu() {
                   <select
                     value={quick.category}
                     onChange={e => setQuick({ ...quick, category: e.target.value })}
-                    className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text text-sm focus:outline-none focus:border-[#5c1514] rounded-lg"
+                    className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text text-sm focus:outline-none focus:border-[cafe-accent] rounded-lg"
                   >
                     {categories.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
@@ -246,7 +246,7 @@ export default function AdminMenu() {
                     <button
                       type="button"
                       onClick={() => setPickerTarget('quick_image')}
-                      className="flex items-center gap-2 px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text text-sm hover:border-[#5c1514] rounded-lg transition-colors"
+                      className="flex items-center gap-2 px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text text-sm hover:border-[cafe-accent] rounded-lg transition-colors"
                     >
                       <Image className="w-4 h-4 text-cafe-muted" />
                       {quick.image_url ? 'Cambiar imagen' : 'Subir imagen'}
@@ -261,7 +261,7 @@ export default function AdminMenu() {
                 <button
                   type="submit"
                   disabled={quickSaving || !quick.name.trim() || !quick.price}
-                  className="px-5 py-2 bg-[#5c1514] text-white font-display text-sm tracking-wider hover:bg-[#731c1a] transition-colors rounded-lg disabled:opacity-40 flex items-center gap-2"
+                  className="px-5 py-2 bg-[cafe-accent] text-white font-display text-sm tracking-wider hover:bg-[cafe-burgundy-light] transition-colors rounded-lg disabled:opacity-40 flex items-center gap-2"
                 >
                   {quickSaving ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Check className="w-4 h-4" />}
                   AGREGAR
@@ -275,7 +275,7 @@ export default function AdminMenu() {
         {/* Category Management */}
         <div className="bg-cafe-surface border border-cafe-border p-4 rounded-xl mb-6">
           <div className="flex items-center justify-between">
-            <h3 className="font-display text-sm tracking-widest text-[#5c1514]">CATEGORÍAS DEL MENÚ</h3>
+            <h3 className="font-display text-sm tracking-widest text-[cafe-accent]">CATEGORÍAS DEL MENÚ</h3>
             <button
               onClick={() => {
                 if (editingCats) {
@@ -286,7 +286,7 @@ export default function AdminMenu() {
                 }
               }}
               className={`text-xs font-display tracking-wider px-3 py-1.5 rounded-lg transition-colors ${
-                editingCats ? 'bg-cafe-bg border border-cafe-border text-cafe-muted' : 'text-[#5c1514] hover:bg-[#5c1514]/10'
+                editingCats ? 'bg-cafe-bg border border-cafe-border text-cafe-muted' : 'text-[cafe-accent] hover:bg-[cafe-accent]/10'
               }`}
             >
               {editingCats ? 'CANCELAR' : 'EDITAR'}
@@ -314,7 +314,7 @@ export default function AdminMenu() {
                       updated[idx] = e.target.value;
                       setCatDraft(updated);
                     }}
-                    className="flex-1 px-3 py-1.5 bg-cafe-bg border border-cafe-border text-cafe-text text-sm focus:outline-none focus:border-[#5c1514] rounded-lg"
+                    className="flex-1 px-3 py-1.5 bg-cafe-bg border border-cafe-border text-cafe-text text-sm focus:outline-none focus:border-[cafe-accent] rounded-lg"
                   />
                   <button
                     onClick={() => setCatDraft(catDraft.filter((_, i) => i !== idx))}
@@ -327,7 +327,7 @@ export default function AdminMenu() {
               <div className="flex items-center gap-2 pt-2">
                 <button
                   onClick={() => setCatDraft([...catDraft, ''])}
-                  className="flex items-center gap-1 text-xs text-[#5c1514] hover:bg-[#5c1514]/10 px-3 py-1.5 rounded-lg"
+                  className="flex items-center gap-1 text-xs text-[cafe-accent] hover:bg-[cafe-accent]/10 px-3 py-1.5 rounded-lg"
                 >
                   <Plus className="w-3 h-3" /> AGREGAR
                 </button>
@@ -346,7 +346,7 @@ export default function AdminMenu() {
                     setCatSaving(false);
                   }}
                   disabled={catSaving}
-                  className="flex items-center gap-1 px-4 py-1.5 bg-[#5c1514] text-white text-xs font-display tracking-wider rounded-lg hover:bg-[#731c1a] disabled:opacity-50"
+                  className="flex items-center gap-1 px-4 py-1.5 bg-[cafe-accent] text-white text-xs font-display tracking-wider rounded-lg hover:bg-[cafe-burgundy-light] disabled:opacity-50"
                 >
                   {catSaving ? <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Save className="w-3 h-3" />}
                   GUARDAR
@@ -365,7 +365,7 @@ export default function AdminMenu() {
                 onClick={() => setActiveFilter('Todos')}
                 className={`shrink-0 px-5 py-3 text-xs font-display tracking-widest transition-all duration-200 border-b-2 ${
                   activeFilter === 'Todos'
-                    ? 'border-[#5c1514] text-[#5c1514] bg-[#5c1514]/5'
+                    ? 'border-[cafe-accent] text-[cafe-accent] bg-[cafe-accent]/5'
                     : 'border-transparent text-cafe-muted hover:text-cafe-text hover:bg-cafe-bg/50'
                 }`}
               >
@@ -378,7 +378,7 @@ export default function AdminMenu() {
                   onClick={() => setActiveFilter(cat)}
                   className={`shrink-0 px-5 py-3 text-xs font-display tracking-widest transition-all duration-200 border-b-2 ${
                     activeFilter === cat
-                      ? 'border-[#5c1514] text-[#5c1514] bg-[#5c1514]/5'
+                      ? 'border-[cafe-accent] text-[cafe-accent] bg-[cafe-accent]/5'
                       : 'border-transparent text-cafe-muted hover:text-cafe-text hover:bg-cafe-bg/50'
                   }`}
                 >
@@ -420,7 +420,7 @@ export default function AdminMenu() {
                         </div>
                       </td>
                       <td className="p-4">
-                        <span className="font-display text-sm text-[#5c1514]">
+                        <span className="font-display text-sm text-[cafe-accent]">
                           ${parseFloat(item.price).toLocaleString('es-AR')}
                         </span>
                       </td>
@@ -436,24 +436,24 @@ export default function AdminMenu() {
                       <td className="p-4">
                         <button
                           onClick={() => toggleFeatured(item)}
-                          className={`transition-colors ${item.featured ? 'text-[#5c1514]' : 'text-cafe-muted'}`}
+                          className={`transition-colors ${item.featured ? 'text-[cafe-accent]' : 'text-cafe-muted'}`}
                           title={item.featured ? 'Destacado' : 'No destacado'}
                         >
-                          <Star className={`w-5 h-5 ${item.featured ? 'fill-[#5c1514]' : ''}`} />
+                          <Star className={`w-5 h-5 ${item.featured ? 'fill-[cafe-accent]' : ''}`} />
                         </button>
                       </td>
                       <td className="p-4 text-right">
                         <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => setPickerTarget(`row_image_${item.id}`)}
-                            className="p-2 text-cafe-muted hover:text-[#5c1514] transition-colors"
+                            className="p-2 text-cafe-muted hover:text-[cafe-accent] transition-colors"
                             title="Cambiar imagen"
                           >
                             <Image className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => openEdit(item)}
-                            className="p-2 text-cafe-muted hover:text-[#5c1514] transition-colors"
+                            className="p-2 text-cafe-muted hover:text-[cafe-accent] transition-colors"
                             title="Editar"
                           >
                             <Pencil className="w-4 h-4" />
@@ -518,7 +518,7 @@ export default function AdminMenu() {
                       type="text"
                       value={form.name}
                       onChange={e => setForm({ ...form, name: e.target.value })}
-                      className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-[#5c1514]"
+                      className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-[cafe-accent]"
                       required
                     />
                   </div>
@@ -527,7 +527,7 @@ export default function AdminMenu() {
                     <textarea
                       value={form.description}
                       onChange={e => setForm({ ...form, description: e.target.value })}
-                      className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-[#5c1514] resize-none h-20"
+                      className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-[cafe-accent] resize-none h-20"
                     />
                   </div>
                   <div>
@@ -535,7 +535,7 @@ export default function AdminMenu() {
                     <textarea
                       value={form.description_en}
                       onChange={e => setForm({ ...form, description_en: e.target.value })}
-                      className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-[#5c1514] resize-none h-20"
+                      className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-[cafe-accent] resize-none h-20"
                       placeholder="English description..."
                     />
                   </div>
@@ -547,7 +547,7 @@ export default function AdminMenu() {
                         step="0.01"
                         value={form.price}
                         onChange={e => setForm({ ...form, price: e.target.value })}
-                        className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-[#5c1514]"
+                        className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-[cafe-accent]"
                         required
                       />
                     </div>
@@ -556,7 +556,7 @@ export default function AdminMenu() {
                       <select
                         value={form.category}
                         onChange={e => setForm({ ...form, category: e.target.value })}
-                        className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-[#5c1514]"
+                        className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-[cafe-accent]"
                       >
                         {categories.map(c => <option key={c} value={c}>{c}</option>)}
                       </select>
@@ -568,7 +568,7 @@ export default function AdminMenu() {
                       <button
                         type="button"
                         onClick={() => setPickerTarget('form_image')}
-                        className="flex items-center gap-2 px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text text-sm hover:border-[#5c1514] rounded-lg transition-colors"
+                        className="flex items-center gap-2 px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text text-sm hover:border-[cafe-accent] rounded-lg transition-colors"
                       >
                         <Image className="w-4 h-4 text-cafe-muted" />
                         {form.image_url ? 'Cambiar imagen' : 'Subir imagen'}
@@ -591,7 +591,7 @@ export default function AdminMenu() {
                         type="checkbox"
                         checked={form.stock}
                         onChange={e => setForm({ ...form, stock: e.target.checked })}
-                        className="accent-[#5c1514]"
+                        className="accent-[cafe-accent]"
                       />
                       <span className="text-sm text-cafe-muted">En stock</span>
                     </label>
@@ -600,7 +600,7 @@ export default function AdminMenu() {
                         type="checkbox"
                         checked={form.featured}
                         onChange={e => setForm({ ...form, featured: e.target.checked })}
-                        className="accent-[#5c1514]"
+                        className="accent-[cafe-accent]"
                       />
                       <span className="text-sm text-cafe-muted">Destacado del día</span>
                     </label>
@@ -609,7 +609,7 @@ export default function AdminMenu() {
                     <button
                       type="submit"
                       disabled={loading}
-                      className="flex-1 py-2 bg-[#5c1514] text-white font-display text-sm tracking-wider hover:bg-[#731c1a] transition-colors disabled:opacity-50 rounded-xl shadow-lg shadow-black/30"
+                      className="flex-1 py-2 bg-[cafe-accent] text-white font-display text-sm tracking-wider hover:bg-[cafe-burgundy-light] transition-colors disabled:opacity-50 rounded-xl shadow-lg shadow-black/30"
                     >
                       {loading ? 'GUARDANDO...' : editing ? 'ACTUALIZAR' : 'CREAR'}
                     </button>
@@ -664,7 +664,7 @@ export default function AdminMenu() {
                   />
                   <button
                     onClick={() => fileRef.current?.click()}
-                    className="w-full p-8 border-2 border-dashed border-cafe-border hover:border-[#5c1514] rounded-xl text-center transition-colors cursor-pointer"
+                    className="w-full p-8 border-2 border-dashed border-cafe-border hover:border-[cafe-accent] rounded-xl text-center transition-colors cursor-pointer"
                   >
                     <FileSpreadsheet className="w-10 h-10 text-cafe-muted mx-auto mb-3" />
                     <p className="text-sm text-cafe-text font-display">Hacé click para seleccionar un archivo</p>
@@ -673,7 +673,7 @@ export default function AdminMenu() {
 
                   {importFile && (
                     <div className="bg-cafe-bg border border-cafe-border rounded-xl p-4 flex items-center gap-3">
-                      <FileSpreadsheet className="w-8 h-8 text-[#5c1514]" />
+                      <FileSpreadsheet className="w-8 h-8 text-[cafe-accent]" />
                       <div className="flex-1">
                         <p className="text-sm text-cafe-text font-display">{importFile.name}</p>
                         <p className="text-xs text-cafe-muted">El servidor procesará las columnas: Nombre, Descripción, Precio, Categoría, Imagen</p>
@@ -694,7 +694,7 @@ export default function AdminMenu() {
                     <button
                       onClick={handleImport}
                       disabled={!importFile || importing}
-                      className="flex-1 py-2.5 bg-[#5c1514] text-white font-display text-sm tracking-wider hover:bg-[#731c1a] transition-colors disabled:opacity-50 rounded-xl shadow-lg shadow-black/30 flex items-center justify-center gap-2"
+                      className="flex-1 py-2.5 bg-[cafe-accent] text-white font-display text-sm tracking-wider hover:bg-[cafe-burgundy-light] transition-colors disabled:opacity-50 rounded-xl shadow-lg shadow-black/30 flex items-center justify-center gap-2"
                     >
                       {importing ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Upload className="w-4 h-4" />}
                       {importing ? 'IMPORTANDO...' : 'IMPORTAR'}

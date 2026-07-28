@@ -23,7 +23,7 @@ export default function StaffLayout({ children }) {
   };
 
   return (
-    <div className="min-h-screen bg-cafe-bg flex panel-light">
+    <div className="min-h-screen bg-cafe-bg flex">
       <TaskNotification />
       <aside
         className={`bg-cafe-surface border-r border-cafe-border flex flex-col transition-all duration-300 ${
@@ -57,8 +57,8 @@ export default function StaffLayout({ children }) {
                 to={link.to}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded transition-colors ${
                   isActive
-                    ? 'bg-[#5c1514]/15 text-[#5c1514] font-semibold'
-                    : 'text-[#5c1514] hover:bg-[#5c1514]/10'
+                    ? 'bg-cafe-accent/15 text-cafe-accent font-semibold'
+                    : 'text-cafe-accent hover:bg-cafe-accent/10'
                 }`}
               >
                 <Icon className="w-5 h-5 shrink-0" />

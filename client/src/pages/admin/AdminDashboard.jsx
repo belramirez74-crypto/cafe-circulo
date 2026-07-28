@@ -88,19 +88,19 @@ export default function AdminDashboard() {
               >
                 <Link
                   to={card.to}
-                  className="block bg-cafe-surface border border-cafe-border border-l-4 border-l-[#5c1514] p-6 transition-all group rounded-xl h-full flex flex-col justify-between hover:border-l-[#5c1514] hover:bg-cafe-card"
+                  className="block bg-cafe-surface border border-cafe-border border-l-4 border-l-[cafe-accent] p-6 transition-all group rounded-xl h-full flex flex-col justify-between hover:border-l-[cafe-accent] hover:bg-cafe-card"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex items-start gap-4">
-                      <Icon className="w-8 h-8 text-[#5c1514] shrink-0 mt-1 transition-colors" />
+                      <Icon className="w-8 h-8 text-[cafe-accent] shrink-0 mt-1 transition-colors" />
                       <div>
-                        <h2 className="font-display text-xl text-[#5c1514] transition-colors">
+                        <h2 className="font-display text-xl text-[cafe-accent] transition-colors">
                           {card.title}
                         </h2>
-                        <p className="text-[#5c1514]/70 text-sm mt-1 line-clamp-2">{card.desc}</p>
+                        <p className="text-[cafe-accent]/70 text-sm mt-1 line-clamp-2">{card.desc}</p>
                       </div>
                     </div>
-                    <ArrowRight className="w-5 h-5 text-[#5c1514] group-hover:translate-x-1 transition-all shrink-0" />
+                    <ArrowRight className="w-5 h-5 text-[cafe-accent] group-hover:translate-x-1 transition-all shrink-0" />
                   </div>
                 </Link>
               </motion.div>
