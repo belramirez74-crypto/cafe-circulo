@@ -163,9 +163,7 @@ export default function AdminMenu() {
   });
 
   const allCats = [...new Set([...categories, ...Object.keys(grouped)])];
-  const filteredGrouped = activeFilter === 'Todos'
-    ? grouped
-    : { [activeFilter]: grouped[activeFilter] || [] };
+  const currentItems = activeFilter === 'Todos' ? items : (grouped[activeFilter] || []);
 
   return (
     <div>
@@ -358,135 +356,134 @@ export default function AdminMenu() {
           )}
         </div>
 
-        {/* Category Filter Tabs */}
-        <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-          <button
-            onClick={() => setActiveFilter('Todos')}
-            className={`shrink-0 px-5 py-3 text-sm font-display tracking-wider rounded-xl transition-all duration-200 ${
-              activeFilter === 'Todos'
-                ? 'bg-[#5c1514] text-white shadow-lg shadow-[#5c1514]/30'
-                : 'bg-cafe-surface border border-cafe-border text-cafe-muted hover:text-cafe-text hover:border-[#5c1514]/40'
-            }`}
-          >
-            TODOS
-            <span className="ml-1.5 text-xs opacity-70">({items.length})</span>
-          </button>
-          {allCats.map(cat => (
-            <button
-              key={cat}
-              onClick={() => setActiveFilter(cat)}
-              className={`shrink-0 px-5 py-3 text-sm font-display tracking-wider rounded-xl transition-all duration-200 ${
-                activeFilter === cat
-                  ? 'bg-[#5c1514] text-white shadow-lg shadow-[#5c1514]/30'
-                  : 'bg-cafe-surface border border-cafe-border text-cafe-muted hover:text-cafe-text hover:border-[#5c1514]/40'
-              }`}
-            >
-              {cat}
-              <span className="ml-1.5 text-xs opacity-70">({(grouped[cat] || []).length})</span>
-            </button>
-          ))}
-        </div>
+        {/* Menu Table with integrated category tabs */}
+        {items.length > 0 ? (
+          <div className="bg-cafe-surface border border-cafe-border rounded-xl overflow-hidden">
+            {/* Category Tabs - directly above table */}
+            <div className="flex border-b border-cafe-border overflow-x-auto">
+              <button
+                onClick={() => setActiveFilter('Todos')}
+                className={`shrink-0 px-5 py-3 text-xs font-display tracking-widest transition-all duration-200 border-b-2 ${
+                  activeFilter === 'Todos'
+                    ? 'border-[#5c1514] text-[#5c1514] bg-[#5c1514]/5'
+                    : 'border-transparent text-cafe-muted hover:text-cafe-text hover:bg-cafe-bg/50'
+                }`}
+              >
+                TODOS
+                <span className="ml-1 opacity-70">({items.length})</span>
+              </button>
+              {allCats.map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveFilter(cat)}
+                  className={`shrink-0 px-5 py-3 text-xs font-display tracking-widest transition-all duration-200 border-b-2 ${
+                    activeFilter === cat
+                      ? 'border-[#5c1514] text-[#5c1514] bg-[#5c1514]/5'
+                      : 'border-transparent text-cafe-muted hover:text-cafe-text hover:bg-cafe-bg/50'
+                  }`}
+                >
+                  {cat.toUpperCase()}
+                  <span className="ml-1 opacity-70">({(grouped[cat] || []).length})</span>
+                </button>
+              ))}
+            </div>
 
-        {/* Items grouped by category */}
-        <div className="space-y-6">
-          {Object.entries(filteredGrouped).map(([cat, catItems]) => {
-            <div key={cat}>
-              <h3 className="font-display text-sm tracking-widest text-[#5c1514] mb-3 uppercase flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-[#5c1514]" />
-                {cat}
-                <span className="text-cafe-muted font-normal text-xs">({catItems.length} items)</span>
-              </h3>
-              <div className="bg-cafe-surface border border-cafe-border overflow-x-auto rounded-xl">
-                <table className="w-full text-left">
-                  <thead>
-                    <tr className="border-b border-cafe-border">
-                      <th className="p-4 font-display text-xs tracking-widest text-cafe-muted">NOMBRE</th>
-                      <th className="p-4 font-display text-xs tracking-widest text-cafe-muted">PRECIO</th>
-                      <th className="p-4 font-display text-xs tracking-widest text-cafe-muted">STOCK</th>
-                      <th className="p-4 font-display text-xs tracking-widest text-cafe-muted">DESTACADO</th>
-                      <th className="p-4 font-display text-xs tracking-widest text-cafe-muted text-right">ACCIONES</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {catItems.map((item) => (
-                      <tr
-                        key={item.id}
-                        className={`border-b border-cafe-border/50 hover:bg-cafe-bg/50 transition-colors ${!item.stock ? 'opacity-50' : ''}`}
-                      >
-                        <td className="p-4">
-                          <div className="flex items-center gap-3">
-                            {item.image_url && (
-                              <img src={item.image_url} alt="" className="w-10 h-10 object-cover rounded" />
+            {/* Table */}
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="border-b border-cafe-border">
+                    <th className="p-4 font-display text-xs tracking-widest text-cafe-muted">NOMBRE</th>
+                    <th className="p-4 font-display text-xs tracking-widest text-cafe-muted">PRECIO</th>
+                    <th className="p-4 font-display text-xs tracking-widest text-cafe-muted">STOCK</th>
+                    <th className="p-4 font-display text-xs tracking-widest text-cafe-muted">DESTACADO</th>
+                    <th className="p-4 font-display text-xs tracking-widest text-cafe-muted text-right">ACCIONES</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentItems.map((item) => (
+                    <tr
+                      key={item.id}
+                      className={`border-b border-cafe-border/50 hover:bg-cafe-bg/50 transition-colors ${!item.stock ? 'opacity-50' : ''}`}
+                    >
+                      <td className="p-4">
+                        <div className="flex items-center gap-3">
+                          {item.image_url && (
+                            <img src={item.image_url} alt="" className="w-10 h-10 object-cover rounded" />
+                          )}
+                          <div>
+                            <p className="font-display text-sm text-cafe-text">{item.name}</p>
+                            {item.description && (
+                              <p className="text-xs text-cafe-muted leading-relaxed">{item.description.slice(0, 80)}</p>
                             )}
-                            <div>
-                              <p className="font-display text-sm text-cafe-text">{item.name}</p>
-                              {item.description && (
-                                <p className="text-xs text-cafe-muted leading-relaxed">{item.description.slice(0, 80)}</p>
-                              )}
-                            </div>
                           </div>
-                        </td>
-                        <td className="p-4">
-                          <span className="font-display text-sm text-[#5c1514]">
-                            ${parseFloat(item.price).toLocaleString('es-AR')}
-                          </span>
-                        </td>
-                        <td className="p-4">
+                        </div>
+                      </td>
+                      <td className="p-4">
+                        <span className="font-display text-sm text-[#5c1514]">
+                          ${parseFloat(item.price).toLocaleString('es-AR')}
+                        </span>
+                      </td>
+                      <td className="p-4">
+                        <button
+                          onClick={() => toggleStock(item)}
+                          className={`transition-colors ${item.stock ? 'text-green-500' : 'text-cafe-muted'}`}
+                          title={item.stock ? 'En stock' : 'Sin stock'}
+                        >
+                          {item.stock ? <ToggleRight className="w-6 h-6" /> : <ToggleLeft className="w-6 h-6" />}
+                        </button>
+                      </td>
+                      <td className="p-4">
+                        <button
+                          onClick={() => toggleFeatured(item)}
+                          className={`transition-colors ${item.featured ? 'text-[#5c1514]' : 'text-cafe-muted'}`}
+                          title={item.featured ? 'Destacado' : 'No destacado'}
+                        >
+                          <Star className={`w-5 h-5 ${item.featured ? 'fill-[#5c1514]' : ''}`} />
+                        </button>
+                      </td>
+                      <td className="p-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
                           <button
-                            onClick={() => toggleStock(item)}
-                            className={`transition-colors ${item.stock ? 'text-green-500' : 'text-cafe-muted'}`}
-                            title={item.stock ? 'En stock' : 'Sin stock'}
+                            onClick={() => setPickerTarget(`row_image_${item.id}`)}
+                            className="p-2 text-cafe-muted hover:text-[#5c1514] transition-colors"
+                            title="Cambiar imagen"
                           >
-                            {item.stock ? <ToggleRight className="w-6 h-6" /> : <ToggleLeft className="w-6 h-6" />}
+                            <Image className="w-4 h-4" />
                           </button>
-                        </td>
-                        <td className="p-4">
                           <button
-                            onClick={() => toggleFeatured(item)}
-                            className={`transition-colors ${item.featured ? 'text-[#5c1514]' : 'text-cafe-muted'}`}
-                            title={item.featured ? 'Destacado' : 'No destacado'}
+                            onClick={() => openEdit(item)}
+                            className="p-2 text-cafe-muted hover:text-[#5c1514] transition-colors"
+                            title="Editar"
                           >
-                            <Star className={`w-5 h-5 ${item.featured ? 'fill-[#5c1514]' : ''}`} />
+                            <Pencil className="w-4 h-4" />
                           </button>
-                        </td>
-                        <td className="p-4 text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <button
-                              onClick={() => setPickerTarget(`row_image_${item.id}`)}
-                              className="p-2 text-cafe-muted hover:text-[#5c1514] transition-colors"
-                              title="Cambiar imagen"
-                            >
-                              <Image className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => openEdit(item)}
-                              className="p-2 text-cafe-muted hover:text-[#5c1514] transition-colors"
-                              title="Editar"
-                            >
-                              <Pencil className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(item.id, item.name)}
-                              className="p-2 text-cafe-muted hover:text-red-500 transition-colors"
-                              title="Eliminar"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                          <button
+                            onClick={() => handleDelete(item.id, item.name)}
+                            className="p-2 text-cafe-muted hover:text-red-500 transition-colors"
+                            title="Eliminar"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {currentItems.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-cafe-muted">No hay items en esta categoría</p>
               </div>
-            </div>
-          ))}
-          {items.length === 0 && (
-            <div className="text-center py-12 bg-cafe-surface border border-cafe-border rounded-xl">
-              <p className="text-cafe-muted">No hay items en el menú todavía</p>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        ) : (
+          <div className="text-center py-12 bg-cafe-surface border border-cafe-border rounded-xl">
+            <p className="text-cafe-muted">No hay items en el menú todavía</p>
+          </div>
+        )}
 
         {/* Full Form Modal */}
         <AnimatePresence>
