@@ -34,6 +34,18 @@ async function run() {
     `);
     console.log('recommended_items column OK');
 
+    await client.query(`
+      ALTER TABLE landing_settings 
+      ADD COLUMN IF NOT EXISTS menu_categories JSONB DEFAULT '["Cafetería", "Dulces", "Saladitos", "Bebidas"]'::jsonb
+    `);
+    console.log('menu_categories column OK');
+
+    await client.query(`
+      ALTER TABLE landing_settings 
+      ADD COLUMN IF NOT EXISTS menu_categories_en JSONB DEFAULT '["Coffee", "Sweets", "Savory", "Drinks"]'::jsonb
+    `);
+    console.log('menu_categories_en column OK');
+
     client.release();
     await pool.end();
     console.log('Migrations completed!');
@@ -58,6 +70,10 @@ async function run() {
       console.log('gallery_images column OK');
       await client2.query(`ALTER TABLE landing_settings ADD COLUMN IF NOT EXISTS recommended_items JSONB DEFAULT '[]'::jsonb`);
       console.log('recommended_items column OK');
+      await client2.query(`ALTER TABLE landing_settings ADD COLUMN IF NOT EXISTS menu_categories JSONB DEFAULT '["Cafetería", "Dulces", "Saladitos", "Bebidas"]'::jsonb`);
+      console.log('menu_categories column OK');
+      await client2.query(`ALTER TABLE landing_settings ADD COLUMN IF NOT EXISTS menu_categories_en JSONB DEFAULT '["Coffee", "Sweets", "Savory", "Drinks"]'::jsonb`);
+      console.log('menu_categories_en column OK');
       
       client2.release();
       await pool2.end();
