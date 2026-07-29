@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useUserAuth } from '../context/UserAuthContext';
-import { Crown, Shield, User, Sparkles, Image, Coffee } from 'lucide-react';
+import { Crown, Shield, User, Sparkles, Image, Coffee, Calendar } from 'lucide-react';
 import useLandingData from '../components/sections/useLandingData';
 import HeroSection from '../components/sections/HeroSection';
 import CoffeeTypesSection from '../components/sections/CoffeeTypesSection';
-import { getClientPromotions, getClientEventBanners } from '../lib/api';
+import { getClientPromotions, getClientEventBanners, getUpcomingEvents } from '../lib/api';
 import { useEffect, useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -15,8 +15,10 @@ export default function Home() {
   const { t } = useLanguage();
   const [promotions, setPromotions] = useState([]);
   const [clientBanners, setClientBanners] = useState([]);
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
 
   useEffect(() => {
+    getUpcomingEvents().then(r => setUpcomingEvents(r.data)).catch(() => {});
     if (!user) return;
     getClientPromotions().then(r => setPromotions(r.data)).catch(() => {});
     getClientEventBanners().then(r => setClientBanners(r.data)).catch(() => {});
@@ -25,6 +27,50 @@ export default function Home() {
   return (
     <div className="min-h-screen pt-20">
       <HeroSection settings={settings} />
+
+      {upcomingEvents.length > 0 && (
+        <section className="py-16">
+          <div className="max-w-6xl mx-auto px-4">
+            <div className="text-center mb-10">
+              <p className="font-script text-cafe-cream text-4xl sm:text-5xl">{t('home_events')}</p>
+              <div className="w-12 h-0.5 bg-gradient-to-r from-transparent via-cafe-accent to-transparent mx-auto mt-3" />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {upcomingEvents.map((event, i) => (
+                <motion.div
+                  key={event.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.15, duration: 0.5 }}
+                  className="group bg-cafe-surface border border-cafe-border/60 rounded-xl overflow-hidden hover:border-cafe-accent/50 transition-all duration-300"
+                >
+                  {event.flyer_url && (
+                    <div className="aspect-[16/9] overflow-hidden bg-cafe-card">
+                      <img
+                        src={event.flyer_url}
+                        alt={event.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                    </div>
+                  )}
+                  <div className="p-5">
+                    <div className="flex items-center gap-2 text-cafe-accent text-sm mb-2">
+                      <Calendar className="w-4 h-4" />
+                      <span className="font-display tracking-wider">
+                        {new Date(event.date).toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                      </span>
+                    </div>
+                    <h3 className="font-display text-lg text-cafe-text">{event.title}</h3>
+                    {event.description && (
+                      <p className="text-cafe-muted text-sm mt-1.5 leading-relaxed">{event.description}</p>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <CoffeeTypesSection settings={settings} />
 
