@@ -87,7 +87,7 @@ export default function AdminVentas() {
           </motion.h1>
           <p className="text-cafe-muted mt-1">Seguimiento de ventas y popularidad del menú</p>
         </div>
-        <button onClick={() => setShowAdd(true)} className="flex items-center gap-2 px-4 py-2 bg-[#5c1514] text-white font-display text-sm tracking-wider hover:bg-[#731c1a] transition-colors rounded-xl shadow-lg shadow-black/30">
+        <button onClick={() => setShowAdd(true)} className="flex items-center gap-2 px-4 py-2 bg-cafe-accent text-white font-display text-sm tracking-wider hover:bg-cafe-burgundy-light transition-colors rounded-xl shadow-lg shadow-black/30">
           <Plus className="w-4 h-4" /> REGISTRAR VENTA
         </button>
       </div>
@@ -97,7 +97,7 @@ export default function AdminVentas() {
         {periods.map(p => (
           <button key={p.key} onClick={() => setPeriod(p.key)}
             className={`px-4 py-2 text-sm font-display tracking-wider rounded-xl transition-colors ${
-              period === p.key ? 'bg-[#5c1514] text-white shadow-lg shadow-black/30' : 'bg-cafe-surface text-cafe-text border border-cafe-border hover:text-[#5c1514] hover:border-[#5c1514]'
+              period === p.key ? 'bg-cafe-accent text-white shadow-lg shadow-black/30' : 'bg-cafe-surface text-cafe-text border border-cafe-border hover:text-cafe-accent hover:border-cafe-accent'
             }`}>
             {p.label}
           </button>
@@ -107,42 +107,42 @@ export default function AdminVentas() {
       {/* Report Card */}
       <div className="bg-cafe-surface border border-cafe-border p-6 rounded-xl mb-8">
         <div className="flex items-center gap-3 mb-6">
-          <BarChart3 className="w-5 h-5 text-[#5c1514]" />
+          <BarChart3 className="w-5 h-5 text-cafe-accent" />
           <h2 className="font-display text-lg text-cafe-text">REPORTE DE VENTAS — {periods.find(p => p.key === period)?.label}</h2>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
           <div className="bg-cafe-bg/50 border border-cafe-border/50 p-4 rounded-xl text-center">
-            <DollarSign className="w-4 h-4 text-[#5c1514] mx-auto mb-1" />
+            <DollarSign className="w-4 h-4 text-cafe-accent mx-auto mb-1" />
             <p className="text-xs text-[#1a1210] font-display tracking-wider mb-1">INGRESOS</p>
-            <p className="font-display text-xl text-[#5c1514]">${(s.totalRevenue || 0).toLocaleString('es-AR')}</p>
+            <p className="font-display text-xl text-cafe-accent">${(s.totalRevenue || 0).toLocaleString('es-AR')}</p>
           </div>
           <div className="bg-cafe-bg/50 border border-cafe-border/50 p-4 rounded-xl text-center">
-            <ShoppingBag className="w-4 h-4 text-[#5c1514] mx-auto mb-1" />
+            <ShoppingBag className="w-4 h-4 text-cafe-accent mx-auto mb-1" />
             <p className="text-xs text-[#1a1210] font-display tracking-wider mb-1">UNIDADES</p>
-            <p className="font-display text-xl text-[#5c1514]">{s.totalUnits || 0}</p>
+            <p className="font-display text-xl text-cafe-accent">{s.totalUnits || 0}</p>
           </div>
           <div className="bg-cafe-bg/50 border border-cafe-border/50 p-4 rounded-xl text-center">
-            <BarChart3 className="w-4 h-4 text-[#5c1514] mx-auto mb-1" />
+            <BarChart3 className="w-4 h-4 text-cafe-accent mx-auto mb-1" />
             <p className="text-xs text-[#1a1210] font-display tracking-wider mb-1">TRANSACCIONES</p>
-            <p className="font-display text-xl text-[#5c1514]">{s.totalTransactions || 0}</p>
+            <p className="font-display text-xl text-cafe-accent">{s.totalTransactions || 0}</p>
           </div>
           <div className="bg-cafe-bg/50 border border-cafe-border/50 p-4 rounded-xl text-center">
-            <TrendingUp className="w-4 h-4 text-[#5c1514] mx-auto mb-1" />
+            <TrendingUp className="w-4 h-4 text-cafe-accent mx-auto mb-1" />
             <p className="text-xs text-[#1a1210] font-display tracking-wider mb-1">TICKET PROM.</p>
-            <p className="font-display text-xl text-[#5c1514]">${(s.avgTicket || 0).toLocaleString('es-AR')}</p>
+            <p className="font-display text-xl text-cafe-accent">${(s.avgTicket || 0).toLocaleString('es-AR')}</p>
           </div>
           <div className="bg-cafe-bg/50 border border-cafe-border/50 p-4 rounded-xl text-center">
-            <Star className="w-4 h-4 text-[#5c1514] mx-auto mb-1" />
+            <Star className="w-4 h-4 text-cafe-accent mx-auto mb-1" />
             <p className="text-xs text-[#1a1210] font-display tracking-wider mb-1">TOP VENDIDO</p>
-            <p className="font-display text-sm text-[#5c1514] truncate" title={(s.topSelling || [])[0]?.name || '-'}>
+            <p className="font-display text-sm text-cafe-accent truncate" title={(s.topSelling || [])[0]?.name || '-'}>
               {(s.topSelling || [])[0]?.name || '-'}
             </p>
             <p className="text-xs text-[#1a1210]">{(s.topSelling || [])[0] ? `${(s.topSelling || [])[0].quantity} u` : ''}</p>
           </div>
           <div className="bg-cafe-bg/50 border border-cafe-border/50 p-4 rounded-xl text-center">
-            <Package className="w-4 h-4 text-[#5c1514] mx-auto mb-1" />
+            <Package className="w-4 h-4 text-cafe-accent mx-auto mb-1" />
             <p className="text-xs text-[#1a1210] font-display tracking-wider mb-1">SIN VENTAS</p>
-            <p className="font-display text-xl text-[#5c1514]">{(s.neverSold || []).length}</p>
+            <p className="font-display text-xl text-cafe-accent">{(s.neverSold || []).length}</p>
             <p className="text-xs text-[#1a1210]">items</p>
           </div>
         </div>
@@ -152,7 +152,7 @@ export default function AdminVentas() {
         {/* Top Selling */}
         <div className="bg-cafe-surface border border-cafe-border p-6 rounded-xl">
           <div className="flex items-center gap-3 mb-4">
-            <Star className="w-5 h-5 text-[#5c1514]" />
+            <Star className="w-5 h-5 text-cafe-accent" />
             <h2 className="font-display text-lg text-cafe-text">MÁS VENDIDOS</h2>
           </div>
           {(s.topSelling || []).length === 0 ? (
@@ -180,7 +180,7 @@ export default function AdminVentas() {
         {/* Low Selling / Never Sold */}
         <div className="bg-cafe-surface border border-cafe-border p-6 rounded-xl">
           <div className="flex items-center gap-3 mb-4">
-            <AlertTriangle className="w-5 h-5 text-[#5c1514]" />
+            <AlertTriangle className="w-5 h-5 text-cafe-accent" />
             <h2 className="font-display text-lg text-[#1a1210]">RECOMENDAR A CLIENTES</h2>
           </div>
           <p className="text-[#1a1210] text-xs mb-4">Estos productos se venden poco o nunca. Promocionalos más.</p>
@@ -195,7 +195,7 @@ export default function AdminVentas() {
                       <p className="text-sm text-[#1a1210] truncate">{item.name}</p>
                       <p className="text-xs text-[#1a1210]">{item.category} · ${parseFloat(item.price).toLocaleString('es-AR')}</p>
                     </div>
-                    <span className="text-xs text-[#5c1514] font-display shrink-0">0 vendidos</span>
+                    <span className="text-xs text-cafe-accent font-display shrink-0">0 vendidos</span>
                   </div>
                 ))}
               </>
@@ -205,7 +205,7 @@ export default function AdminVentas() {
                 <p className="text-sm font-display text-[#1a1210] tracking-wider mt-4 mb-2 font-semibold">POCA VENTA</p>
                 {s.lowSelling.map(item => (
                   <div key={item.name} className="flex items-center gap-3 p-3 bg-cafe-bg/50 rounded-xl border border-cafe-border/50">
-                    <TrendingDown className="w-4 h-4 text-[#5c1514] shrink-0" />
+                    <TrendingDown className="w-4 h-4 text-cafe-accent shrink-0" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm text-[#1a1210] truncate">{item.name}</p>
                       <p className="text-xs text-[#1a1210]">{item.category}</p>
@@ -275,7 +275,7 @@ export default function AdminVentas() {
               </div>
               <div className="flex flex-wrap gap-3 text-xs font-display">
                 <span className="flex items-center gap-1.5 text-[#1a1210] font-bold text-sm"><span className="w-2 h-2 rounded-full bg-green-500" />MEJOR: ${bestDay.revenue.toLocaleString('es-AR')}</span>
-                <span className="flex items-center gap-1.5 text-[#1a1210] font-bold text-sm"><span className="w-2 h-2 rounded-full bg-[#5c1514]" />PROM: ${avgDaily.toLocaleString('es-AR')}</span>
+                <span className="flex items-center gap-1.5 text-[#1a1210] font-bold text-sm"><span className="w-2 h-2 rounded-full bg-cafe-accent" />PROM: ${avgDaily.toLocaleString('es-AR')}</span>
                 <span className="flex items-center gap-1.5 text-[#1a1210] font-bold text-sm"><span className="w-2 h-2 rounded-full bg-red-500" />MENOR: ${worstDay.revenue.toLocaleString('es-AR')}</span>
               </div>
             </div>

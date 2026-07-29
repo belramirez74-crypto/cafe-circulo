@@ -3,12 +3,12 @@ import { motion } from 'framer-motion';
 import { getStatsOverview, getStatsMenu, getStatsStaff, getStatsClients, getStatsEvents } from '../../lib/api';
 import { Users, ShoppingBag, Calendar, ClipboardList, TrendingUp, Clock, Star, AlertTriangle, CheckCircle, BarChart3 } from 'lucide-react';
 
-function KPICard({ icon: Icon, label, value, sub, color = 'text-[#5c1514]' }) {
+function KPICard({ icon: Icon, label, value, sub, color = 'text-cafe-accent' }) {
   return (
     <div className="bg-cafe-surface border border-cafe-border p-5 rounded-xl">
       <div className="flex items-center gap-3 mb-3">
         <div className={`w-10 h-10 rounded-lg flex items-center justify-center bg-cafe-card`}>
-          <Icon className={`w-5 h-5 text-[#5c1514]`} />
+          <Icon className={`w-5 h-5 text-cafe-accent`} />
         </div>
         <span className="font-body text-xs text-cafe-muted tracking-wide">{label}</span>
       </div>
@@ -18,7 +18,7 @@ function KPICard({ icon: Icon, label, value, sub, color = 'text-[#5c1514]' }) {
   );
 }
 
-function BarChart({ data, maxVal, labelKey, valueKey, color = 'bg-[#5c1514]' }) {
+function BarChart({ data, maxVal, labelKey, valueKey, color = 'bg-cafe-accent' }) {
   const max = maxVal || Math.max(...data.map(d => d[valueKey]), 1);
   return (
     <div className="space-y-2">
@@ -51,7 +51,7 @@ function MiniBarChart({ data, labelKey, valueKey, height = 80 }) {
             initial={{ height: 0 }}
             animate={{ height: `${(item[valueKey] / max) * 100}%` }}
             transition={{ duration: 0.5, delay: i * 0.03 }}
-            className="w-full bg-[#5c1514]/80 rounded-t min-h-[2px]"
+            className="w-full bg-cafe-accent/80 rounded-t min-h-[2px]"
           />
         </div>
       ))}
@@ -121,7 +121,7 @@ export default function AdminStats() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[calc(100vh-3rem)]">
-        <div className="w-8 h-8 border-2 border-[#5c1514] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-cafe-accent border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -180,7 +180,7 @@ export default function AdminStats() {
               className="bg-cafe-surface border border-cafe-border p-6 rounded-xl"
             >
               <div className="flex items-center gap-3 mb-5">
-                <BarChart3 className="w-5 h-5 text-[#5c1514]" />
+                <BarChart3 className="w-5 h-5 text-cafe-accent" />
                 <h2 className="font-display text-lg text-cafe-text">MENÚ POR CATEGORÍA</h2>
               </div>
               <BarChart
@@ -215,7 +215,7 @@ export default function AdminStats() {
               className="bg-cafe-surface border border-cafe-border p-6 rounded-xl"
             >
               <div className="flex items-center gap-3 mb-5">
-                <Users className="w-5 h-5 text-[#5c1514]" />
+                <Users className="w-5 h-5 text-cafe-accent" />
                 <h2 className="font-display text-lg text-cafe-text">STAFF</h2>
               </div>
               <div className="space-y-3">
@@ -263,7 +263,7 @@ export default function AdminStats() {
               className="bg-cafe-surface border border-cafe-border p-6 rounded-xl"
             >
               <div className="flex items-center gap-3 mb-5">
-                <TrendingUp className="w-5 h-5 text-[#5c1514]" />
+                <TrendingUp className="w-5 h-5 text-cafe-accent" />
                 <h2 className="font-display text-lg text-cafe-text">REGISTROS CLIENTES</h2>
               </div>
               <MiniBarChart data={clients.registrations} labelKey="label" valueKey="count" height={100} />
@@ -285,7 +285,7 @@ export default function AdminStats() {
               className="bg-cafe-surface border border-cafe-border p-6 rounded-xl"
             >
               <div className="flex items-center gap-3 mb-5">
-                <ClipboardList className="w-5 h-5 text-[#5c1514]" />
+                <ClipboardList className="w-5 h-5 text-cafe-accent" />
                 <h2 className="font-display text-lg text-cafe-text">RESUMEN TAREAS</h2>
               </div>
               <div className="space-y-3">
@@ -338,13 +338,13 @@ export default function AdminStats() {
               className="bg-cafe-surface border border-cafe-border p-6 rounded-xl"
             >
               <div className="flex items-center gap-3 mb-5">
-                <Star className="w-5 h-5 text-[#5c1514]" />
+                <Star className="w-5 h-5 text-cafe-accent" />
                 <h2 className="font-display text-lg text-cafe-text">TOP FAVORITOS</h2>
               </div>
               <div className="space-y-2">
                 {clients.topFavorites.map((fav, i) => (
                   <div key={i} className="flex items-center gap-3 p-2.5 bg-cafe-card/30 rounded-lg">
-                    <span className="font-display text-sm text-[#5c1514] w-6 text-center">{i + 1}</span>
+                    <span className="font-display text-sm text-cafe-accent w-6 text-center">{i + 1}</span>
                     <span className="font-body text-sm text-cafe-text flex-1 truncate">{fav.name}</span>
                     <span className="font-body text-xs text-cafe-muted">{fav.count} pedido{fav.count !== 1 ? 's' : ''}</span>
                   </div>
@@ -362,7 +362,7 @@ export default function AdminStats() {
               className="bg-cafe-surface border border-cafe-border p-6 rounded-xl"
             >
               <div className="flex items-center gap-3 mb-5">
-                <Calendar className="w-5 h-5 text-[#5c1514]" />
+                <Calendar className="w-5 h-5 text-cafe-accent" />
                 <h2 className="font-display text-lg text-cafe-text">EVENTOS POR MES</h2>
               </div>
               <MiniBarChart data={events.byMonth} labelKey="label" valueKey="count" height={100} />
