@@ -39,18 +39,22 @@ export default function Home() {
               {upcomingEvents.map((event, i) => (
                 <motion.div
                   key={event.id}
-                  initial={{ opacity: 0, y: 30 }}
+                  initial={{ opacity: 0, y: -60 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.15, duration: 0.5 }}
+                  transition={{ delay: i * 0.15, type: 'spring', stiffness: 200, damping: 8, mass: 1 }}
                   className="group bg-cafe-surface border border-cafe-border/60 rounded-xl overflow-hidden hover:border-cafe-accent/50 transition-all duration-300"
                 >
-                  {event.flyer_url && (
-                    <div className="aspect-[16/9] overflow-hidden bg-cafe-card">
+                  {event.flyer_url ? (
+                    <div className="overflow-hidden bg-cafe-card">
                       <img
                         src={event.flyer_url}
                         alt={event.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
                       />
+                    </div>
+                  ) : (
+                    <div className="h-48 bg-cafe-card flex items-center justify-center">
+                      <Calendar className="w-10 h-10 text-cafe-muted/20" />
                     </div>
                   )}
                   <div className="p-5">
