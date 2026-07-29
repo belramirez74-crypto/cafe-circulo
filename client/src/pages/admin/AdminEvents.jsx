@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getEvents, createEvent, deleteEvent } from '../../lib/api';
-import { Plus, Trash2, X, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, Trash2, X, Calendar, ChevronLeft, ChevronRight, Image } from 'lucide-react';
+import ImagePicker from '../../components/ImagePicker';
 
 const monthNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
@@ -10,6 +11,7 @@ export default function AdminEvents() {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ title: '', description: '', date: '', flyer_url: '' });
   const [loading, setLoading] = useState(false);
+  const [pickerTarget, setPickerTarget] = useState(null);
   const [calMonth, setCalMonth] = useState(new Date().getMonth());
   const [calYear, setCalYear] = useState(new Date().getFullYear());
   const [selectedDay, setSelectedDay] = useState(null);
@@ -306,14 +308,27 @@ export default function AdminEvents() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">URL DEL FLYER</label>
-                    <input
-                      type="url"
-                      value={form.flyer_url}
-                      onChange={e => setForm({ ...form, flyer_url: e.target.value })}
-                      className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-cafe-accent"
-                      placeholder="https://..."
-                    />
+                    <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">FLYER</label>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setPickerTarget('flyer')}
+                        className="flex items-center gap-2 px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text text-sm hover:border-cafe-accent rounded-lg transition-colors"
+                      >
+                        <Image className="w-4 h-4 text-cafe-muted" />
+                        {form.flyer_url ? 'Cambiar imagen' : 'Subir imagen'}
+                      </button>
+                      {form.flyer_url && (
+                        <div className="w-10 h-10 rounded overflow-hidden border border-cafe-border shrink-0">
+                          <img src={form.flyer_url} alt="" className="w-full h-full object-cover" />
+                        </div>
+                      )}
+                      {form.flyer_url && (
+                        <button type="button" onClick={() => setForm({ ...form, flyer_url: '' })} className="text-cafe-muted hover:text-red-400">
+                          <X className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
                   </div>
                   <div className="flex gap-3 pt-4 border-t border-cafe-border">
                     <button
@@ -337,6 +352,17 @@ export default function AdminEvents() {
           )}
         </AnimatePresence>
       </div>
+
+      {pickerTarget && (
+        <ImagePicker
+          value={form.flyer_url}
+          onChange={async (url) => {
+            setForm({ ...form, flyer_url: url });
+            setPickerTarget(null);
+          }}
+          onClose={() => setPickerTarget(null)}
+        />
+      )}
     </div>
   );
 }
