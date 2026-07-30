@@ -262,7 +262,7 @@ export default function CoffeeTypesSection({ settings }) {
           <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-cafe-accent to-transparent mx-auto mt-4" />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+        <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           {coffees.map((coffee, i) => {
             const SvgComp = coffeeSvgs[coffee.key];
             const customImage = settings?.coffee_images?.[coffee.key];
@@ -286,16 +286,16 @@ export default function CoffeeTypesSection({ settings }) {
                       loading="lazy"
                     />
                   ) : SvgComp ? (
-                    <div className="w-16 h-16 group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 group-hover:scale-110 transition-transform duration-300">
                       <SvgComp />
                     </div>
                   ) : (
                     <Coffee className="w-10 h-10 text-cafe-muted/20" />
                   )}
                 </div>
-                <div className="px-4 py-3">
-                  <h3 className="font-display text-sm text-cafe-text mb-1 tracking-wide">{label}</h3>
-                  {desc && <p className="text-cafe-muted text-sm leading-relaxed">{desc}</p>}
+                <div className="px-3 py-2 sm:px-4 sm:py-3">
+                  <h3 className="font-display text-xs sm:text-sm text-cafe-text mb-1 tracking-wide">{label}</h3>
+                  {desc && <p className="text-cafe-muted text-xs sm:text-sm leading-relaxed">{desc}</p>}
                 </div>
               </motion.div>
             );
