@@ -4,7 +4,7 @@ import { getAllMenuItems, createMenuItem, updateMenuItem, deleteMenuItem, getLan
 import { Plus, Pencil, Trash2, X, ToggleLeft, ToggleRight, Star, Upload, FileSpreadsheet, Check, Image, Coffee, Cookie, Sandwich, CupSoda, Save } from 'lucide-react';
 import ImagePicker from '../../components/ImagePicker';
 
-const emptyForm = { name: '', description: '', description_en: '', price: '', category: 'Cafetería', image_url: '', stock: true, featured: false };
+const emptyForm = { name: '', description: '', description_en: '', price: '', category: 'Cafetería', image_url: '', stock: true, featured: false, recommended: false };
 
 export default function AdminMenu() {
   const [items, setItems] = useState([]);
@@ -104,6 +104,15 @@ export default function AdminMenu() {
       loadItems();
     } catch {
       alert('Error al actualizar destacado');
+    }
+  };
+
+  const toggleRecommended = async (item) => {
+    try {
+      await updateMenuItem(item.id, { recommended: !item.recommended });
+      loadItems();
+    } catch {
+      alert('Error al actualizar recomendado');
     }
   };
 
@@ -397,6 +406,7 @@ export default function AdminMenu() {
                     <th className="p-4 font-display text-xs tracking-widest text-cafe-muted">PRECIO</th>
                     <th className="p-4 font-display text-xs tracking-widest text-cafe-muted">STOCK</th>
                     <th className="p-4 font-display text-xs tracking-widest text-cafe-muted">DESTACADO</th>
+                    <th className="p-4 font-display text-xs tracking-widest text-cafe-muted">RECOMENDADO</th>
                     <th className="p-4 font-display text-xs tracking-widest text-cafe-muted text-right">ACCIONES</th>
                   </tr>
                 </thead>
@@ -440,6 +450,15 @@ export default function AdminMenu() {
                           title={item.featured ? 'Destacado' : 'No destacado'}
                         >
                           <Star className={`w-5 h-5 ${item.featured ? 'fill-cafe-accent' : ''}`} />
+                        </button>
+                      </td>
+                      <td className="p-4">
+                        <button
+                          onClick={() => toggleRecommended(item)}
+                          className={`transition-colors ${item.recommended ? 'text-cafe-accent' : 'text-cafe-muted'}`}
+                          title={item.recommended ? 'Recomendado' : 'No recomendado'}
+                        >
+                          <Check className={`w-5 h-5 ${item.recommended ? 'text-green-400' : ''}`} />
                         </button>
                       </td>
                       <td className="p-4 text-right">
@@ -603,6 +622,15 @@ export default function AdminMenu() {
                         className="accent-cafe-accent"
                       />
                       <span className="text-sm text-cafe-muted">Destacado del día</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={form.recommended}
+                        onChange={e => setForm({ ...form, recommended: e.target.checked })}
+                        className="accent-cafe-accent"
+                      />
+                      <span className="text-sm text-cafe-muted">Recomendado</span>
                     </label>
                   </div>
                   <div className="flex gap-3 pt-4 border-t border-cafe-border">

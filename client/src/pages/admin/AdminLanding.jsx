@@ -1,7 +1,556 @@
-import { useEffect, useState } from 'react';
-import { getLandingSettings, updateLandingSettings } from '../../lib/api';
-import { Save, Clock, MapPin, Music, Plus, X, Image, GripVertical, ChevronRight, Video, Coffee } from 'lucide-react';
+import { useEffect, useState, useCallback } from 'react';
+import {
+  Save, Eye, EyeOff, Plus, X, GripVertical, ChevronDown, ChevronUp,
+  Image, Coffee, MapPin, Phone, Star, FileText, Utensils, Layout
+} from 'lucide-react';
+import { getLandingSettings, updateLandingSettings, getRecommendedItems, getAllMenuItems } from '../../lib/api';
 import ImagePicker from '../../components/ImagePicker';
+import HeroSection from '../../components/sections/HeroSection';
+import CoffeeTypesSection from '../../components/sections/CoffeeTypesSection';
+import ReservaSection from '../../components/sections/ReservaSection';
+import GallerySection from '../../components/sections/GallerySection';
+import EncontranosSection from '../../components/sections/EncontranosSection';
+import RecommendationsSection from '../../components/sections/RecommendationsSection';
+import TextImageSection from '../../components/sections/TextImageSection';
+import MenuItemsSection from '../../components/sections/MenuItemsSection';
+
+const MODULE_DEFS = [
+  { type: 'hero', label: 'Hero Banner', icon: Layout, defaultVisible: true },
+  { type: 'recommendations', label: 'Recomendaciones', icon: Star, defaultVisible: true },
+  { type: 'coffee_types', label: 'Tipos de Café', icon: Coffee, defaultVisible: true },
+  { type: 'reservas', label: 'Reservas', icon: Phone, defaultVisible: true },
+  { type: 'gallery', label: 'Galería', icon: Image, defaultVisible: true },
+  { type: 'text_image', label: 'Texto + Imagen', icon: FileText, defaultVisible: false },
+  { type: 'menu_items', label: 'Items del Menú', icon: Utensils, defaultVisible: false },
+  { type: 'encuentranos', label: 'Encontranos', icon: MapPin, defaultVisible: true },
+];
+
+function makeModule(type) {
+  const def = MODULE_DEFS.find(m => m.type === type);
+  const base = { id: `${type}_${Date.now()}`, type, visible: def?.defaultVisible ?? true };
+  if (type === 'recommendations') return { ...base, title: 'Recomendaciones', subtitle: '' };
+  if (type === 'text_image') return { ...base, title: '', subtitle: '', paragraph: '', cta_text: '', cta_link: '', image_url: '', image_align: 'right' };
+  if (type === 'menu_items') return { ...base, title: 'Nuestro Menú', subtitle: '', button_text: 'Ver menú completo', item_ids: [] };
+  return base;
+}
+
+const EMPTY = {
+  hero_subtitle: '', hero_title_line1: 'CAFÉ', hero_title_line2: 'Círculo', hero_description: '', hero_bg_image: '', hero_button_text: 'VER MENÚ',
+  reserva_heading: 'RESERVA', reserva_description: '', reserva_whatsapp_url: '', reserva_instagram_url: '',
+  gallery_images: '[]', gallery_taglines: '[""]',
+  encontranos_subtitle: '', encontranos_heading: 'ENCONTRANOS', ubicacion_heading: 'UBICACIÓN', location_line1: '', location_line2: '', maps_embed_url: '',
+  coffee_images: '{}', coffee_items: '[]',
+  menu_categories: '[]', menu_categories_en: '[]',
+  modules: '[]',
+};
+
+export default function AdminLanding() {
+  const [settings, setSettings] = useState(null);
+  const [original, setOriginal] = useState(null);
+  const [selectedId, setSelectedId] = useState(null);
+  const [preview, setPreview] = useState(false);
+  const [pickerTarget, setPickerTarget] = useState(null);
+  const [recommendedItems, setRecommendedItems] = useState([]);
+  const [allMenuItems, setAllMenuItems] = useState([]);
+  const [saving, setSaving] = useState(false);
+  const [dragIdx, setDragIdx] = useState(null);
+
+  useEffect(() => {
+    getLandingSettings().then(r => {
+      const s = r.data;
+      if (!s.modules || !Array.isArray(s.modules) || s.modules.length === 0) {
+        s.modules = MODULE_DEFS.map(m => makeModule(m.type));
+      }
+      setSettings(s);
+      setOriginal(JSON.parse(JSON.stringify(s)));
+      if (s.modules.length > 0) setSelectedId(s.modules[0].id);
+    }).catch(() => {});
+    getRecommendedItems().then(r => setRecommendedItems(r.data)).catch(() => {});
+    getAllMenuItems().then(r => setAllMenuItems(r.data)).catch(() => {});
+  }, []);
+
+  const modules = settings?.modules || [];
+
+  const handleChange = useCallback((key, val) => {
+    setSettings(prev => ({ ...prev, [key]: val }));
+  }, []);
+
+  const updateModule = useCallback((id, patch) => {
+    setSettings(prev => ({
+      ...prev,
+      modules: prev.modules.map(m => m.id === id ? { ...m, ...patch } : m),
+    }));
+  }, []);
+
+  const addModule = useCallback((type) => {
+    const m = makeModule(type);
+    setSettings(prev => ({ ...prev, modules: [...prev.modules, m] }));
+    setSelectedId(m.id);
+  }, []);
+
+  const removeModule = useCallback((id) => {
+    setSettings(prev => {
+      const mods = prev.modules.filter(m => m.id !== id);
+      if (selectedId === id) setSelectedId(mods.length > 0 ? mods[0].id : null);
+      return { ...prev, modules: mods };
+    });
+  }, [selectedId]);
+
+  const toggleVisibility = useCallback((id) => {
+    setSettings(prev => ({
+      ...prev,
+      modules: prev.modules.map(m => m.id === id ? { ...m, visible: !m.visible } : m),
+    }));
+  }, []);
+
+  const moveModule = useCallback((from, to) => {
+    if (to < 0 || to >= modules.length) return;
+    const mods = [...modules];
+    const [removed] = mods.splice(from, 1);
+    mods.splice(to, 0, removed);
+    setSettings(prev => ({ ...prev, modules: mods }));
+  }, [modules]);
+
+  const handleSave = useCallback(async () => {
+    setSaving(true);
+    try {
+      const res = await updateLandingSettings(settings);
+      setSettings(res.data);
+      setOriginal(JSON.parse(JSON.stringify(res.data)));
+    } catch (e) {
+      alert('Error al guardar');
+    }
+    setSaving(false);
+  }, [settings]);
+
+  const hasChanges = JSON.stringify(settings) !== JSON.stringify(original);
+  const selectedModule = modules.find(m => m.id === selectedId);
+
+  const availableTypes = MODULE_DEFS.filter(d => !modules.find(m => m.type === d.type));
+
+  const pickImage = (handler) => setPickerTarget({ handler });
+  const handlePicked = (url) => {
+    if (!pickerTarget?.handler) return;
+    pickerTarget.handler(url);
+    setPickerTarget(null);
+  };
+
+  if (!settings) return <div className="p-8 text-cafe-muted">Cargando...</div>;
+
+  return (
+    <div className="min-h-screen bg-cafe-bg">
+      {/* Toolbar */}
+      <div className="sticky top-0 z-30 bg-cafe-surface border-b border-cafe-border px-4 py-3 flex items-center justify-between gap-2 flex-wrap">
+        <h1 className="font-display text-lg text-cafe-text">Constructor de Landing Page</h1>
+        <div className="flex items-center gap-2">
+          {availableTypes.length > 0 && (
+            <div className="relative group">
+              <button className="flex items-center gap-1.5 px-3 py-1.5 bg-cafe-accent text-white text-sm rounded-lg hover:opacity-90 transition-colors">
+                <Plus className="w-4 h-4" /> Módulo
+              </button>
+              <div className="absolute right-0 top-full mt-1 w-48 bg-cafe-surface border border-cafe-border rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                {availableTypes.map(d => (
+                  <button key={d.type} onClick={() => addModule(d.type)}
+                    className="flex items-center gap-2 w-full px-3 py-2 text-sm text-cafe-text hover:bg-cafe-bg transition-colors first:rounded-t-xl last:rounded-b-xl"
+                  >
+                    <d.icon className="w-4 h-4 text-cafe-accent" /> {d.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+          <button onClick={() => setPreview(!preview)}
+            className="flex items-center gap-1.5 px-3 py-1.5 border border-cafe-border text-cafe-text text-sm rounded-lg hover:bg-cafe-bg transition-colors"
+          >
+            {preview ? 'Editar' : 'Vista previa'}
+          </button>
+          <button onClick={handleSave} disabled={!hasChanges || saving}
+            className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+              hasChanges && !saving ? 'bg-cafe-accent text-white hover:opacity-90' : 'bg-cafe-border/50 text-cafe-muted cursor-not-allowed'
+            }`}
+          >
+            <Save className="w-4 h-4" /> {saving ? 'Guardando...' : 'Guardar'}
+          </button>
+        </div>
+      </div>
+
+      <div className="flex flex-col lg:flex-row gap-0">
+        {/* Module list */}
+        <div className="w-full lg:w-80 xl:w-96 border-b lg:border-b-0 lg:border-r border-cafe-border shrink-0">
+          <div className="p-3 space-y-2">
+            {modules.map((mod, idx) => {
+              const def = MODULE_DEFS.find(d => d.type === mod.type);
+              const isSelected = selectedId === mod.id;
+              return (
+                <div
+                  key={mod.id}
+                  draggable
+                  onDragStart={() => setDragIdx(idx)}
+                  onDragOver={e => { e.preventDefault(); }}
+                  onDrop={() => { if (dragIdx !== null && dragIdx !== idx) { moveModule(dragIdx, idx); setDragIdx(null); } }}
+                  onDragEnd={() => setDragIdx(null)}
+                  className={`group flex items-center gap-2 p-2.5 rounded-xl border transition-all cursor-pointer ${
+                    isSelected ? 'border-cafe-accent bg-cafe-accent/10' : 'border-cafe-border/60 bg-cafe-surface hover:border-cafe-border'
+                  } ${mod.visible ? 'opacity-100' : 'opacity-50'}`}
+                  onClick={() => setSelectedId(mod.id)}
+                >
+                  <GripVertical className="w-4 h-4 text-cafe-muted/40 shrink-0 cursor-grab active:cursor-grabbing" />
+                  <def.icon className="w-4 h-4 text-cafe-accent shrink-0" />
+                  <span className="flex-1 text-sm font-display text-cafe-text truncate">{def?.label || mod.type}</span>
+                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={e => e.stopPropagation()}>
+                    <button onClick={() => toggleVisibility(mod.id)} title={mod.visible ? 'Ocultar' : 'Mostrar'}>
+                      {mod.visible ? <EyeOff className="w-3.5 h-3.5 text-cafe-muted hover:text-cafe-text" /> : <Eye className="w-3.5 h-3.5 text-cafe-muted hover:text-cafe-text" />}
+                    </button>
+                    <button onClick={() => removeModule(mod.id)} title="Eliminar">
+                      <X className="w-3.5 h-3.5 text-cafe-muted hover:text-red-400" />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Editor / Preview */}
+        <div className="flex-1 min-w-0">
+          {preview ? (
+            <div className="p-4">
+              <PagePreview settings={settings} recommendedItems={recommendedItems} allMenuItems={allMenuItems} />
+            </div>
+          ) : selectedModule ? (
+            <div className="p-4 max-w-3xl">
+              <ModuleEditor
+                module={selectedModule}
+                settings={settings}
+                onChange={handleChange}
+                onUpdateModule={updateModule}
+                pickImage={pickImage}
+                recommendedItems={recommendedItems}
+                allMenuItems={allMenuItems}
+              />
+            </div>
+          ) : (
+            <div className="p-8 text-center text-cafe-muted">Seleccioná un módulo para editarlo</div>
+          )}
+        </div>
+      </div>
+
+      {pickerTarget && (
+        <ImagePicker
+          onSelect={handlePicked}
+          onClose={() => setPickerTarget(null)}
+        />
+      )}
+    </div>
+  );
+}
+
+/* ---------- MODULE EDITOR ---------- */
+function ModuleEditor({ module, settings, onChange, onUpdateModule, pickImage, recommendedItems, allMenuItems }) {
+  const { type } = module;
+
+  if (type === 'hero') return <HeroEditor settings={settings} onChange={onChange} pickImage={pickImage} />;
+  if (type === 'recommendations') return <RecommendationsEditor module={module} onUpdateModule={onUpdateModule} recommendedItems={recommendedItems} />;
+  if (type === 'coffee_types') return <CoffeeTypesEditor settings={settings} onChange={onChange} pickImage={pickImage} />;
+  if (type === 'reservas') return <ReservasEditor settings={settings} onChange={onChange} />;
+  if (type === 'gallery') return <GalleryEditor settings={settings} onChange={onChange} pickImage={pickImage} />;
+  if (type === 'text_image') return <TextImageEditor module={module} onUpdateModule={onUpdateModule} pickImage={pickImage} />;
+  if (type === 'menu_items') return <MenuItemsEditor module={module} onUpdateModule={onUpdateModule} allMenuItems={allMenuItems} />;
+  if (type === 'encuentranos') return <EncontranosEditor settings={settings} onChange={onChange} />;
+  return null;
+}
+
+/* ---------- HERO EDITOR ---------- */
+function HeroEditor({ settings, onChange, pickImage }) {
+  return (
+    <div className="space-y-4">
+      <h2 className="font-display text-lg text-cafe-text mb-4">Hero Banner</h2>
+      <Field label="Subtítulo" value={settings.hero_subtitle} onChange={v => onChange('hero_subtitle', v)} />
+      <Field label="Título línea 1" value={settings.hero_title_line1} onChange={v => onChange('hero_title_line1', v)} />
+      <Field label="Título línea 2" value={settings.hero_title_line2} onChange={v => onChange('hero_title_line2', v)} />
+      <FieldArea label="Descripción" value={settings.hero_description} onChange={v => onChange('hero_description', v)} />
+      <Field label="Texto del botón" value={settings.hero_button_text} onChange={v => onChange('hero_button_text', v)} />
+      <ImageField label="Imagen de fondo" value={settings.hero_bg_image} onPick={() => pickImage(url => onChange('hero_bg_image', url))} onRemove={() => onChange('hero_bg_image', '')} />
+    </div>
+  );
+}
+
+/* ---------- RECOMMENDATIONS EDITOR ---------- */
+function RecommendationsEditor({ module, onUpdateModule, recommendedItems }) {
+  return (
+    <div className="space-y-4">
+      <h2 className="font-display text-lg text-cafe-text mb-4">Recomendaciones</h2>
+      <Field label="Título" value={module.title || ''} onChange={v => onUpdateModule(module.id, { title: v })} />
+      <Field label="Subtítulo" value={module.subtitle || ''} onChange={v => onUpdateModule(module.id, { subtitle: v })} />
+      <div>
+        <p className="text-sm text-cafe-muted mb-2">Items recomendados (marcados como RECOMENDADOS en el menú)</p>
+        <p className="text-xs text-cafe-muted/60">Andá a Menú → Editar item → marcar "Recomendado"</p>
+        {recommendedItems.length === 0 ? (
+          <p className="text-sm text-cafe-muted/40 mt-2">No hay items recomendados todavía</p>
+        ) : (
+          <div className="mt-2 space-y-1">
+            {recommendedItems.map(item => (
+              <div key={item.id} className="flex items-center gap-2 text-sm text-cafe-text bg-cafe-bg rounded px-2 py-1">
+                <Star className="w-3 h-3 text-cafe-accent shrink-0" />
+                <span className="truncate">{item.name}</span>
+                <span className="text-cafe-muted text-xs ml-auto">${item.price}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ---------- COFFEE TYPES EDITOR ---------- */
+function CoffeeTypesEditor({ settings, onChange, pickImage }) {
+  const items = Array.isArray(settings.coffee_items) ? settings.coffee_items : [];
+  const images = settings.coffee_images || {};
+
+  const updateItem = (idx, patch) => {
+    const next = items.map((it, i) => i === idx ? { ...it, ...patch } : it);
+    onChange('coffee_items', next);
+  };
+  const addItem = () => {
+    onChange('coffee_items', [...items, { key: `custom_${Date.now()}`, label: '' }]);
+  };
+  const removeItem = (idx) => {
+    const next = items.filter((_, i) => i !== idx);
+    onChange('coffee_items', next);
+  };
+
+  return (
+    <div className="space-y-4">
+      <h2 className="font-display text-lg text-cafe-text mb-4">Tipos de Café</h2>
+      {items.map((item, idx) => (
+        <div key={item.key} className="flex items-start gap-2 bg-cafe-bg rounded-xl p-3">
+          <div className="flex-1 space-y-2">
+            <Field label="Nombre" value={item.label || ''} onChange={v => updateItem(idx, { label: v })} />
+            {images[item.key] && (
+              <div className="relative inline-block">
+                <img src={images[item.key]} alt="" className="w-16 h-16 object-cover rounded" />
+                <button onClick={() => onChange('coffee_images', { ...images, [item.key]: '' })}
+                  className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center"
+                ><X className="w-3 h-3" /></button>
+              </div>
+            )}
+            <button onClick={() => pickImage(url => onChange('coffee_images', { ...images, [item.key]: url }))}
+              className="text-xs text-cafe-accent hover:underline"
+            >{images[item.key] ? 'Cambiar imagen' : 'Agregar imagen'}</button>
+          </div>
+          <button onClick={() => removeItem(idx)} className="p-1 text-cafe-muted hover:text-red-400 mt-1"><X className="w-4 h-4" /></button>
+        </div>
+      ))}
+      <button onClick={addItem} className="flex items-center gap-1 text-sm text-cafe-accent hover:underline">
+        <Plus className="w-4 h-4" /> Agregar tipo de café
+      </button>
+    </div>
+  );
+}
+
+/* ---------- RESERVAS EDITOR ---------- */
+function ReservasEditor({ settings, onChange }) {
+  return (
+    <div className="space-y-4">
+      <h2 className="font-display text-lg text-cafe-text mb-4">Reservas</h2>
+      <Field label="Título" value={settings.reserva_heading} onChange={v => onChange('reserva_heading', v)} />
+      <FieldArea label="Descripción" value={settings.reserva_description} onChange={v => onChange('reserva_description', v)} />
+      <Field label="WhatsApp URL" value={settings.reserva_whatsapp_url} onChange={v => onChange('reserva_whatsapp_url', v)} />
+      <Field label="Instagram URL" value={settings.reserva_instagram_url} onChange={v => onChange('reserva_instagram_url', v)} />
+    </div>
+  );
+}
+
+/* ---------- GALLERY EDITOR ---------- */
+function GalleryEditor({ settings, onChange, pickImage }) {
+  const images = safeJson(settings.gallery_images);
+  const taglines = safeJson(settings.gallery_taglines);
+
+  const addImage = () => pickImage(url => {
+    const next = [...images, url];
+    onChange('gallery_images', JSON.stringify(next));
+  });
+  const updateImage = (idx, url) => {
+    const next = images.map((i, n) => n === idx ? url : i);
+    onChange('gallery_images', JSON.stringify(next));
+  };
+  const removeImage = (idx) => {
+    onChange('gallery_images', JSON.stringify(images.filter((_, i) => i !== idx)));
+  };
+  const addTagline = () => onChange('gallery_taglines', JSON.stringify([...taglines, '']));
+  const updateTagline = (idx, v) => {
+    onChange('gallery_taglines', JSON.stringify(taglines.map((t, i) => i === idx ? v : t)));
+  };
+  const removeTagline = (idx) => {
+    onChange('gallery_taglines', JSON.stringify(taglines.filter((_, i) => i !== idx)));
+  };
+
+  return (
+    <div className="space-y-4">
+      <h2 className="font-display text-lg text-cafe-text mb-4">Galería</h2>
+      <div>
+        <p className="text-sm text-cafe-muted mb-2">Taglines (rotan automáticamente)</p>
+        {taglines.map((t, idx) => (
+          <div key={idx} className="flex items-center gap-2 mb-2">
+            <input value={t} onChange={e => updateTagline(idx, e.target.value)}
+              className="flex-1 bg-cafe-bg border border-cafe-border rounded-lg px-3 py-1.5 text-sm text-cafe-text focus:outline-none focus:border-cafe-accent"
+            />
+            <button onClick={() => removeTagline(idx)}><X className="w-4 h-4 text-cafe-muted hover:text-red-400" /></button>
+          </div>
+        ))}
+        <button onClick={addTagline} className="text-xs text-cafe-accent hover:underline">+ Agregar tagline</button>
+      </div>
+      <div>
+        <p className="text-sm text-cafe-muted mb-2">Imágenes / Videos</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          {images.map((url, idx) => (
+            <div key={idx} className="relative aspect-video bg-cafe-bg rounded-lg overflow-hidden group">
+              {url ? (
+                isVideoUrl(url) ? (
+                  <iframe src={getVideoEmbed(url)} className="w-full h-full" allowFullScreen />
+                ) : (
+                  <img src={url} alt="" className="w-full h-full object-cover" />
+                )
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-cafe-muted/30">
+                  <Image className="w-6 h-6" />
+                </div>
+              )}
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                <button onClick={() => pickImage(url => updateImage(idx, url))} className="p-1 bg-white/20 rounded text-white text-xs">Cambiar</button>
+                <button onClick={() => removeImage(idx)} className="p-1 bg-red-500/60 rounded text-white text-xs">X</button>
+              </div>
+            </div>
+          ))}
+        </div>
+        <button onClick={addImage} className="mt-2 text-xs text-cafe-accent hover:underline">+ Agregar imagen/video</button>
+        <p className="text-xs text-cafe-muted/40 mt-1">Soportado: imágenes, YouTube, Vimeo, MP4 directo</p>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- TEXT + IMAGE EDITOR ---------- */
+function TextImageEditor({ module, onUpdateModule, pickImage }) {
+  const align = module.image_align || 'right';
+  return (
+    <div className="space-y-4">
+      <h2 className="font-display text-lg text-cafe-text mb-4">Texto + Imagen</h2>
+      <Field label="Título" value={module.title || ''} onChange={v => onUpdateModule(module.id, { title: v })} />
+      <Field label="Subtítulo" value={module.subtitle || ''} onChange={v => onUpdateModule(module.id, { subtitle: v })} />
+      <FieldArea label="Párrafo" value={module.paragraph || ''} onChange={v => onUpdateModule(module.id, { paragraph: v })} />
+      <Field label="Texto del botón (CTA)" value={module.cta_text || ''} onChange={v => onUpdateModule(module.id, { cta_text: v })} />
+      <Field label="Link del botón" value={module.cta_link || ''} onChange={v => onUpdateModule(module.id, { cta_link: v })} />
+      <ImageField label="Imagen" value={module.image_url || ''} onPick={() => pickImage(url => onUpdateModule(module.id, { image_url: url }))} onRemove={() => onUpdateModule(module.id, { image_url: '' })} />
+      <div>
+        <p className="text-sm text-cafe-muted mb-1">Alineación de la imagen</p>
+        <select value={align} onChange={e => onUpdateModule(module.id, { image_align: e.target.value })}
+          className="bg-cafe-bg border border-cafe-border rounded-lg px-3 py-1.5 text-sm text-cafe-text focus:outline-none focus:border-cafe-accent"
+        >
+          <option value="right">Derecha</option>
+          <option value="left">Izquierda</option>
+        </select>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- MENU ITEMS EDITOR ---------- */
+function MenuItemsEditor({ module, onUpdateModule, allMenuItems }) {
+  const itemIds = module.item_ids || [];
+  const selectedItems = allMenuItems.filter(it => itemIds.includes(it.id));
+  const availableItems = allMenuItems.filter(it => !itemIds.includes(it.id));
+
+  const toggleItem = (id) => {
+    const next = itemIds.includes(id) ? itemIds.filter(i => i !== id) : [...itemIds, id];
+    onUpdateModule(module.id, { item_ids: next });
+  };
+
+  return (
+    <div className="space-y-4">
+      <h2 className="font-display text-lg text-cafe-text mb-4">Items del Menú</h2>
+      <Field label="Título" value={module.title || ''} onChange={v => onUpdateModule(module.id, { title: v })} />
+      <Field label="Subtítulo" value={module.subtitle || ''} onChange={v => onUpdateModule(module.id, { subtitle: v })} />
+      <Field label="Texto del botón" value={module.button_text || 'Ver menú completo'} onChange={v => onUpdateModule(module.id, { button_text: v })} />
+      <div>
+        <p className="text-sm text-cafe-muted mb-2">Items a mostrar ({selectedItems.length} seleccionados)</p>
+        <div className="max-h-60 overflow-y-auto space-y-1 border border-cafe-border rounded-xl p-2">
+          {allMenuItems.map(item => (
+            <label key={item.id} className="flex items-center gap-2 px-2 py-1 rounded hover:bg-cafe-bg cursor-pointer text-sm">
+              <input type="checkbox" checked={itemIds.includes(item.id)} onChange={() => toggleItem(item.id)}
+                className="accent-cafe-accent"
+              />
+              <span className="text-cafe-text truncate">{item.name}</span>
+              <span className="text-cafe-muted text-xs ml-auto">${item.price}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- ENCONTRANOS EDITOR ---------- */
+function EncontranosEditor({ settings, onChange }) {
+  return (
+    <div className="space-y-4">
+      <h2 className="font-display text-lg text-cafe-text mb-4">Encontranos</h2>
+      <Field label="Subtítulo" value={settings.encontranos_subtitle} onChange={v => onChange('encontranos_subtitle', v)} />
+      <Field label="Título" value={settings.encontranos_heading} onChange={v => onChange('encontranos_heading', v)} />
+      <Field label="Título ubicación" value={settings.ubicacion_heading} onChange={v => onChange('ubicacion_heading', v)} />
+      <Field label="Dirección línea 1" value={settings.location_line1} onChange={v => onChange('location_line1', v)} />
+      <Field label="Dirección línea 2" value={settings.location_line2} onChange={v => onChange('location_line2', v)} />
+      <FieldArea label="Google Maps Embed URL" value={settings.maps_embed_url} onChange={v => onChange('maps_embed_url', v)} />
+    </div>
+  );
+}
+
+/* ---------- HELPERS ---------- */
+function Field({ label, value, onChange }) {
+  return (
+    <div>
+      <label className="block text-sm text-cafe-muted mb-1">{label}</label>
+      <input value={value || ''} onChange={e => onChange(e.target.value)}
+        className="w-full bg-cafe-bg border border-cafe-border rounded-lg px-3 py-2 text-sm text-cafe-text focus:outline-none focus:border-cafe-accent transition-colors"
+      />
+    </div>
+  );
+}
+
+function FieldArea({ label, value, onChange }) {
+  return (
+    <div>
+      <label className="block text-sm text-cafe-muted mb-1">{label}</label>
+      <textarea value={value || ''} onChange={e => onChange(e.target.value)} rows={3}
+        className="w-full bg-cafe-bg border border-cafe-border rounded-lg px-3 py-2 text-sm text-cafe-text focus:outline-none focus:border-cafe-accent transition-colors resize-y"
+      />
+    </div>
+  );
+}
+
+function ImageField({ label, value, onPick, onRemove }) {
+  return (
+    <div>
+      <label className="block text-sm text-cafe-muted mb-1">{label}</label>
+      {value && (
+        <div className="relative inline-block mb-2">
+          <img src={value} alt="" className="h-24 w-auto rounded-lg object-cover" />
+          <button onClick={onRemove} className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center"><X className="w-3 h-3" /></button>
+        </div>
+      )}
+      <button onClick={onPick} className="block text-xs text-cafe-accent hover:underline">
+        {value ? 'Cambiar imagen' : 'Seleccionar imagen'}
+      </button>
+    </div>
+  );
+}
+
+function safeJson(val) {
+  if (!val) return [];
+  if (Array.isArray(val)) return val;
+  try { return JSON.parse(val); } catch { return []; }
+}
 
 function isVideoUrl(url) {
   return /(?:youtube\.com\/watch\?v=|youtu\.be\/|vimeo\.com\/|player\.vimeo\.com\/video\/)/.test(url);
@@ -15,1189 +564,77 @@ function getVideoEmbed(url) {
   return url;
 }
 
-const defaultSettings = {
-  // Hero
-  hero_subtitle: '',
-  hero_title_line1: 'CAFÉ',
-  hero_title_line2: 'Círculo',
-  hero_description: '',
-  hero_bg_image: '',
-  hero_button_text: 'VER MENÚ',
-
-  // Reserva
-  reserva_heading: 'RESERVA',
-  reserva_description: 'Contactanos para reservar tu lugar y disfrutar de una experiencia única.',
-  reserva_whatsapp_url: 'https://wa.me/5493541530797',
-  reserva_instagram_url: 'https://www.instagram.com/circuloescafe',
-
-  // Recommendations
-  recommended_items: [],
-
-  // Gallery
-  gallery_taglines: ['más que un café de especialidad,', 'una comunidad.', 'donde los círculos se hacen más grandes'],
-  gallery_images: [],
-
-  // Encontranos
-  encontranos_subtitle: 'Visitanos',
-  encontranos_heading: 'ENCONTRANOS',
-  ubicacion_heading: 'UBICACIÓN',
-  location_line1: '',
-  location_line2: '',
-  maps_embed_url: '',
-
-  // Sobre Nosotros
-  nosotros_subtitle: 'Nuestra historia',
-  nosotros_heading: 'SOBRE NOSOTROS',
-  about_story: '',
-  nosotros_paragraph2: '',
-  nosotros_paragraph3: '',
-  hours_weekdays: '',
-  hours_weekends: '',
-  culture_line1: '',
-  culture_line2: '',
-
-  // Tipos de Café (imágenes custom)
-  coffee_images: {},
-  coffee_items: [
-    { key: 'espresso', label: 'Espresso' },
-    { key: 'doppio', label: 'Doppio' },
-    { key: 'cortado', label: 'Cortado' },
-    { key: 'americano', label: 'Americano' },
-    { key: 'lungo', label: 'Lungo' },
-    { key: 'ristretto', label: 'Ristretto' },
-    { key: 'capuchino', label: 'Capuchino' },
-    { key: 'flatwhite', label: 'Flat White' },
-    { key: 'latte', label: 'Latte' },
-    { key: 'mocha', label: 'Mocha' },
-  ],
-
-  // Categorías del menú
-  menu_categories: ['Cafetería', 'Dulces', 'Saladitos', 'Bebidas'],
-  menu_categories_en: ['Coffee', 'Sweets', 'Savory', 'Drinks'],
-};
-
-export default function AdminLanding() {
-  const [settings, setSettings] = useState(defaultSettings);
-  const [original, setOriginal] = useState(defaultSettings);
-  const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [pickerTarget, setPickerTarget] = useState(null);
-  const [previewTaglineIdx, setPreviewTaglineIdx] = useState(0);
-
-  useEffect(() => {
-    const taglines = settings.gallery_taglines || ['más que un café de especialidad,', 'una comunidad.'];
-    if (taglines.length <= 1) return;
-    const interval = setInterval(() => {
-      setPreviewTaglineIdx(prev => prev + 1);
-    }, 3500);
-    return () => clearInterval(interval);
-  }, [settings.gallery_taglines?.length]);
-
-  useEffect(() => {
-    setLoading(true);
-    getLandingSettings()
-      .then(res => {
-        setSettings(res.data);
-        setOriginal(res.data);
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
-
-  const handleChange = (key, value) => {
-    setSettings(prev => ({ ...prev, [key]: value }));
-  };
-
-  const addGalleryImage = () => {
-    setSettings(prev => ({
-      ...prev,
-      gallery_images: [...(prev.gallery_images || []), ''],
-    }));
-  };
-
-  const updateGalleryImage = (index, url) => {
-    const updated = [...(settings.gallery_images || [])];
-    updated[index] = url;
-    handleChange('gallery_images', updated);
-  };
-
-  const removeGalleryImage = (index) => {
-    const updated = [...(settings.gallery_images || [])];
-    updated.splice(index, 1);
-    handleChange('gallery_images', updated);
-  };
-
-  const moveGalleryImage = (from, to) => {
-    const updated = [...(settings.gallery_images || [])];
-    const [moved] = updated.splice(from, 1);
-    updated.splice(to, 0, moved);
-    handleChange('gallery_images', updated);
-  };
-
-  const addTagline = () => {
-    setSettings(prev => ({ ...prev, gallery_taglines: [...(prev.gallery_taglines || []), ''] }));
-  };
-  const updateTagline = (index, value) => {
-    setSettings(prev => {
-      const updated = [...(prev.gallery_taglines || [])];
-      updated[index] = value;
-      return { ...prev, gallery_taglines: updated };
-    });
-  };
-  const removeTagline = (index) => {
-    setSettings(prev => {
-      const updated = [...(prev.gallery_taglines || [])];
-      updated.splice(index, 1);
-      return { ...prev, gallery_taglines: updated };
-    });
-  };
-
-  const addRecommendedItem = () => {
-    setSettings(prev => ({
-      ...prev,
-      recommended_items: [...(prev.recommended_items || []), { name: '', description: '', price: '', image_url: '' }],
-    }));
-  };
-
-  const updateRecommendedItem = (index, key, value) => {
-    const updated = [...(settings.recommended_items || [])];
-    updated[index] = { ...updated[index], [key]: value };
-    handleChange('recommended_items', updated);
-  };
-
-  const removeRecommendedItem = (index) => {
-    const updated = [...(settings.recommended_items || [])];
-    updated.splice(index, 1);
-    handleChange('recommended_items', updated);
-  };
-
-  const moveRecommendedItem = (from, to) => {
-    const updated = [...(settings.recommended_items || [])];
-    const [moved] = updated.splice(from, 1);
-    updated.splice(to, 0, moved);
-    handleChange('recommended_items', updated);
-  };
-
-  const handleSave = async () => {
-    setSaving(true);
-    try {
-      await updateLandingSettings(settings);
-      setOriginal(settings);
-      setSaved(true);
-      setTimeout(() => setSaved(false), 2000);
-    } catch (err) {
-      alert(err.response?.data?.error || 'Error al guardar');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const hasChanges = JSON.stringify(settings) !== JSON.stringify(original);
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[calc(100vh-3rem)]">
-        <div className="w-8 h-8 border-2 border-cafe-accent border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
+/* ---------- PAGE PREVIEW ---------- */
+function PagePreview({ settings, recommendedItems, allMenuItems }) {
+  const modules = settings?.modules || [];
+  if (!modules.length) return <div className="text-cafe-muted text-center py-8">No hay módulos</div>;
 
   return (
-    <div>
-      <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="font-display text-4xl text-cafe-text">LANDING PAGE</h1>
-            <p className="text-cafe-muted text-sm mt-1">Personalizá el contenido de la página principal</p>
-          </div>
-          <button
-            onClick={handleSave}
-            disabled={!hasChanges || saving}
-            className="flex items-center gap-2 px-4 py-2 bg-cafe-accent text-white font-display text-sm tracking-wider hover:bg-cafe-burgundy-light transition-colors disabled:opacity-50 rounded-xl shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-black/40"
-          >
-            <Save className="w-4 h-4" /> {saving ? 'GUARDANDO...' : saved ? 'GUARDADO' : 'GUARDAR'}
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-          {/* Left: Edit Forms */}
-          <div className="space-y-6 overflow-y-auto max-h-[calc(100vh-12rem)] pr-2">
-            {/* 1. Hero */}
-            <div className="bg-cafe-surface border border-cafe-border p-6 rounded-xl">
-              <h2 className="font-display text-lg text-cafe-accent mb-4">1 · SECCIÓN HERO</h2>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">SUBTÍTULO</label>
-                  <input
-                    type="text"
-                    value={settings.hero_subtitle}
-                    onChange={e => handleChange('hero_subtitle', e.target.value)}
-                    className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-cafe-accent"
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">LÍNEA 1</label>
-                    <input
-                      type="text"
-                      value={settings.hero_title_line1}
-                      onChange={e => handleChange('hero_title_line1', e.target.value)}
-                      className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-cafe-accent"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">LÍNEA 2</label>
-                    <input
-                      type="text"
-                      value={settings.hero_title_line2}
-                      onChange={e => handleChange('hero_title_line2', e.target.value)}
-                      className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-cafe-accent"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">DESCRIPCIÓN</label>
-                  <textarea
-                    value={settings.hero_description}
-                    onChange={e => handleChange('hero_description', e.target.value)}
-                    className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-cafe-accent resize-none h-20"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">TEXTO DEL BOTÓN</label>
-                  <input
-                    type="text"
-                    value={settings.hero_button_text}
-                    onChange={e => handleChange('hero_button_text', e.target.value)}
-                    className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-cafe-accent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">IMAGEN DE FONDO</label>
-                  <div className="flex gap-2">
-                    <input
-                      type="url"
-                      value={settings.hero_bg_image}
-                      onChange={e => handleChange('hero_bg_image', e.target.value)}
-                      className="flex-1 px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text text-sm focus:outline-none focus:border-cafe-accent"
-                      placeholder="https://..."
-                    />
-                    <button
-                      onClick={() => setPickerTarget('hero_bg_image')}
-                      className="px-3 py-2 bg-cafe-surface border border-cafe-border text-cafe-muted hover:text-cafe-accent hover:border-cafe-accent transition-colors"
-                      title="Seleccionar imagen"
-                    >
-                      <Image className="w-4 h-4" />
-                    </button>
-                  </div>
-                  {settings.hero_bg_image && (
-                    <div className="mt-2 aspect-[16/9] rounded overflow-hidden border border-cafe-border">
-                      <img
-                        src={settings.hero_bg_image}
-                        alt="Fondo"
-                        className="w-full h-full object-cover"
-                        onError={e => { e.target.style.display = 'none' }}
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* 2. Reserva */}
-            <div className="bg-cafe-surface border border-cafe-border p-6 rounded-xl">
-              <h2 className="font-display text-lg text-cafe-accent mb-4">2 · RESERVA</h2>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">TÍTULO DE LA SECCIÓN</label>
-                  <input
-                    type="text"
-                    value={settings.reserva_heading}
-                    onChange={e => handleChange('reserva_heading', e.target.value)}
-                    className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-cafe-accent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">DESCRIPCIÓN</label>
-                  <textarea
-                    value={settings.reserva_description}
-                    onChange={e => handleChange('reserva_description', e.target.value)}
-                    className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-cafe-accent resize-none h-20"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">URL DE WHATSAPP</label>
-                  <input
-                    type="url"
-                    value={settings.reserva_whatsapp_url}
-                    onChange={e => handleChange('reserva_whatsapp_url', e.target.value)}
-                    className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-cafe-accent"
-                    placeholder="https://wa.me/..."
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">URL DE INSTAGRAM</label>
-                  <input
-                    type="url"
-                    value={settings.reserva_instagram_url}
-                    onChange={e => handleChange('reserva_instagram_url', e.target.value)}
-                    className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-cafe-accent"
-                    placeholder="https://instagram.com/..."
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* 3. Productos Recomendados */}
-            <div className="bg-cafe-surface border border-cafe-border p-6 rounded-xl">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="font-display text-lg text-cafe-accent">3 · PRODUCTOS RECOMENDADOS</h2>
-                <button
-                  onClick={addRecommendedItem}
-                  className="flex items-center gap-1 px-3 py-1.5 bg-cafe-accent text-white font-display text-xs tracking-wider hover:bg-cafe-burgundy-light transition-colors rounded-xl shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-black/40"
-                >
-                  <Plus className="w-3 h-3" /> AGREGAR
-                </button>
-              </div>
-              <div className="space-y-3">
-                {(settings.recommended_items || []).length === 0 && (
-                  <p className="text-cafe-muted text-sm text-center py-4">Sin productos recomendados. Agregá uno.</p>
-                )}
-                {(settings.recommended_items || []).map((item, index) => (
-                  <div key={index} className="border border-cafe-border p-3">
-                    <div className="flex items-start gap-3">
-                      <div className="shrink-0 mt-2 text-cafe-muted cursor-move">
-                        <GripVertical className="w-4 h-4" />
-                      </div>
-                      <div className="flex-1 space-y-2">
-                        <div className="grid grid-cols-2 gap-2">
-                          <div>
-                            <label className="block text-xs text-cafe-muted mb-1">NOMBRE</label>
-                            <input
-                              type="text"
-                              value={item.name}
-                              onChange={e => updateRecommendedItem(index, 'name', e.target.value)}
-                              className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text text-sm focus:outline-none focus:border-cafe-accent"
-                              placeholder="Ej: Café Latte"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs text-cafe-muted mb-1">PRECIO</label>
-                            <input
-                              type="text"
-                              value={item.price}
-                              onChange={e => updateRecommendedItem(index, 'price', e.target.value)}
-                              className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text text-sm focus:outline-none focus:border-cafe-accent"
-                              placeholder="Ej: 2500"
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <label className="block text-xs text-cafe-muted mb-1">DESCRIPCIÓN</label>
-                          <textarea
-                            value={item.description}
-                            onChange={e => updateRecommendedItem(index, 'description', e.target.value)}
-                            className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text text-sm focus:outline-none focus:border-cafe-accent resize-none h-16"
-                            placeholder="Breve descripción del producto"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs text-cafe-muted mb-1">IMAGEN</label>
-                          <div className="flex gap-2">
-                            <input
-                              type="url"
-                              value={item.image_url}
-                              onChange={e => updateRecommendedItem(index, 'image_url', e.target.value)}
-                              className="flex-1 px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text text-sm focus:outline-none focus:border-cafe-accent"
-                              placeholder="https://..."
-                            />
-                            <button
-                              onClick={() => setPickerTarget(`recommended_${index}`)}
-                              className="px-2 py-2 bg-cafe-bg border border-cafe-border text-cafe-muted hover:text-cafe-accent transition-colors"
-                              title="Seleccionar imagen"
-                            >
-                              <Image className="w-3.5 h-3.5" />
-                            </button>
-                            <button
-                              onClick={() => removeRecommendedItem(index)}
-                              className="p-2 text-cafe-muted hover:text-cafe-burgundy-light transition-colors"
-                            >
-                              <X className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </div>
-                        {item.image_url && (
-                          <div className="aspect-video rounded overflow-hidden border border-cafe-border bg-cafe-card">
-                            <img
-                              src={item.image_url}
-                              alt={item.name || `Producto ${index + 1}`}
-                              className="w-full h-full object-cover"
-                              onError={e => { e.target.style.display = 'none' }}
-                            />
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              {(settings.recommended_items || []).length > 1 && (
-                <div className="flex gap-2 justify-end mt-3">
-                  <button
-                    onClick={() => moveRecommendedItem(
-                      (settings.recommended_items || []).length - 1,
-                      (settings.recommended_items || []).length - 2
-                    )}
-                    disabled={(settings.recommended_items || []).length < 2}
-                    className="text-xs text-cafe-muted hover:text-cafe-text transition-colors disabled:opacity-30"
-                  >
-                    ↑ SUBIR
-                  </button>
-                  <button
-                    onClick={() => moveRecommendedItem(0, 1)}
-                    disabled={(settings.recommended_items || []).length < 2}
-                    className="text-xs text-cafe-muted hover:text-cafe-text transition-colors disabled:opacity-30"
-                  >
-                    BAJAR ↓
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* 4. Galería */}
-            <div className="bg-cafe-surface border border-cafe-border p-6 rounded-xl">
-              <h2 className="font-display text-lg text-cafe-accent mb-4">4 · GALERÍA DE IMÁGENES Y VIDEOS</h2>
-              <div className="space-y-4">
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="text-xs font-display tracking-wider text-cafe-muted">TEXTOS DECORATIVO (rotan cada 3.5s)</label>
-                    <button onClick={addTagline} className="text-xs text-cafe-accent hover:text-cafe-burgundy-light flex items-center gap-1">
-                      <Plus className="w-3 h-3" /> AGREGAR FRASE
-                    </button>
-                  </div>
-                  <div className="space-y-2">
-                    {(settings.gallery_taglines || []).map((line, idx) => (
-                      <div key={idx} className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          value={line}
-                          onChange={e => updateTagline(idx, e.target.value)}
-                          className="flex-1 px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text text-sm focus:outline-none focus:border-cafe-accent rounded-lg"
-                          placeholder="Frase decorativa..."
-                        />
-                        {(settings.gallery_taglines || []).length > 1 && (
-                          <button onClick={() => removeTagline(idx)} className="text-cafe-muted hover:text-red-400 p-1">
-                            <X className="w-3.5 h-3.5" />
-                          </button>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="text-xs font-display tracking-wider text-cafe-muted">IMÁGENES Y VIDEOS</span>
-                    <p className="text-[10px] text-cafe-muted/60 mt-0.5">Podés pegar URLs de imágenes, YouTube o Vimeo</p>
-                  </div>
-                  <button
-                    onClick={addGalleryImage}
-                    className="flex items-center gap-1 px-3 py-1.5 bg-cafe-accent text-white font-display text-xs tracking-wider hover:bg-cafe-burgundy-light transition-colors rounded-xl shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-black/40"
-                  >
-                    <Plus className="w-3 h-3" /> AGREGAR
-                  </button>
-                </div>
-                <div className="space-y-3">
-                  {(settings.gallery_images || []).length === 0 && (
-                    <p className="text-cafe-muted text-sm text-center py-4">Sin elementos. Agregá una URL de imagen o video.</p>
-                  )}
-                  {(settings.gallery_images || []).map((url, index) => (
-                    <div key={index} className="border border-cafe-border p-3">
-                      <div className="flex items-start gap-3">
-                        <div className="shrink-0 mt-2 text-cafe-muted cursor-move">
-                          <GripVertical className="w-4 h-4" />
-                        </div>
-                        <div className="flex-1 space-y-2">
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="url"
-                              value={url}
-                              onChange={e => updateGalleryImage(index, e.target.value)}
-                              className="flex-1 px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text text-sm focus:outline-none focus:border-cafe-accent"
-                              placeholder="https://imagen.jpg, youtube.com/watch?v=... o vimeo.com/..."
-                            />
-                            <button
-                              onClick={() => setPickerTarget(`gallery_${index}`)}
-                              className="px-2 py-2 bg-cafe-bg border border-cafe-border text-cafe-muted hover:text-cafe-accent transition-colors"
-                              title="Seleccionar imagen"
-                            >
-                              <Image className="w-3.5 h-3.5" />
-                            </button>
-                            <button
-                              onClick={() => removeGalleryImage(index)}
-                              className="p-2 text-cafe-muted hover:text-cafe-burgundy-light transition-colors"
-                            >
-                              <X className="w-4 h-4" />
-                            </button>
-                          </div>
-                          {url && (
-                            <div className="aspect-video rounded overflow-hidden border border-cafe-border bg-cafe-card">
-                              {(() => {
-                                if (/\.(mp4|webm|mov)$/i.test(url)) {
-                                  return <video src={url} className="w-full h-full object-cover" controls playsInline />;
-                                }
-                                const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&?/]+)/);
-                                const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
-                                if (ytMatch) {
-                                  return <iframe src={`https://www.youtube.com/embed/${ytMatch[1]}`} className="w-full h-full" allowFullScreen title={`Video ${index + 1}`} />;
-                                }
-                                if (vimeoMatch) {
-                                  return <iframe src={`https://player.vimeo.com/video/${vimeoMatch[1]}`} className="w-full h-full" allowFullScreen title={`Video ${index + 1}`} />;
-                                }
-                                return <img src={url} alt={`Galería ${index + 1}`} className="w-full h-full object-cover" onError={e => { e.target.style.display = 'none' }} />;
-                              })()}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                {(settings.gallery_images || []).length > 1 && (
-                  <div className="flex gap-2 justify-end mt-3">
-                    <button
-                      onClick={() => moveGalleryImage(
-                        (settings.gallery_images || []).length - 1,
-                        (settings.gallery_images || []).length - 2
-                      )}
-                      disabled={(settings.gallery_images || []).length < 2}
-                      className="text-xs text-cafe-muted hover:text-cafe-text transition-colors disabled:opacity-30"
-                    >
-                      ↑ SUBIR
-                    </button>
-                    <button
-                      onClick={() => moveGalleryImage(0, 1)}
-                      disabled={(settings.gallery_images || []).length < 2}
-                      className="text-xs text-cafe-muted hover:text-cafe-text transition-colors disabled:opacity-30"
-                    >
-                      BAJAR ↓
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* 5. Encontranos */}
-            <div className="bg-cafe-surface border border-cafe-border p-6 rounded-xl">
-              <h2 className="font-display text-lg text-cafe-accent mb-4">5 · ENCONTRANOS</h2>
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">SUBTÍTULO (SCRIPT)</label>
-                    <input
-                      type="text"
-                      value={settings.encontranos_subtitle}
-                      onChange={e => handleChange('encontranos_subtitle', e.target.value)}
-                      className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-cafe-accent"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">TÍTULO DE SECCIÓN</label>
-                    <input
-                      type="text"
-                      value={settings.encontranos_heading}
-                      onChange={e => handleChange('encontranos_heading', e.target.value)}
-                      className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-cafe-accent"
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">UBICACIÓN LÍNEA 1</label>
-                    <input
-                      type="text"
-                      value={settings.location_line1}
-                      onChange={e => handleChange('location_line1', e.target.value)}
-                      className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-cafe-accent"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">UBICACIÓN LÍNEA 2</label>
-                    <input
-                      type="text"
-                      value={settings.location_line2}
-                      onChange={e => handleChange('location_line2', e.target.value)}
-                      className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-cafe-accent"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">TÍTULO DEL MAPA (UBICACIÓN)</label>
-                  <input
-                    type="text"
-                    value={settings.ubicacion_heading}
-                    onChange={e => handleChange('ubicacion_heading', e.target.value)}
-                    className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-cafe-accent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">URL EMBED DE GOOGLE MAPS</label>
-                  <textarea
-                    value={settings.maps_embed_url}
-                    onChange={e => handleChange('maps_embed_url', e.target.value)}
-                    className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text text-sm focus:outline-none focus:border-cafe-accent resize-none h-16"
-                    placeholder="https://www.google.com/maps/embed?pb=..."
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* 6. Sobre Nosotros */}
-            <div className="bg-cafe-surface border border-cafe-border p-6 rounded-xl">
-              <h2 className="font-display text-lg text-cafe-accent mb-4">6 · SOBRE NOSOTROS</h2>
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">SUBTÍTULO (SCRIPT)</label>
-                    <input
-                      type="text"
-                      value={settings.nosotros_subtitle}
-                      onChange={e => handleChange('nosotros_subtitle', e.target.value)}
-                      className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-cafe-accent"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">TÍTULO DE SECCIÓN</label>
-                    <input
-                      type="text"
-                      value={settings.nosotros_heading}
-                      onChange={e => handleChange('nosotros_heading', e.target.value)}
-                      className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-cafe-accent"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">PÁRRAFO 1 — HISTORIA</label>
-                  <textarea
-                    rows={3}
-                    value={settings.about_story}
-                    onChange={e => handleChange('about_story', e.target.value)}
-                    className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-cafe-accent resize-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">PÁRRAFO 2</label>
-                  <textarea
-                    rows={2}
-                    value={settings.nosotros_paragraph2}
-                    onChange={e => handleChange('nosotros_paragraph2', e.target.value)}
-                    className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-cafe-accent resize-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">PÁRRAFO 3</label>
-                  <textarea
-                    rows={2}
-                    value={settings.nosotros_paragraph3}
-                    onChange={e => handleChange('nosotros_paragraph3', e.target.value)}
-                    className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-cafe-accent resize-none"
-                  />
-                </div>
-                <div className="border-t border-cafe-border/40 pt-4">
-                  <p className="text-xs font-display tracking-wider text-cafe-muted mb-3">INFORMACIÓN ADICIONAL</p>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">HORARIO SEMANA</label>
-                      <input
-                        type="text"
-                        value={settings.hours_weekdays}
-                        onChange={e => handleChange('hours_weekdays', e.target.value)}
-                        className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-cafe-accent"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">HORARIO FIN DE SEMANA</label>
-                      <input
-                        type="text"
-                        value={settings.hours_weekends}
-                        onChange={e => handleChange('hours_weekends', e.target.value)}
-                        className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-cafe-accent"
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4 mt-3">
-                    <div>
-                      <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">CULTURA LÍNEA 1</label>
-                      <input
-                        type="text"
-                        value={settings.culture_line1}
-                        onChange={e => handleChange('culture_line1', e.target.value)}
-                        className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-cafe-accent"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-display tracking-wider text-cafe-muted mb-1">CULTURA LÍNEA 2</label>
-                      <input
-                        type="text"
-                        value={settings.culture_line2}
-                        onChange={e => handleChange('culture_line2', e.target.value)}
-                        className="w-full px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text focus:outline-none focus:border-cafe-accent"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {/* 7. Categorías del Menú */}
-            <div className="bg-cafe-surface border border-cafe-border p-6 rounded-xl">
-              <div className="flex items-center justify-between mb-2">
-                <h2 className="font-display text-lg text-cafe-accent">7 · CATEGORÍAS DEL MENÚ</h2>
-                <button
-                  onClick={() => handleChange('menu_categories', [...(settings.menu_categories || []), ''])}
-                  className="flex items-center gap-1 px-3 py-1.5 bg-cafe-accent text-white font-display text-xs tracking-wider hover:bg-cafe-burgundy-light transition-colors rounded-xl shadow-lg shadow-black/30"
-                >
-                  <Plus className="w-3 h-3" /> AGREGAR
-                </button>
-              </div>
-              <p className="text-cafe-muted text-xs mb-4">Definí las categorías que aparecen en el menú. Arrastrá para reordenar.</p>
-              <div className="space-y-2">
-                {(settings.menu_categories || []).map((cat, idx) => (
-                  <div key={idx} className="flex items-center gap-2">
-                    <span className="w-6 text-center text-xs text-cafe-muted/50 font-display">{idx + 1}</span>
-                    <input
-                      type="text"
-                      value={cat}
-                      onChange={e => {
-                        const updated = [...(settings.menu_categories || [])];
-                        updated[idx] = e.target.value;
-                        handleChange('menu_categories', updated);
-                      }}
-                      className="flex-1 px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text text-sm focus:outline-none focus:border-cafe-accent rounded-lg"
-                      placeholder="Nombre de categoría"
-                    />
-                    <div className="flex items-center gap-1">
-                      <button
-                        onClick={() => {
-                          if (idx === 0) return;
-                          const updated = [...(settings.menu_categories || [])];
-                          [updated[idx - 1], updated[idx]] = [updated[idx], updated[idx - 1]];
-                          handleChange('menu_categories', updated);
-                        }}
-                        disabled={idx === 0}
-                        className="p-1.5 text-cafe-muted hover:text-cafe-text transition-colors disabled:opacity-20"
-                        title="Subir"
-                      >
-                        <ChevronRight className="w-3.5 h-3.5 rotate-[-90deg]" />
-                      </button>
-                      <button
-                        onClick={() => {
-                          const updated = [...(settings.menu_categories || [])];
-                          if (idx < updated.length - 1) {
-                            [updated[idx], updated[idx + 1]] = [updated[idx + 1], updated[idx]];
-                            handleChange('menu_categories', updated);
-                          }
-                        }}
-                        disabled={idx >= (settings.menu_categories || []).length - 1}
-                        className="p-1.5 text-cafe-muted hover:text-cafe-text transition-colors disabled:opacity-20"
-                        title="Bajar"
-                      >
-                        <ChevronRight className="w-3.5 h-3.5 rotate-90" />
-                      </button>
-                      <button
-                        onClick={() => {
-                          const updated = [...(settings.menu_categories || [])];
-                          updated.splice(idx, 1);
-                          handleChange('menu_categories', updated);
-                        }}
-                        className="p-1.5 text-cafe-muted hover:text-cafe-burgundy-light transition-colors"
-                        title="Eliminar"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-                {(settings.menu_categories || []).length === 0 && (
-                  <p className="text-cafe-muted text-xs text-center py-3">Sin categorías. Agregá una.</p>
-                )}
-              </div>
-              <div className="mt-4 pt-4 border-t border-cafe-border/40">
-                <p className="text-xs font-display tracking-wider text-cafe-muted mb-3">NOMBRES EN INGLÉS (EN)</p>
-                <div className="space-y-2">
-                  {(settings.menu_categories || []).map((cat, idx) => (
-                    <div key={idx} className="flex items-center gap-2">
-                      <span className="w-6 text-center text-xs text-cafe-muted/50 font-display">{idx + 1}</span>
-                      <input
-                        type="text"
-                        value={settings.menu_categories_en?.[idx] || ''}
-                        onChange={e => {
-                          const updated = [...(settings.menu_categories_en || [])];
-                          updated[idx] = e.target.value;
-                          handleChange('menu_categories_en', updated);
-                        }}
-                        className="flex-1 px-3 py-2 bg-cafe-bg border border-cafe-border text-cafe-text text-sm focus:outline-none focus:border-cafe-accent rounded-lg"
-                        placeholder={`English name for "${cat}"`}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* 8. Tipos de Café */}
-            <div className="bg-cafe-surface border border-cafe-border p-6 rounded-xl">
-              <div className="flex items-center justify-between mb-2">
-                <h2 className="font-display text-lg text-cafe-accent">7 · TIPOS DE CAFÉ</h2>
-                <button
-                  onClick={() => {
-                    const items = settings.coffee_items || [];
-                    const newKey = `custom_${Date.now()}`;
-                    handleChange('coffee_items', [...items, { key: newKey, label: '' }]);
-                  }}
-                  className="flex items-center gap-1 px-3 py-1.5 bg-cafe-accent text-white font-display text-xs tracking-wider hover:bg-cafe-burgundy-light transition-colors rounded-xl shadow-lg shadow-black/30"
-                >
-                  <Plus className="w-3 h-3" /> AGREGAR
-                </button>
-              </div>
-              <p className="text-cafe-muted text-xs mb-5">Subí fotos personalizadas para cada café. Si dejás vacío, se muestra la ilustración SVG por defecto.</p>
-              <div className="grid grid-cols-2 gap-3">
-                {(settings.coffee_items || []).map(({ key, label }, idx) => {
-                  const hasImage = !!settings.coffee_images?.[key];
-                  return (
-                    <div
-                      key={key}
-                      className={`group relative border rounded-xl overflow-hidden transition-all duration-200 ${
-                        hasImage
-                          ? 'border-cafe-accent/40 bg-cafe-bg'
-                          : 'border-cafe-border/40 bg-cafe-bg/50'
-                      }`}
-                    >
-                      <div className="aspect-[4/3] relative overflow-hidden bg-cafe-card">
-                        {hasImage ? (
-                          <img
-                            src={settings.coffee_images[key]}
-                            alt={label || key}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex flex-col items-center justify-center gap-1.5">
-                            <Coffee className="w-6 h-6 text-cafe-muted/25" />
-                            <span className="text-cafe-muted/30 text-[10px] font-display tracking-wider">SIN IMAGEN</span>
-                          </div>
-                        )}
-                        <button
-                          onClick={() => {
-                            const items = [...(settings.coffee_items || [])];
-                            items.splice(idx, 1);
-                            handleChange('coffee_items', items);
-                            const images = { ...(settings.coffee_images || {}) };
-                            delete images[key];
-                            handleChange('coffee_images', images);
-                          }}
-                          className="absolute top-1.5 right-1.5 p-1 bg-black/50 rounded-lg text-white/70 hover:text-red-400 hover:bg-black/70 transition-all opacity-0 group-hover:opacity-100"
-                          title="Quitar café"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      </div>
-                      <div className="px-3 py-2.5 space-y-2">
-                        <input
-                          type="text"
-                          value={label}
-                          onChange={e => {
-                            const items = [...(settings.coffee_items || [])];
-                            items[idx] = { ...items[idx], label: e.target.value };
-                            handleChange('coffee_items', items);
-                          }}
-                          className="w-full px-2.5 py-1.5 bg-cafe-surface border border-cafe-border text-cafe-text text-xs font-display tracking-wide focus:outline-none focus:border-cafe-accent rounded-lg"
-                          placeholder="Nombre del café"
-                        />
-                        <div className="flex items-center gap-1.5">
-                          <input
-                            type="url"
-                            value={settings.coffee_images?.[key] || ''}
-                            onChange={e => {
-                              const updated = { ...(settings.coffee_images || {}), [key]: e.target.value };
-                              handleChange('coffee_images', updated);
-                            }}
-                            className="flex-1 px-2.5 py-1.5 bg-cafe-surface border border-cafe-border text-cafe-text text-[11px] focus:outline-none focus:border-cafe-accent rounded-lg"
-                            placeholder="https://..."
-                          />
-                          <button
-                            onClick={() => setPickerTarget(`coffee_${key}`)}
-                            className={`p-1.5 border rounded-lg transition-colors ${
-                              hasImage
-                                ? 'bg-cafe-accent/10 border-cafe-accent/30 text-cafe-accent'
-                                : 'bg-cafe-surface border-cafe-border text-cafe-muted hover:text-cafe-accent hover:border-cafe-accent/40'
-                            }`}
-                            title="Seleccionar imagen"
-                          >
-                            <Image className="w-3 h-3" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-
-          {/* Right: Live Preview */}
-          <div className="xl:sticky xl:top-24 self-start border border-cafe-border">
-            <div className="bg-cafe-bg">
-              <div className="text-center py-2 bg-cafe-surface border-b border-cafe-border">
-                <span className="text-xs font-display tracking-widest text-cafe-muted">VISTA PREVIA</span>
-              </div>
-              <div className="overflow-y-auto max-h-[calc(100vh-12rem)]">
-                {/* Hero */}
-                <div className="relative min-h-[50vh] flex items-center justify-center overflow-hidden">
-                  <div className="absolute inset-0">
-                    <div className="absolute inset-0 bg-gradient-to-b from-cafe-burgundy/20 via-cafe-bg/50 to-cafe-bg" />
-                    {settings.hero_bg_image && (
-                      <div className="absolute inset-0" style={{
-                        backgroundImage: `url('${settings.hero_bg_image}')`,
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        filter: 'grayscale(20%) brightness(0.4) saturate(1.2)'
-                      }} />
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-cafe-burgundy/10 to-transparent" />
-                  </div>
-                  <div className="relative z-10 text-center px-4 max-w-4xl pt-16 pb-8">
-                    {settings.hero_subtitle && (
-                      <p className="font-display text-cafe-cream text-sm sm:text-base mb-3 tracking-widest uppercase">
-                        {settings.hero_subtitle}
-                      </p>
-                    )}
-                    <h1 className="font-display text-5xl sm:text-7xl text-cafe-text mb-4 tracking-tight leading-none">
-                      {settings.hero_title_line1 || 'CAFÉ'}
-                      <br />
-                      <span className="font-script text-cafe-accent text-5xl sm:text-7xl inline-block" style={{ fontWeight: 600 }}>
-                        {settings.hero_title_line2 || 'Círculo'}
-                      </span>
-                    </h1>
-                    {settings.hero_description && (
-                      <p className="text-cafe-muted text-sm sm:text-base mb-6 max-w-xl mx-auto">
-                        {settings.hero_description}
-                      </p>
-                    )}
-                    <div className="flex flex-wrap items-center gap-x-2 justify-center mb-6 text-xs sm:text-sm text-cafe-cream/70">
-                      <Clock className="w-3.5 h-3.5 text-cafe-accent shrink-0" />
-                      <span className="tracking-wide">{settings.hours_weekdays || 'Lun - Vie: 8:00 - 20:30'}</span>
-                      <span className="text-cafe-muted-dark mx-1">·</span>
-                      <span className="tracking-wide">{settings.hours_weekends || 'Sáb - Dom: 9:00 - 20:30'}</span>
-                    </div>
-                    <div className="inline-flex items-center gap-2 px-6 py-2.5 bg-cafe-accent text-white font-display text-sm tracking-wider rounded-full">
-                      {settings.hero_button_text || 'VER MENÚ'} <ChevronRight className="w-4 h-4" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Reserva */}
-                <div className="py-12 border-t border-cafe-border/60 text-center px-4">
-                  <h2 className="font-display text-2xl sm:text-3xl text-cafe-text mb-4">{settings.reserva_heading || 'RESERVA'}</h2>
-                  <div className="w-12 h-0.5 bg-gradient-to-r from-transparent via-cafe-accent to-transparent mx-auto mb-6" />
-                  <p className="text-cafe-muted text-sm max-w-xl mx-auto mb-6">
-                    {settings.reserva_description || 'Contactanos para reservar tu lugar y disfrutar de una experiencia única.'}
-                  </p>
-                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                    <div className="inline-flex items-center gap-2 px-6 py-2.5 bg-cafe-accent text-white font-display text-xs tracking-wider rounded-full">
-                      RESERVAR POR WHATSAPP
-                    </div>
-                    <div className="inline-flex items-center gap-2 px-6 py-2.5 bg-cafe-accent text-white font-display text-xs tracking-wider rounded-full">
-                      INSTAGRAM
-                    </div>
-                  </div>
-                </div>
-
-                {/* Encontranos */}
-                <div className="py-12 border-t border-cafe-border/60 px-4">
-                  <div className="text-center mb-8">
-                    <p className="font-script text-cafe-cream text-lg mb-1">{settings.encontranos_subtitle || 'Visitanos'}</p>
-                    <h2 className="font-display text-2xl sm:text-3xl text-cafe-text">{settings.encontranos_heading || 'ENCONTRANOS'}</h2>
-                    <div className="w-12 h-0.5 bg-gradient-to-r from-transparent via-cafe-accent to-transparent mx-auto mt-3" />
-                  </div>
-                  <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-8 items-start">
-                    <div className="flex items-start gap-3">
-                      <MapPin className="w-5 h-5 text-cafe-accent shrink-0 mt-0.5" />
-                      <div>
-                        <p className="font-display text-sm text-cafe-text mb-2">{settings.ubicacion_heading || 'UBICACIÓN'}</p>
-                        <p className="text-cafe-muted text-sm">{settings.location_line1}</p>
-                        <p className="text-cafe-muted text-sm">{settings.location_line2}</p>
-                      </div>
-                    </div>
-                    <div className="aspect-[16/9] rounded-lg overflow-hidden border border-cafe-border/60 bg-cafe-card">
-                      <iframe
-                        src={settings.maps_embed_url || 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d217847.3641164673!2d-64.37866564765623!3d-31.398478!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x942d7bca9b3a6c4f%3A0x9b0f5e5e5e5e5e5e!2sVilla%20Allende%2C%20C%C3%B3rdoba!5e0!3m2!1ses!2sar!4v1'}
-                        width="100%"
-                        height="100%"
-                        style={{ border: 0 }}
-                        allowFullScreen
-                        loading="lazy"
-                        referrerPolicy="no-referrer-when-downgrade"
-                        title="Ubicación"
-                        className="w-full h-full"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Sobre Nosotros */}
-                <div className="py-12 border-t border-cafe-border/60 px-4">
-                  <div className="text-center mb-8">
-                    <p className="font-script text-cafe-cream text-lg mb-1">{settings.nosotros_subtitle || 'Nuestra historia'}</p>
-                    <h2 className="font-display text-2xl sm:text-3xl text-cafe-text">{settings.nosotros_heading || 'SOBRE NOSOTROS'}</h2>
-                    <div className="w-12 h-0.5 bg-gradient-to-r from-transparent via-cafe-accent to-transparent mx-auto mt-3" />
-                  </div>
-                  <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-8 items-center">
-                    <div className="space-y-3">
-                      <p className="text-cafe-muted text-sm">
-                        {settings.about_story}
-                      </p>
-                      <p className="text-cafe-muted text-sm">
-                        {settings.nosotros_paragraph2}
-                      </p>
-                      <p className="text-cafe-muted text-sm">
-                        {settings.nosotros_paragraph3}
-                      </p>
-                      <div className="pt-3 space-y-2 border-t border-cafe-border/40">
-                        <div className="flex items-start gap-2">
-                          <Clock className="w-4 h-4 text-cafe-accent shrink-0 mt-0.5" />
-                          <div>
-                            <p className="text-cafe-muted text-xs">{settings.hours_weekdays}</p>
-                            <p className="text-cafe-muted text-xs">{settings.hours_weekends}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <Music className="w-4 h-4 text-cafe-accent shrink-0 mt-0.5" />
-                          <div>
-                            <p className="text-cafe-muted text-xs">{settings.culture_line1}</p>
-                            <p className="text-cafe-muted text-xs">{settings.culture_line2}</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="aspect-[4/3] rounded overflow-hidden border border-cafe-border/60 bg-cafe-card">
-                      {settings.hero_bg_image ? (
-                        <img src={settings.hero_bg_image} alt="" className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-cafe-muted/40 text-xs">Imagen</div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Recommendations */}
-                <div className="py-12 border-t border-cafe-border/60 px-4">
-                  <div className="max-w-4xl mx-auto">
-                    <div className="bg-cafe-surface border border-cafe-border/60 rounded-xl overflow-hidden">
-                      {(settings.recommended_items || []).filter(r => r.name).length > 0 ? (
-                        <div className="p-6 space-y-3">
-                          {(settings.recommended_items || []).filter(r => r.name).slice(0, 4).map((item, i) => (
-                            <div key={i} className="flex items-center gap-4 p-3 bg-cafe-card/50 rounded-xl">
-                              <div className="w-16 h-16 shrink-0 rounded-xl overflow-hidden bg-cafe-card">
-                                {item.image_url ? (
-                                  <img src={item.image_url} alt="" className="w-full h-full object-cover" />
-                                ) : (
-                                  <div className="w-full h-full flex items-center justify-center text-cafe-muted/20">•</div>
-                                )}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="font-display text-sm text-cafe-text truncate">{item.name}</p>
-                              </div>
-                              {item.price && <span className="font-display text-base text-cafe-accent">${item.price}</span>}
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="flex items-center justify-center h-32 text-cafe-muted/40 text-xs">Sin recomendaciones</div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Gallery */}
-                <div className="py-12 border-t border-cafe-border/60 px-4">
-                  <div className="max-w-4xl mx-auto space-y-6">
-                    <div className="text-center">
-                      <p className="font-script text-cafe-burgundy text-2xl sm:text-3xl">{(settings.gallery_taglines || ['más que un café de especialidad,', 'una comunidad.'])[previewTaglineIdx % (settings.gallery_taglines || ['más que un café de especialidad,', 'una comunidad.']).length]}</p>
-                    </div>
-                    <div className="bg-cafe-surface border border-cafe-border/60 rounded-xl overflow-hidden">
-                      {(settings.gallery_images || []).filter(Boolean).length > 0 ? (
-                        (() => {
-                          const firstItem = (settings.gallery_images || []).filter(Boolean)[0];
-                          if (/\.(mp4|webm|mov)$/i.test(firstItem)) {
-                            return (
-                              <div className="aspect-[16/9] bg-cafe-card">
-                                <video src={firstItem} className="w-full h-full object-cover" controls playsInline />
-                              </div>
-                            );
-                          }
-                          const ytMatch = firstItem.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&?/]+)/);
-                          const vimeoMatch = firstItem.match(/vimeo\.com\/(\d+)/);
-                          if (ytMatch) {
-                            return (
-                              <div className="aspect-[16/9] bg-cafe-card">
-                                <iframe src={`https://www.youtube.com/embed/${ytMatch[1]}`} className="w-full h-full" allowFullScreen title="Galería" />
-                              </div>
-                            );
-                          }
-                          if (vimeoMatch) {
-                            return (
-                              <div className="aspect-[16/9] bg-cafe-card">
-                                <iframe src={`https://player.vimeo.com/video/${vimeoMatch[1]}`} className="w-full h-full" allowFullScreen title="Galería" />
-                              </div>
-                            );
-                          }
-                          return (
-                            <div className="aspect-[16/9] bg-cafe-card flex items-center justify-center">
-                              <img src={firstItem} alt="" className="w-full h-full object-cover" />
-                            </div>
-                          );
-                        })()
-                      ) : (
-                        <div className="flex items-center justify-center h-40 text-cafe-muted/40 text-xs">Sin imágenes</div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {pickerTarget && (
-        <ImagePicker
-          value={
-            pickerTarget === 'hero_bg_image'
-              ? settings.hero_bg_image
-              : pickerTarget.startsWith('coffee_')
-                ? (settings.coffee_images || {})[pickerTarget.replace('coffee_', '')] || ''
-                : pickerTarget.startsWith('gallery_')
-                  ? (settings.gallery_images || [])[parseInt(pickerTarget.split('_')[1])] || ''
-                  : (settings.recommended_items || [])[parseInt(pickerTarget.split('_')[1])]?.image_url || ''
-          }
-          onChange={(url) => {
-            if (pickerTarget === 'hero_bg_image') {
-              handleChange('hero_bg_image', url);
-            } else if (pickerTarget.startsWith('coffee_')) {
-              const key = pickerTarget.replace('coffee_', '');
-              const updated = { ...(settings.coffee_images || {}), [key]: url };
-              handleChange('coffee_images', updated);
-            } else if (pickerTarget.startsWith('gallery_')) {
-              const idx = parseInt(pickerTarget.split('_')[1]);
-              updateGalleryImage(idx, url);
-            } else {
-              const idx = parseInt(pickerTarget.split('_')[1]);
-              updateRecommendedItem(idx, 'image_url', url);
-            }
-            setPickerTarget(null);
-          }}
-          onClose={() => setPickerTarget(null)}
-        />
-      )}
+    <div className="min-h-screen pt-20">
+      {modules.filter(m => m.visible).map(mod => {
+        return <ModuleRenderer key={mod.id} module={mod} settings={settings} recommendedItems={recommendedItems} allMenuItems={allMenuItems} />;
+      })}
     </div>
   );
+}
+
+function ModuleRenderer({ module: mod, settings, recommendedItems, allMenuItems }) {
+  const { type } = mod;
+
+  switch (type) {
+    case 'hero':
+      return <HeroSection settings={settings} />;
+
+    case 'recommendations':
+      if (!recommendedItems.length) return null;
+      return (
+        <section className="py-16">
+          <div className="max-w-6xl mx-auto px-4">
+            {mod.title && (
+              <div className="text-center mb-10">
+                <p className="font-script text-cafe-cream text-4xl sm:text-5xl">{mod.title}</p>
+                {mod.subtitle && <p className="font-display text-sm tracking-widest text-cafe-muted mt-2">{mod.subtitle}</p>}
+                <div className="w-12 h-0.5 bg-gradient-to-r from-transparent via-cafe-accent to-transparent mx-auto mt-3" />
+              </div>
+            )}
+            <RecommendationsSection items={recommendedItems} />
+          </div>
+        </section>
+      );
+
+    case 'coffee_types':
+      return <CoffeeTypesSection settings={settings} />;
+
+    case 'reservas':
+      return (
+        <section className="py-16">
+          <div className="max-w-6xl mx-auto px-4">
+            <ReservaSection settings={settings} />
+          </div>
+        </section>
+      );
+
+    case 'gallery':
+      return (
+        <section className="py-16">
+          <div className="max-w-6xl mx-auto px-4">
+            <GallerySection settings={settings} />
+          </div>
+        </section>
+      );
+
+    case 'text_image':
+      return <TextImageSection module={mod} />;
+
+    case 'menu_items':
+      if (!mod.item_ids?.length) return null;
+      const items = allMenuItems.filter(it => mod.item_ids.includes(it.id));
+      return <MenuItemsSection module={mod} items={items} />;
+
+    case 'encuentranos':
+      return <EncontranosSection settings={settings} />;
+
+    default:
+      return null;
+  }
 }

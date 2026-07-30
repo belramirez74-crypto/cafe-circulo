@@ -53,6 +53,22 @@ router.get('/featured', async (req, res) => {
   }
 });
 
+router.get('/recommended', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('menu_items')
+      .select('*')
+      .eq('recommended', true)
+      .eq('stock', true)
+      .order('name');
+
+    if (error) throw error;
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 router.post('/', authenticateAdmin, async (req, res) => {
   try {
     const { name, description, price, category, image_url, stock, featured } = req.body;

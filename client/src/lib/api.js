@@ -105,6 +105,7 @@ export const getAdminClientFavorites = (id) => USER_API.get(`/admin/clients/${id
 export const getMenuItems = () => API.get('/menu');
 export const getAllMenuItems = () => API.get('/menu/all');
 export const getFeaturedItems = () => API.get('/menu/featured');
+export const getRecommendedItems = () => API.get('/menu/recommended');
 export const createMenuItem = (data) => API.post('/menu', data);
 export const updateMenuItem = (id, data) => API.put(`/menu/${id}`, data);
 export const deleteMenuItem = (id) => API.delete(`/menu/${id}`);

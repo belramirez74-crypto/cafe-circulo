@@ -7,9 +7,6 @@ import StaffLayout from './components/StaffLayout';
 import Home from './pages/Home';
 import MenuPage from './pages/MenuPage';
 import Login from './pages/Login';
-import ReservaPage from './pages/ReservaPage';
-import EncontranosPage from './pages/EncontranosPage';
-import SobreNosotrosPage from './pages/SobreNosotrosPage';
 import StaffDashboard from './pages/staff/StaffDashboard';
 import StaffProfile from './pages/staff/StaffProfile';
 import AdminLogin from './pages/admin/AdminLogin';
@@ -44,7 +41,7 @@ function AdminRoute({ children }) {
 
 export default function App() {
   const location = useLocation();
-  const landingPaths = ['/', '/reserva', '/encontranos', '/sobre-nosotros', '/menu'];
+  const landingPaths = ['/', '/menu'];
   const isLanding = landingPaths.includes(location.pathname);
   const isAdmin = location.pathname.startsWith('/admin');
   const isStaff = location.pathname.startsWith('/staff');
@@ -55,10 +52,10 @@ export default function App() {
       <main>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/reserva" element={<ReservaPage />} />
-          <Route path="/encontranos" element={<EncontranosPage />} />
-          <Route path="/sobre-nosotros" element={<SobreNosotrosPage />} />
           <Route path="/menu" element={<MenuPage />} />
+          <Route path="/reserva" element={<Navigate to="/" replace />} />
+          <Route path="/encontranos" element={<Navigate to="/" replace />} />
+          <Route path="/sobre-nosotros" element={<Navigate to="/" replace />} />
           <Route path="/login" element={<Navigate to="/" replace />} />
           <Route path="/staff" element={<StaffRoute><StaffLayout><StaffDashboard /></StaffLayout></StaffRoute>} />
           <Route path="/staff/profile" element={<StaffRoute><StaffLayout><StaffProfile /></StaffLayout></StaffRoute>} />

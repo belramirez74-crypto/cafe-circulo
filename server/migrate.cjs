@@ -46,6 +46,18 @@ async function run() {
     `);
     console.log('menu_categories_en column OK');
 
+    await client.query(`
+      ALTER TABLE landing_settings 
+      ADD COLUMN IF NOT EXISTS modules JSONB DEFAULT '[]'::jsonb
+    `);
+    console.log('modules column OK');
+
+    await client.query(`
+      ALTER TABLE menu_items 
+      ADD COLUMN IF NOT EXISTS recommended BOOLEAN DEFAULT false
+    `);
+    console.log('menu_items.recommended column OK');
+
     client.release();
     await pool.end();
     console.log('Migrations completed!');
@@ -74,6 +86,11 @@ async function run() {
       console.log('menu_categories column OK');
       await client2.query(`ALTER TABLE landing_settings ADD COLUMN IF NOT EXISTS menu_categories_en JSONB DEFAULT '["Coffee", "Sweets", "Savory", "Drinks"]'::jsonb`);
       console.log('menu_categories_en column OK');
+      
+      await client2.query(`ALTER TABLE landing_settings ADD COLUMN IF NOT EXISTS modules JSONB DEFAULT '[]'::jsonb`);
+      console.log('modules column OK');
+      await client2.query(`ALTER TABLE menu_items ADD COLUMN IF NOT EXISTS recommended BOOLEAN DEFAULT false`);
+      console.log('menu_items.recommended column OK');
       
       client2.release();
       await pool2.end();
