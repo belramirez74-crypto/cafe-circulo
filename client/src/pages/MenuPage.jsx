@@ -130,7 +130,7 @@ export default function MenuPage() {
             <p className="text-cafe-muted text-lg">{t('menu_no_results')}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered.map((item, i) => (
               <motion.div
                 key={item.id}
