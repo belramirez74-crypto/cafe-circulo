@@ -7,7 +7,7 @@ ALTER TABLE cafe_circulo.landing_settings
   ADD COLUMN IF NOT EXISTS reserva_heading TEXT DEFAULT 'RESERVA',
   ADD COLUMN IF NOT EXISTS reserva_description TEXT DEFAULT 'Contactanos para reservar tu lugar y disfrutar de una experiencia única.',
   ADD COLUMN IF NOT EXISTS reserva_whatsapp_url TEXT DEFAULT 'https://wa.me/5493541530797',
-  ADD COLUMN IF NOT EXISTS reserva_instagram_url TEXT DEFAULT 'https://instagram.com/cafecirculo',
+  ADD COLUMN IF NOT EXISTS reserva_instagram_url TEXT DEFAULT 'https://www.instagram.com/circuloescafe',
   ADD COLUMN IF NOT EXISTS gallery_tagline_1 TEXT DEFAULT 'más que un café de especialidad,',
   ADD COLUMN IF NOT EXISTS gallery_tagline_2 TEXT DEFAULT 'una comunidad.',
   ADD COLUMN IF NOT EXISTS encontranos_subtitle TEXT DEFAULT 'Visitanos',

@@ -28,7 +28,7 @@ const defaultSettings = {
   reserva_heading: 'RESERVA',
   reserva_description: 'Contactanos para reservar tu lugar y disfrutar de una experiencia única.',
   reserva_whatsapp_url: 'https://wa.me/5493541530797',
-  reserva_instagram_url: 'https://instagram.com/cafecirculo',
+  reserva_instagram_url: 'https://www.instagram.com/circuloescafe',
 
   // Recommendations
   recommended_items: [],

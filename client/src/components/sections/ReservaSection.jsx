@@ -22,7 +22,7 @@ export default function ReservaSection({ settings }) {
             <Coffee className="w-4 h-4" /> {t('reserva_whatsapp')}
           </a>
           <a
-            href={settings?.reserva_instagram_url || 'https://instagram.com/cafecirculo'}
+            href={settings?.reserva_instagram_url || 'https://www.instagram.com/circuloescafe'}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-8 py-3 bg-cafe-accent text-white font-display tracking-wider hover:bg-cafe-burgundy-light transition-colors animate-glow-pulse rounded-full shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-black/40"
