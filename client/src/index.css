@@ -7,7 +7,7 @@
   --color-cafe-border: #3d2c25;
   --color-cafe-burgundy: #491716;
   --color-cafe-burgundy-light: #6e1d18;
-  --color-cafe-accent: #5c1514;
+  --color-cafe-accent: #a09388;
   --color-cafe-cream: #f5f0e8;
   --color-cafe-text: #f5f0e8;
   --color-cafe-muted: #b5a89a;
@@ -138,6 +138,7 @@ body {
   --color-cafe-muted: #6b5e52;
   --color-cafe-muted-dark: #8a7a6a;
   --color-cafe-cream: #1a1210;
+  --color-cafe-accent: #5c1514;
   background-color: var(--color-cafe-bg);
   color: var(--color-cafe-text);
 }
