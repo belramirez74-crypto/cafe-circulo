@@ -148,19 +148,19 @@ export default function MenuPage() {
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <Coffee className="w-16 h-16 text-cafe-muted/20" />
+                      <Coffee className="w-10 h-10 sm:w-16 sm:h-16 text-cafe-muted/20" />
                     </div>
                   )}
                 </div>
-                <div className="p-4">
-                  <div className="flex items-start justify-between gap-4 mb-1">
-                    <h3 className="font-display text-lg text-cafe-text">{item.name}</h3>
-                    <span className="font-display text-xl text-cafe-cream shrink-0">
+                <div className="p-3 sm:p-4">
+                  <div className="flex items-start justify-between gap-2 sm:gap-4 mb-1">
+                    <h3 className="font-display text-sm sm:text-lg text-cafe-text">{item.name}</h3>
+                    <span className="font-display text-base sm:text-xl text-cafe-cream shrink-0">
                       ${parseFloat(item.price).toLocaleString('es-AR')}
                     </span>
                   </div>
                   {item.description && (
-                    <p className="text-cafe-muted text-sm">{lang === 'en' && item.description_en ? item.description_en : item.description}</p>
+                    <p className="text-cafe-muted text-xs sm:text-sm">{lang === 'en' && item.description_en ? item.description_en : item.description}</p>
                   )}
                 </div>
               </motion.div>
