@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: cafe-circulo
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm --prefix server install && npm --prefix client install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_KEY
+        sync: false
+      - key: JWT_SECRET
+        sync: false
